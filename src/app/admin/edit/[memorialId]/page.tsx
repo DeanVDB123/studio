@@ -4,7 +4,7 @@ import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
 import { getMemorialById } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Globe, Link2 } from 'lucide-react';
+import { Globe, Link2, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -19,13 +19,25 @@ export default async function EditMemorialPage({ params }: EditMemorialPageProps
   const memorialData = await getMemorialById(memorialId);
 
   if (!memorialData) {
+    let alertDescriptionText = "The memorial page you are looking for does not exist or may have been removed.";
+    if (process.env.NODE_ENV === 'development') {
+      alertDescriptionText += " If you're in a development environment, this could be due to a server restart clearing in-memory data. Please try returning to the dashboard and selecting the memorial again.";
+    }
     return (
-      <div className="container mx-auto py-8">
+      <>
         <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Memorial page not found.</AlertDescription>
+          <AlertTriangle className="h-5 w-5" />
+          <AlertTitle>Error: Memorial Not Found</AlertTitle>
+          <AlertDescription>
+            {alertDescriptionText}
+          </AlertDescription>
         </Alert>
-      </div>
+        <div className="mt-6 flex justify-center">
+            <Button asChild>
+                <Link href="/admin">Return to Dashboard</Link>
+            </Button>
+        </div>
+      </>
     );
   }
 
