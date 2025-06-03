@@ -18,7 +18,7 @@ const OrganizeUserContentInputSchema = z.object({
   photosDataUris: z
     .array(z.string())
     .describe(
-      'A list of photos of the deceased, as data URIs that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' 
+      'A list of photos of the deceased, as data URIs that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
     ),
 });
 export type OrganizeUserContentInput = z.infer<typeof OrganizeUserContentInputSchema>;
@@ -41,6 +41,7 @@ export async function organizeUserContent(input: OrganizeUserContentInput): Prom
 
 const prompt = ai.definePrompt({
   name: 'organizeUserContentPrompt',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: OrganizeUserContentInputSchema},
   output: {schema: OrganizeUserContentOutputSchema},
   prompt: `You are an AI assistant that helps organize user-generated content for a memorial page.

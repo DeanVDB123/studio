@@ -30,6 +30,7 @@ export async function generateBiographyDraft(input: GenerateBiographyDraftInput)
 
 const prompt = ai.definePrompt({
   name: 'generateBiographyDraftPrompt',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {schema: GenerateBiographyDraftInputSchema},
   output: {schema: GenerateBiographyDraftOutputSchema},
   prompt: `You are a professional biographer who specializes in writing respectful and heartfelt biographies for memorial pages.
