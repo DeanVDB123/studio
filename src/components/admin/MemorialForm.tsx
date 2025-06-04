@@ -150,7 +150,12 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         };
         const savedMemorial = await saveMemorialAction(payload);
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${memorialId ? 'updated' : 'created'}.` });
-        router.push(`/admin/edit/${savedMemorial.id}`);
+        
+        if (memorialId) { // If memorialId exists, it's an update
+          router.push(`/admin/edit/${savedMemorial.id}`); // Stay on edit page or refresh it
+        } else { // Otherwise, it's a new creation
+          router.push('/admin'); // Redirect to dashboard
+        }
       } catch (error: any) {
         toast({ title: "Error saving memorial", description: error.message, variant: "destructive" });
       }
@@ -310,3 +315,5 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
+
+    
