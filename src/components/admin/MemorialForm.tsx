@@ -81,28 +81,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     }
   };
 
-  const onGenerateBiography = async () => {
-    const { deceasedName, birthDate, deathDate, lifeSummary } = getValues();
-    if (!deceasedName || !birthDate || !deathDate || !lifeSummary) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in Name, Birth Date, Death Date, and Life Summary to generate biography.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setIsAiBioLoading(true);
-    try {
-      const draft = await handleGenerateBiography({ deceasedName, birthDate, deathDate, lifeSummary });
-      setValue('biography', draft, { shouldValidate: true });
-      toast({ title: "AI Biography Generated", description: "Initial draft created." });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsAiBioLoading(false);
-    }
-  };
-
   const onOrganizeContent = async () => {
     const { biography, tributes, stories, photos } = getValues();
     if (!biography && tributes.length === 0 && stories.length === 0 && photos.length === 0) {
@@ -128,9 +106,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       setValue('tributes', organized.tributes, { shouldValidate: true });
       setValue('stories', organized.stories, { shouldValidate: true });
       
-      // This part is tricky as AI returns data URIs, but our form stores Photo objects.
-      // For simplicity, we'll log the organized photos but not directly update the form field for photos from AI to avoid complexity.
-      // In a real app, you'd need to reconcile these or have the AI return structured photo data.
       console.log("AI organized photo URIs:", organized.photoGallery);
       toast({ title: "Content Organized by AI", description: "Biography, tributes, and stories have been updated." });
 
@@ -151,11 +126,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         const savedMemorial = await saveMemorialAction(payload);
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${memorialId ? 'updated' : 'created'}.` });
         
-        if (!memorialId) { 
-          router.push('/admin'); 
-        } else { 
-          router.push(`/admin/edit/${savedMemorial.id}`);
-        }
+        router.push('/admin'); 
       } catch (error: any) {
         toast({ title: "Error saving memorial", description: error.message, variant: "destructive" });
       }
@@ -309,7 +280,3 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
-
-    
-
-    
