@@ -6,9 +6,11 @@ import { PhotoGallerySection } from '@/components/memorial/PhotoGallerySection';
 import { TributesSection } from '@/components/memorial/TributesSection';
 import { StoriesSection } from '@/components/memorial/StoriesSection';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Feather } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Feather, QrCode as QrCodeIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay'; // Re-using the admin component
 
 interface MemorialPageProps {
   params: {
@@ -47,6 +49,8 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
     );
   }
 
+  const permalink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:9002'}/memorial/${params.memorialId}`;
+
   return (
     <div className="bg-background min-h-screen font-body">
       <MemorialPageHeader
@@ -59,6 +63,24 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
         <PhotoGallerySection photos={memorial.photos} />
         <TributesSection tributes={memorial.tributes} />
         <StoriesSection stories={memorial.stories} />
+
+        <Card className="shadow-lg animate-in fade-in duration-500 delay-400">
+          <CardHeader className="bg-secondary/50 rounded-t-lg">
+            <CardTitle className="font-headline text-3xl flex items-center">
+              <QrCodeIcon className="mr-3 h-7 w-7 text-primary" />
+              Share this Memorial
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 flex flex-col items-center">
+            <p className="text-muted-foreground mb-4 text-center">
+              Scan the QR code below to easily share this memorial page with others.
+            </p>
+            <QRCodeDisplay url={permalink} size={200} />
+             <Link href={permalink} target="_blank" className="text-sm text-primary hover:underline break-all block mt-4 text-center">
+              {permalink}
+            </Link>
+          </CardContent>
+        </Card>
       </main>
       <footer className="py-8 text-center text-muted-foreground border-t">
         <p>&copy; {new Date().getFullYear()} ForeverMark. All rights reserved.</p>
