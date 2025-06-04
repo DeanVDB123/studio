@@ -151,10 +151,10 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         const savedMemorial = await saveMemorialAction(payload);
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${memorialId ? 'updated' : 'created'}.` });
         
-        if (memorialId) { // If memorialId exists, it's an update
-          router.push(`/admin/edit/${savedMemorial.id}`); // Stay on edit page or refresh it
-        } else { // Otherwise, it's a new creation
-          router.push('/admin'); // Redirect to dashboard
+        if (!memorialId) { 
+          router.push('/admin'); 
+        } else { 
+          router.push(`/admin/edit/${savedMemorial.id}`);
         }
       } catch (error: any) {
         toast({ title: "Error saving memorial", description: error.message, variant: "destructive" });
@@ -197,14 +197,8 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
 
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="font-headline text-2xl">Biography</CardTitle>
-            <Button type="button" onClick={onGenerateBiography} variant="outline" size="sm" disabled={isAiBioLoading}>
-              {isAiBioLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-              Generate with AI
-            </Button>
-          </div>
-          <CardDescription>Share their life story.</CardDescription>
+          <CardTitle className="font-headline text-2xl">Biography</CardTitle>
+          <CardDescription>Share their life story. You can use the "Life Summary" field above to help the AI generate a starting point using the "Organize All Content with AI" button below.</CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea id="biography" {...register('biography')} rows={10} placeholder="Write or generate the biography here..." />
@@ -215,8 +209,8 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       <Separator />
 
       <div className="flex justify-end">
-          <Button type="button" onClick={onOrganizeContent} variant="secondary" disabled={isAiOrganizeLoading}>
-            {isAiOrganizeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+          <Button type="button" onClick={onOrganizeContent} variant="secondary" disabled={isAiOrganizeLoading || isAiBioLoading}>
+            {isAiOrganizeLoading || isAiBioLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
             Organize All Content with AI
           </Button>
       </div>
@@ -308,12 +302,14 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
 
       <CardFooter className="flex justify-end sticky bottom-0 bg-background py-4 border-t">
         <Button type="submit" disabled={isPending || isAiBioLoading || isAiOrganizeLoading} size="lg">
-          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {isPending || isAiBioLoading || isAiOrganizeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {memorialId ? 'Update' : 'Create'} Memorial Page
         </Button>
       </CardFooter>
     </form>
   );
 }
+
+    
 
     
