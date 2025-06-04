@@ -82,21 +82,37 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   };
 
   const onOrganizeContent = async () => {
-    const { biography, tributes, stories, photos } = getValues();
-    if (!biography && tributes.length === 0 && stories.length === 0 && photos.length === 0) {
-      toast({ title: "Missing Content", description: "Please add some content (biography, tributes, stories, or photos) to organize.", variant: "destructive" });
+    const { biography, tributes, stories, photos, lifeSummary, deceasedName, birthDate, deathDate } = getValues();
+    if (!lifeSummary && !biography && tributes.length === 0 && stories.length === 0 && photos.length === 0) {
+      toast({ title: "Missing Content", description: "Please add a life summary (for AI Bio generation) or other content (biography, tributes, stories, or photos) to organize.", variant: "destructive" });
       return;
     }
     
     setIsAiOrganizeLoading(true);
     try {
+      let currentBiography = biography;
+      if (!currentBiography && lifeSummary && deceasedName && birthDate && deathDate) {
+        setIsAiBioLoading(true);
+        toast({ title: "Generating Biography Draft...", description: "The AI is crafting a biography based on the life summary." });
+        currentBiography = await handleGenerateBiography({
+            name: deceasedName,
+            birthDate: birthDate,
+            deathDate: deathDate,
+            lifeSummary: lifeSummary,
+        });
+        setValue('biography', currentBiography, { shouldValidate: true });
+        toast({ title: "AI Biography Draft Generated!", description: "The biography has been populated. You can edit it further." });
+        setIsAiBioLoading(false);
+      }
+
+
       const photosDataUris = photos.map(p => p.url).filter(url => url.startsWith('data:'));
       if (photos.some(p => !p.url.startsWith('data:')) && photos.length > 0) {
          toast({ title: "Warning", description: "Some photos are not data URIs and will be ignored by the AI organization process. Please ensure all photos are uploaded directly.", variant: "default" });
       }
 
       const organized: OrganizedContent = await handleOrganizeContent({
-        biography,
+        biography: currentBiography,
         tributes,
         stories,
         photosDataUris,
@@ -107,12 +123,16 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       setValue('stories', organized.stories, { shouldValidate: true });
       
       console.log("AI organized photo URIs:", organized.photoGallery);
+      // To update photos, we would need a more complex logic to match AI output with existing photo array items,
+      // or decide how to handle new/removed photos. For now, we'll focus on textual content.
+      // If `organized.photoGallery` is used, ensure it's mapped back to the `photos` array structure with captions.
       toast({ title: "Content Organized by AI", description: "Biography, tributes, and stories have been updated." });
 
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsAiOrganizeLoading(false);
+      setIsAiBioLoading(false);
     }
   };
   
@@ -172,7 +192,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
           <CardDescription>Share their life story. You can use the "Life Summary" field above to help the AI generate a starting point using the "Organize All Content with AI" button below.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Textarea id="biography" {...register('biography')} rows={10} placeholder="Write or generate the biography here..." />
+          <Textarea id="biography" {...register('biography')} rows={10} placeholder="Write the biography here..." />
           {errors.biography && <p className="text-sm text-destructive mt-1">{errors.biography.message}</p>}
         </CardContent>
       </Card>
@@ -280,3 +300,4 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
+
