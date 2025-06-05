@@ -4,11 +4,13 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react';
-import { getAllMemorialsForUser } from '@/lib/data'; // Updated function name
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
+import { PlusCircle, Edit3, ExternalLink, Loader2, QrCode } from 'lucide-react'; // Added QrCode
+import { getAllMemorialsForUser } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation'; 
 
 // Define a type for the memorials displayed on this page
 type UserMemorial = {
@@ -20,11 +22,22 @@ export default function AdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [memorials, setMemorials] = useState<UserMemorial[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const router = useRouter(); // Initialize router
+  const router = useRouter(); 
+  const [selectedMemorialForQr, setSelectedMemorialForQr] = useState<UserMemorial | null>(null);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [pageBaseUrl, setPageBaseUrl] = useState('');
 
   useEffect(() => {
-    // Refresh the route's data. This helps in ensuring that after an action (like creating a memorial)
-    // and redirecting back to this page, the data fetched is the latest.
+    if (typeof window !== 'undefined') {
+      setPageBaseUrl(window.location.origin);
+    } else if (process.env.NEXT_PUBLIC_BASE_URL) {
+      setPageBaseUrl(process.env.NEXT_PUBLIC_BASE_URL);
+    } else {
+      setPageBaseUrl('http://localhost:9002'); // Fallback
+    }
+  }, []);
+
+  useEffect(() => {
     router.refresh();
 
     async function fetchMemorials() {
@@ -35,18 +48,21 @@ export default function AdminDashboardPage() {
           setMemorials(userMemorials);
         } catch (error) {
           console.error("Failed to fetch memorials:", error);
-          // Optionally, set an error state and display it
         } finally {
           setIsLoadingData(false);
         }
       } else if (!authLoading) {
-        // No user, or auth still loading
         setMemorials([]);
         setIsLoadingData(false);
       }
     }
     fetchMemorials();
-  }, [user, authLoading, router]); // Add router to the dependency array
+  }, [user, authLoading, router]);
+
+  const handleQrCodeClick = (memorial: UserMemorial) => {
+    setSelectedMemorialForQr(memorial);
+    setIsQrModalOpen(true);
+  };
 
   if (authLoading || isLoadingData) {
     return (
@@ -58,7 +74,6 @@ export default function AdminDashboardPage() {
   }
   
   if (!user) {
-     // This case should ideally be handled by AuthGuard redirecting to /login
     return (
       <div className="text-center py-12">
         <p>Please log in to view your dashboard.</p>
@@ -116,15 +131,31 @@ export default function AdminDashboardPage() {
                     <Edit3 className="mr-2 h-4 w-4" /> Edit
                   </Link>
                 </Button>
+                 <Button variant="outline" size="sm" onClick={() => handleQrCodeClick(memorial)}>
+                  <QrCode className="mr-2 h-4 w-4" /> Show QR
+                </Button>
                 <Button variant="ghost" size="sm" asChild>
                   <Link href={`/memorial/${memorial.id}`} target="_blank">
-                    <ExternalLink className="mr-2 h-4 w-4" /> View Page
+                    <ExternalLink className="mr-2 h-4 w-4" /> View
                   </Link>
                 </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
+      )}
+
+      {selectedMemorialForQr && (
+        <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>QR Code for {selectedMemorialForQr.deceasedName}</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <QRCodeDisplay url={`${pageBaseUrl}/memorial/${selectedMemorialForQr.id}`} />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
