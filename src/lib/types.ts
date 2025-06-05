@@ -3,10 +3,12 @@ export interface Photo {
   id: string;
   url: string; // Data URI or a remote URL if stored
   caption?: string;
+  dataAiHint?: string; 
 }
 
 export interface MemorialData {
   id?: string; // Optional: will be assigned on creation
+  userId?: string; // ID of the user who created this memorial
   deceasedName: string;
   birthDate: string; // Consider using Date objects if more manipulation is needed
   deathDate: string;  // Consider using Date objects

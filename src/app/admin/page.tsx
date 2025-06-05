@@ -1,14 +1,68 @@
 
+"use client"; // Make this a client component to use useAuth and fetch user-specific data
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Edit3, ExternalLink } from 'lucide-react';
-import { getAllMemorials } from '@/lib/data';
+import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react';
+import { getAllMemorialsForUser } from '@/lib/data'; // Updated function name
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
-export const dynamic = 'force-dynamic'; // Ensure fresh data on each request
+// Define a type for the memorials displayed on this page
+type UserMemorial = {
+  id: string;
+  deceasedName: string;
+};
 
-export default async function AdminDashboardPage() {
-  const memorials = await getAllMemorials();
+export default function AdminDashboardPage() {
+  const { user, loading: authLoading } = useAuth();
+  const [memorials, setMemorials] = useState<UserMemorial[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  useEffect(() => {
+    async function fetchMemorials() {
+      if (user && !authLoading) {
+        setIsLoadingData(true);
+        try {
+          const userMemorials = await getAllMemorialsForUser(user.uid);
+          setMemorials(userMemorials);
+        } catch (error) {
+          console.error("Failed to fetch memorials:", error);
+          // Optionally, set an error state and display it
+        } finally {
+          setIsLoadingData(false);
+        }
+      } else if (!authLoading) {
+        // No user, or auth still loading
+        setMemorials([]);
+        setIsLoadingData(false);
+      }
+    }
+    fetchMemorials();
+  }, [user, authLoading]);
+
+  if (authLoading || isLoadingData) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="ml-4 text-lg">Loading Dashboard...</p>
+      </div>
+    );
+  }
+  
+  if (!user) {
+     // This case should ideally be handled by AuthGuard redirecting to /login
+    return (
+      <div className="text-center py-12">
+        <p>Please log in to view your dashboard.</p>
+         <Button asChild className="mt-4">
+            <Link href="/login">Log In</Link>
+         </Button>
+      </div>
+    );
+  }
+
 
   return (
     <div className="space-y-8">

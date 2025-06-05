@@ -18,11 +18,13 @@ import type { MemorialData, Photo, OrganizedContent } from '@/lib/types';
 import { handleGenerateBiography, handleOrganizeContent, saveMemorialAction } from '@/lib/actions';
 import { Wand2, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
 const photoSchema = z.object({
   id: z.string().optional(),
   url: z.string().min(1, "Image URL is required."),
   caption: z.string().optional(),
+  dataAiHint: z.string().optional(),
 });
 
 const memorialFormSchema = z.object({
@@ -34,18 +36,20 @@ const memorialFormSchema = z.object({
   photos: z.array(photoSchema).min(0, "At least one photo is recommended."),
   tributes: z.array(z.string()).min(0, "At least one tribute is recommended."),
   stories: z.array(z.string()).min(0, "At least one story is recommended."),
+  // userId is not part of the form schema, it comes from context
 });
 
 type MemorialFormValues = z.infer<typeof memorialFormSchema>;
 
 interface MemorialFormProps {
-  initialData?: MemorialData;
+  initialData?: MemorialData; // This should include userId if editing
   memorialId?: string;
 }
 
 export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth(); // Get user from context
   const [isPending, startTransition] = useTransition();
   const [isAiBioLoading, setIsAiBioLoading] = useState(false);
   const [isAiOrganizeLoading, setIsAiOrganizeLoading] = useState(false);
@@ -70,18 +74,35 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
 
   const watchPhotos = watch("photos");
 
+  useEffect(() => {
+    // If editing an existing memorial, and initialData has a userId,
+    // ensure the current user is the owner.
+    // This is a client-side check; server-side validation is crucial in saveMemorialAction.
+    if (initialData && initialData.userId && user && initialData.userId !== user.uid) {
+      toast({ title: "Unauthorized", description: "You can only edit your own memorials.", variant: "destructive" });
+      router.push('/admin');
+    }
+  }, [initialData, user, router, toast]);
+
+
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>, index: number) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true });
+        // You might want to set a default dataAiHint here if needed, or let the user do it
+        setValue(`photos.${index}.dataAiHint`, 'person memory', { shouldValidate: false });
       };
       reader.readAsDataURL(file);
     }
   };
 
   const onOrganizeContent = async () => {
+    if (!user) {
+      toast({ title: "Authentication Error", description: "You must be logged in to use AI features.", variant: "destructive" });
+      return;
+    }
     const { biography, tributes, stories, photos, lifeSummary, deceasedName, birthDate, deathDate } = getValues();
     if (!lifeSummary && !biography && tributes.length === 0 && stories.length === 0 && photos.length === 0) {
       toast({ title: "Missing Content", description: "Please add a life summary (for AI Bio generation) or other content (biography, tributes, stories, or photos) to organize.", variant: "destructive" });
@@ -105,9 +126,8 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         setIsAiBioLoading(false);
       }
 
-
-      const photosDataUris = photos.map(p => p.url).filter(url => url.startsWith('data:'));
-      if (photos.some(p => !p.url.startsWith('data:')) && photos.length > 0) {
+      const photosDataUris = photos.map(p => p.url).filter(url => url && url.startsWith('data:'));
+      if (photos.some(p => p.url && !p.url.startsWith('data:')) && photos.length > 0) {
          toast({ title: "Warning", description: "Some photos are not data URIs and will be ignored by the AI organization process. Please ensure all photos are uploaded directly.", variant: "default" });
       }
 
@@ -122,10 +142,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       setValue('tributes', organized.tributes, { shouldValidate: true });
       setValue('stories', organized.stories, { shouldValidate: true });
       
-      console.log("AI organized photo URIs:", organized.photoGallery);
-      // To update photos, we would need a more complex logic to match AI output with existing photo array items,
-      // or decide how to handle new/removed photos. For now, we'll focus on textual content.
-      // If `organized.photoGallery` is used, ensure it's mapped back to the `photos` array structure with captions.
       toast({ title: "Content Organized by AI", description: "Biography, tributes, and stories have been updated." });
 
     } catch (error: any) {
@@ -137,13 +153,20 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   };
   
   const onSubmit = (data: MemorialFormValues) => {
+    if (!user) {
+      toast({ title: "Authentication Error", description: "You must be logged in to save a memorial.", variant: "destructive" });
+      return;
+    }
+
     startTransition(async () => {
       try {
+        // Construct payload including userId from context
         const payload: MemorialData = {
           ...data,
-          id: memorialId,
+          id: memorialId, // Will be undefined for new memorials
+          userId: user.uid, // Add the user's ID
         };
-        const savedMemorial = await saveMemorialAction(payload);
+        const savedMemorial = await saveMemorialAction(user.uid, payload); // Pass user.uid to server action
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${memorialId ? 'updated' : 'created'}.` });
         
         router.push('/admin'); 
@@ -152,6 +175,16 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       }
     });
   };
+
+  if (authLoading) {
+    return <div className="flex justify-center items-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /> <span className="ml-2">Loading form...</span></div>;
+  }
+
+  if (!user && !authLoading) {
+     // Should be caught by AuthGuard, but as a fallback
+    router.push('/login');
+    return null;
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -200,7 +233,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       <Separator />
 
       <div className="flex justify-end">
-          <Button type="button" onClick={onOrganizeContent} variant="secondary" disabled={isAiOrganizeLoading || isAiBioLoading}>
+          <Button type="button" onClick={onOrganizeContent} variant="secondary" disabled={isAiOrganizeLoading || isAiBioLoading || authLoading || !user}>
             {isAiOrganizeLoading || isAiBioLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
             Organize All Content with AI
           </Button>
@@ -218,7 +251,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
             <div key={field.id} className="flex items-start gap-4 p-4 border rounded-md">
               <div className="flex-shrink-0 w-24 h-24 bg-muted rounded-md flex items-center justify-center overflow-hidden">
                 {watchPhotos[index]?.url ? (
-                  <Image src={watchPhotos[index].url} alt={`Photo ${index + 1}`} width={96} height={96} className="object-cover w-full h-full" data-ai-hint="person memory" />
+                  <Image src={watchPhotos[index].url} alt={`Photo ${index + 1}`} width={96} height={96} className="object-cover w-full h-full" data-ai-hint={watchPhotos[index]?.dataAiHint || "person memory"} />
                 ) : (
                   <FileImage className="w-10 h-10 text-muted-foreground" />
                 )}
@@ -237,13 +270,15 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                 
                 <Label htmlFor={`photos.${index}.caption`}>Caption (Optional)</Label>
                 <Input id={`photos.${index}.caption`} {...register(`photos.${index}.caption`)} placeholder="e.g., Graduation Day, 2010" />
+                 <Label htmlFor={`photos.${index}.dataAiHint`}>AI Hint (Optional)</Label>
+                <Input id={`photos.${index}.dataAiHint`} {...register(`photos.${index}.dataAiHint`)} placeholder="e.g., person memory" />
               </div>
               <Button type="button" variant="ghost" size="icon" onClick={() => removePhoto(index)} aria-label="Remove photo">
                 <Trash2 className="h-5 w-5 text-destructive" />
               </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendPhoto({ url: '', caption: '' })}>
+          <Button type="button" variant="outline" onClick={() => appendPhoto({ url: '', caption: '', dataAiHint: 'person memory' })}>
             <PlusCircle className="mr-2 h-4 w-4" /> Add Photo
           </Button>
         </CardContent>
@@ -292,12 +327,11 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       </Card>
 
       <CardFooter className="flex justify-end sticky bottom-0 bg-background py-4 border-t">
-        <Button type="submit" disabled={isPending || isAiBioLoading || isAiOrganizeLoading} size="lg">
-          {isPending || isAiBioLoading || isAiOrganizeLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        <Button type="submit" disabled={isPending || isAiBioLoading || isAiOrganizeLoading || authLoading || !user} size="lg">
+          {isPending || isAiBioLoading || isAiOrganizeLoading || authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {memorialId ? 'Update' : 'Create'} Memorial Page
         </Button>
       </CardFooter>
     </form>
   );
 }
-
