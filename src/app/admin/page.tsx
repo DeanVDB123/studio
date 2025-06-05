@@ -3,10 +3,9 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Removed CardDescription, CardFooter
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
-import { PlusCircle, Edit3, ExternalLink, Loader2, QrCode } from 'lucide-react';
+import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react'; // Removed QrCode
 import { getAllMemorialsForUser } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -23,8 +22,6 @@ export default function AdminDashboardPage() {
   const [memorials, setMemorials] = useState<UserMemorial[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const router = useRouter(); 
-  const [selectedMemorialForQr, setSelectedMemorialForQr] = useState<UserMemorial | null>(null);
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [pageBaseUrl, setPageBaseUrl] = useState('');
 
   useEffect(() => {
@@ -57,10 +54,6 @@ export default function AdminDashboardPage() {
     fetchMemorials();
   }, [user, authLoading]);
 
-  const handleQrCodeClick = (memorial: UserMemorial) => {
-    setSelectedMemorialForQr(memorial);
-    setIsQrModalOpen(true);
-  };
 
   if (authLoading || isLoadingData) {
     return (
@@ -100,70 +93,47 @@ export default function AdminDashboardPage() {
             <CardTitle className="text-2xl">No Memorials Yet</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription className="text-lg">
+            <p className="text-lg text-muted-foreground">
               Start by creating a new memorial page for a loved one.
-            </CardDescription>
+            </p>
           </CardContent>
-          <CardFooter className="justify-center">
+          <div className="flex justify-center pt-4"> {/* Replaced CardFooter */}
              <Button asChild className="mt-4">
               <Link href="/admin/create">
                 <PlusCircle className="mr-2 h-5 w-5" /> Create Memorial
               </Link>
             </Button>
-          </CardFooter>
+          </div>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memorials.map((memorial) => (
             <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="font-headline text-xl leading-tight truncate flex-grow_">
-                    {memorial.deceasedName}
-                  </CardTitle>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleQrCodeClick(memorial)} 
-                    aria-label="Show QR Code"
-                    className="flex-shrink-0 h-7 w-7"
-                  >
-                    <QrCode className="h-5 w-5 text-muted-foreground hover:text-primary" />
-                  </Button>
-                </div>
-                <CardDescription className="text-xs text-muted-foreground break-all">ID: {memorial.id}</CardDescription>
+              <CardHeader className="pb-2">
+                <CardTitle className="font-headline text-xl leading-tight truncate text-center">
+                  {memorial.deceasedName}
+                </CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow pt-2">
-                <p className="text-sm text-muted-foreground">Manage this memorial page.</p>
+              <CardContent className="flex-grow flex flex-col items-center justify-center pt-2 pb-4">
+                <QRCodeDisplay url={`${pageBaseUrl}/memorial/${memorial.id}`} size={128} />
               </CardContent>
-              <CardFooter className="flex justify-between gap-2 pt-4">
-                <Button variant="default" size="sm" asChild className="flex-1">
+              <div className="flex justify-around items-center p-3 border-t"> {/* Replaced CardFooter */}
+                <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
                   <Link href={`/admin/edit/${memorial.id}`}>
-                    <Edit3 className="mr-2 h-4 w-4" /> Edit
+                    <Edit3 className="h-5 w-5" />
+                    <span className="sr-only">Edit</span>
                   </Link>
                 </Button>
-                <Button variant="outline" size="sm" asChild className="flex-1">
+                <Button variant="ghost" size="icon" asChild title={`View ${memorial.deceasedName}`}>
                   <Link href={`/memorial/${memorial.id}`} target="_blank">
-                    View <ExternalLink className="ml-2 h-4 w-4" /> 
+                    <ExternalLink className="h-5 w-5" /> 
+                    <span className="sr-only">View</span>
                   </Link>
                 </Button>
-              </CardFooter>
+              </div>
             </Card>
           ))}
         </div>
-      )}
-
-      {selectedMemorialForQr && (
-        <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>QR Code for {selectedMemorialForQr.deceasedName}</DialogTitle>
-            </DialogHeader>
-            <div className="py-4 flex justify-center">
-              <QRCodeDisplay url={`${pageBaseUrl}/memorial/${selectedMemorialForQr.id}`} />
-            </div>
-          </DialogContent>
-        </Dialog>
       )}
     </div>
   );
