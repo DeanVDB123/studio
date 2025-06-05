@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react'; // Added useEffect
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,29 +9,37 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { Loader2, LogInIcon } from 'lucide-react'; // Added LogInIcon
-import { auth } from '@/lib/firebase'; // Direct import for signInWithEmailAndPassword
+import { Loader2, LogInIcon } from 'lucide-react';
+import { auth } from '@/lib/firebase';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { logIn, loading, error: authError, user } = useAuth(); // Use logIn from context
+  const { logIn, loading: authLoading, error: authError, user } = useAuth();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
 
-  if (user) {
-    router.push('/admin');
-    return null; 
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/admin');
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFormError(null);
     try {
-      await logIn(auth, email, password); // Use logIn from context
+      await logIn(auth, email, password);
       router.push('/admin');
     } catch (err: any) {
-      // Firebase errors have a 'code' property
       if (err.code) {
         switch (err.code) {
           case 'auth/invalid-email':
@@ -87,8 +95,8 @@ export default function LoginPage() {
             </div>
             {formError && <p className="text-sm text-destructive text-center">{formError}</p>}
             {authError && !formError && <p className="text-sm text-destructive text-center">{authError.message}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            <Button type="submit" className="w-full" disabled={authLoading}>
+              {authLoading && !user ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Log In
             </Button>
           </form>
