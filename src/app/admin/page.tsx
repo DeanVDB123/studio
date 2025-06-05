@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
-import { PlusCircle, Edit3, ExternalLink, Loader2, QrCode } from 'lucide-react'; // Added QrCode
+import { PlusCircle, Edit3, ExternalLink, Loader2, QrCode } from 'lucide-react';
 import { getAllMemorialsForUser } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   useEffect(() => {
-    router.refresh();
+    // router.refresh(); // Can sometimes cause issues if overused, let's see if direct fetch is enough
 
     async function fetchMemorials() {
       if (user && !authLoading) {
@@ -52,12 +52,13 @@ export default function AdminDashboardPage() {
           setIsLoadingData(false);
         }
       } else if (!authLoading) {
+        // If auth is loaded but no user, clear memorials
         setMemorials([]);
         setIsLoadingData(false);
       }
     }
     fetchMemorials();
-  }, [user, authLoading, router]);
+  }, [user, authLoading]); // Removed router from dependencies for now to avoid potential loops
 
   const handleQrCodeClick = (memorial: UserMemorial) => {
     setSelectedMemorialForQr(memorial);
@@ -73,7 +74,7 @@ export default function AdminDashboardPage() {
     );
   }
   
-  if (!user) {
+  if (!user) { // This check is important after loading states are resolved
     return (
       <div className="text-center py-12">
         <p>Please log in to view your dashboard.</p>
@@ -96,7 +97,7 @@ export default function AdminDashboardPage() {
         </Button>
       </div>
 
-      {memorials.length === 0 ? (
+      {memorials.length === 0 && !isLoadingData ? ( // Added !isLoadingData to ensure it's not shown prematurely
         <Card className="text-center py-12">
           <CardHeader>
             <CardTitle className="text-2xl">No Memorials Yet</CardTitle>
@@ -119,7 +120,12 @@ export default function AdminDashboardPage() {
           {memorials.map((memorial) => (
             <Card key={memorial.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle className="font-headline text-xl">{memorial.deceasedName}</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-headline text-xl">{memorial.deceasedName}</CardTitle>
+                  <Button variant="ghost" size="icon" onClick={() => handleQrCodeClick(memorial)} aria-label="Show QR Code">
+                    <QrCode className="h-5 w-5" />
+                  </Button>
+                </div>
                 <CardDescription>ID: {memorial.id}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
@@ -130,9 +136,6 @@ export default function AdminDashboardPage() {
                   <Link href={`/admin/edit/${memorial.id}`}>
                     <Edit3 className="mr-2 h-4 w-4" /> Edit
                   </Link>
-                </Button>
-                 <Button variant="outline" size="sm" onClick={() => handleQrCodeClick(memorial)}>
-                  <QrCode className="mr-2 h-4 w-4" /> Show QR
                 </Button>
                 <Button variant="ghost" size="sm" asChild>
                   <Link href={`/memorial/${memorial.id}`} target="_blank">
@@ -151,7 +154,7 @@ export default function AdminDashboardPage() {
             <DialogHeader>
               <DialogTitle>QR Code for {selectedMemorialForQr.deceasedName}</DialogTitle>
             </DialogHeader>
-            <div className="py-4">
+            <div className="py-4 flex justify-center">
               <QRCodeDisplay url={`${pageBaseUrl}/memorial/${selectedMemorialForQr.id}`} />
             </div>
           </DialogContent>
