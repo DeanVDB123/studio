@@ -6,9 +6,10 @@ interface MemorialPageHeaderProps {
   deceasedName: string;
   birthDate: string;
   deathDate: string;
+  lifeSummary?: string; // Make it optional in case it's not always provided
 }
 
-export function MemorialPageHeader({ deceasedName, birthDate, deathDate }: MemorialPageHeaderProps) {
+export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSummary }: MemorialPageHeaderProps) {
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'MMMM d, yyyy');
@@ -24,7 +25,12 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate }: Memor
         <p className="text-xl text-foreground/80 font-body">
           {formatDate(birthDate)} &ndash; {formatDate(deathDate)}
         </p>
-        <p className="mt-4 text-2xl font-headline text-accent-foreground italic">Forever in our hearts</p>
+        {lifeSummary && (
+          <p className="mt-4 text-lg font-body text-foreground/70 italic max-w-2xl mx-auto">
+            {lifeSummary}
+          </p>
+        )}
+        <p className="mt-6 text-2xl font-headline text-accent-foreground italic">Forever in our hearts</p>
       </div>
     </header>
   );

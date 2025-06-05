@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: MemorialPageProps) {
   }
   return {
     title: `${memorial.deceasedName} | ForeverMark`,
-    description: `A memorial page for ${memorial.deceasedName}.`,
+    description: `A memorial page for ${memorial.deceasedName}. ${memorial.lifeSummary || ''}`,
   };
 }
 
@@ -57,6 +57,7 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
         deceasedName={memorial.deceasedName}
         birthDate={memorial.birthDate}
         deathDate={memorial.deathDate}
+        lifeSummary={memorial.lifeSummary}
       />
       <main className="container mx-auto py-8 px-4 md:px-6 lg:px-8 space-y-12">
         <BiographySection biography={memorial.biography} />
