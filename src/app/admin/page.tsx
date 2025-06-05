@@ -8,6 +8,7 @@ import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react';
 import { getAllMemorialsForUser } from '@/lib/data'; // Updated function name
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 // Define a type for the memorials displayed on this page
 type UserMemorial = {
@@ -19,8 +20,13 @@ export default function AdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [memorials, setMemorials] = useState<UserMemorial[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const router = useRouter(); // Initialize router
 
   useEffect(() => {
+    // Refresh the route's data. This helps in ensuring that after an action (like creating a memorial)
+    // and redirecting back to this page, the data fetched is the latest.
+    router.refresh();
+
     async function fetchMemorials() {
       if (user && !authLoading) {
         setIsLoadingData(true);
@@ -40,7 +46,7 @@ export default function AdminDashboardPage() {
       }
     }
     fetchMemorials();
-  }, [user, authLoading]);
+  }, [user, authLoading, router]); // Add router to the dependency array
 
   if (authLoading || isLoadingData) {
     return (
