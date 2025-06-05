@@ -38,8 +38,6 @@ export default function AdminDashboardPage() {
   }, []);
 
   useEffect(() => {
-    // router.refresh(); // Can sometimes cause issues if overused, let's see if direct fetch is enough
-
     async function fetchMemorials() {
       if (user && !authLoading) {
         setIsLoadingData(true);
@@ -52,13 +50,12 @@ export default function AdminDashboardPage() {
           setIsLoadingData(false);
         }
       } else if (!authLoading) {
-        // If auth is loaded but no user, clear memorials
         setMemorials([]);
         setIsLoadingData(false);
       }
     }
     fetchMemorials();
-  }, [user, authLoading]); // Removed router from dependencies for now to avoid potential loops
+  }, [user, authLoading]);
 
   const handleQrCodeClick = (memorial: UserMemorial) => {
     setSelectedMemorialForQr(memorial);
@@ -74,7 +71,7 @@ export default function AdminDashboardPage() {
     );
   }
   
-  if (!user) { // This check is important after loading states are resolved
+  if (!user) { 
     return (
       <div className="text-center py-12">
         <p>Please log in to view your dashboard.</p>
@@ -97,7 +94,7 @@ export default function AdminDashboardPage() {
         </Button>
       </div>
 
-      {memorials.length === 0 && !isLoadingData ? ( // Added !isLoadingData to ensure it's not shown prematurely
+      {memorials.length === 0 && !isLoadingData ? (
         <Card className="text-center py-12">
           <CardHeader>
             <CardTitle className="text-2xl">No Memorials Yet</CardTitle>
@@ -118,28 +115,36 @@ export default function AdminDashboardPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {memorials.map((memorial) => (
-            <Card key={memorial.id} className="flex flex-col">
+            <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="font-headline text-xl">{memorial.deceasedName}</CardTitle>
-                  <Button variant="ghost" size="icon" onClick={() => handleQrCodeClick(memorial)} aria-label="Show QR Code">
-                    <QrCode className="h-5 w-5" />
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="font-headline text-xl leading-tight truncate flex-grow_">
+                    {memorial.deceasedName}
+                  </CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleQrCodeClick(memorial)} 
+                    aria-label="Show QR Code"
+                    className="flex-shrink-0 h-7 w-7"
+                  >
+                    <QrCode className="h-5 w-5 text-muted-foreground hover:text-primary" />
                   </Button>
                 </div>
-                <CardDescription>ID: {memorial.id}</CardDescription>
+                <CardDescription className="text-xs text-muted-foreground break-all">ID: {memorial.id}</CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow">
+              <CardContent className="flex-grow pt-2">
                 <p className="text-sm text-muted-foreground">Manage this memorial page.</p>
               </CardContent>
-              <CardFooter className="flex justify-between gap-2">
-                <Button variant="outline" size="sm" asChild>
+              <CardFooter className="flex justify-between gap-2 pt-4">
+                <Button variant="default" size="sm" asChild className="flex-1">
                   <Link href={`/admin/edit/${memorial.id}`}>
                     <Edit3 className="mr-2 h-4 w-4" /> Edit
                   </Link>
                 </Button>
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="outline" size="sm" asChild className="flex-1">
                   <Link href={`/memorial/${memorial.id}`} target="_blank">
-                    <ExternalLink className="mr-2 h-4 w-4" /> View
+                    View <ExternalLink className="ml-2 h-4 w-4" /> 
                   </Link>
                 </Button>
               </CardFooter>
