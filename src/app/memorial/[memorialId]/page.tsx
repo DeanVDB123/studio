@@ -21,10 +21,10 @@ interface MemorialPageProps {
 export async function generateMetadata({ params }: MemorialPageProps) {
   const memorial = await getMemorialById(params.memorialId);
   if (!memorial) {
-    return { title: 'Memorial Not Found | ForeverMark' };
+    return { title: 'Memorial Not Found | HonoringLives' };
   }
   return {
-    title: `${memorial.deceasedName} | ForeverMark`,
+    title: `${memorial.deceasedName} | HonoringLives`,
     description: `A memorial page for ${memorial.deceasedName}. ${memorial.lifeSummary || ''}`,
   };
 }
@@ -84,7 +84,7 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
         </Card>
       </main>
       <footer className="py-8 text-center text-muted-foreground border-t">
-        <p>&copy; {new Date().getFullYear()} ForeverMark. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} HonoringLives. All rights reserved.</p>
         <p className="text-sm">Created with love and remembrance.</p>
       </footer>
     </div>
