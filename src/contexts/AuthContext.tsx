@@ -75,15 +75,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
-  if (loading && typeof window !== 'undefined') {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Loading Authentication...</p>
-      </div>
-    );
-  }
+  // The global loader was removed from here.
+  // Components like AuthGuard will handle their own loading UI based on context.
   
   return (
     <AuthContext.Provider value={{ user, loading, error, signUp: signUpWithFeedback, logIn: logInWithFeedback, logOut }}>
@@ -99,3 +92,4 @@ export const useAuth = () => {
   }
   return context;
 };
+
