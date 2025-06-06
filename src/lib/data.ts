@@ -41,23 +41,23 @@ const sampleMemorials: MemorialData[] = [
   }
 ];
 
-// Pre-populate with sample data (for demo purposes)
-// In a real app, this would be empty or loaded from a persistent store
 sampleMemorials.forEach(memorial => memorials.set(memorial.id!, memorial));
 
 
-// Public memorial pages can fetch by ID without userId check
 export async function getMemorialById(id: string): Promise<MemorialData | undefined> {
   console.log(`[InMem] getMemorialById called for ID: ${id}`);
   return memorials.get(id);
 }
 
-// Admin function: get all memorials for a specific user
 export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; profilePhotoUrl?: string }[]> {
-  console.log(`[InMem] getAllMemorialsForUser called for user: ${userId}`);
+  console.log(`[InMem] getAllMemorialsForUser called for user: ${userId}. Current memorials map size: ${memorials.size}`);
+  console.log('[InMem] Current keys in memorials map:', Array.from(memorials.keys()));
+  
   const userMemorials: { id: string; deceasedName: string; birthDate: string; deathDate: string; profilePhotoUrl?: string }[] = [];
   memorials.forEach((memorial, id) => {
+    console.log(`[InMem] getAllMemorialsForUser: Checking memorial ID: ${id}, Owner: ${memorial.userId}`);
     if (memorial.userId === userId) {
+      console.log(`[InMem] getAllMemorialsForUser: Match found for user ${userId}: Memorial ID ${id}`);
       userMemorials.push({
         id,
         deceasedName: memorial.deceasedName,
@@ -67,50 +67,68 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
       });
     }
   });
-  console.log(`[InMem] Found ${userMemorials.length} memorials for user ${userId}`);
+  console.log(`[InMem] getAllMemorialsForUser: Found ${userMemorials.length} memorials for user ${userId}. Data: ${JSON.stringify(userMemorials)}`);
   return userMemorials;
 }
 
-// Admin function: save/update memorial, ensuring it's for the correct user
 export async function saveMemorial(id: string, userId: string, data: MemorialData): Promise<MemorialData> {
   console.log(`[InMem] saveMemorial called for ID: ${id}, User: ${userId}`);
   const existingMemorial = memorials.get(id);
   if (!existingMemorial) {
+    console.error(`[InMem] Memorial with ID ${id} not found for update.`);
     throw new Error(`Memorial with ID ${id} not found for update.`);
   }
   if (existingMemorial.userId !== userId) {
+     console.error(`[InMem] Unauthorized: User ${userId} cannot edit memorial ${id} owned by ${existingMemorial.userId}.`);
     throw new Error(`Unauthorized: User ${userId} cannot edit memorial ${id} owned by ${existingMemorial.userId}.`);
   }
-  const updatedMemorial = { ...existingMemorial, ...data, id, userId }; // Ensure ID and userId are preserved/correct
+  const updatedMemorial = { ...existingMemorial, ...data, id, userId }; 
   memorials.set(id, updatedMemorial);
-  console.log(`[InMem] Memorial updated: ${id}`);
+  console.log(`[InMem] Memorial UPDATED: ${id}. User: ${userId}. Total memorials: ${memorials.size}`);
   return updatedMemorial;
 }
 
-// Admin function: create a new memorial
-export async function createMemorial(userId: string, data: MemorialData): Promise<MemorialData> {
-  const id = data.id || uuidv4(); // Generate new ID if one isn't provided in data
-  console.log(`[InMem] createMemorial called for User: ${userId}. Generated/Used ID: ${id}`);
-  if (memorials.has(id)) {
-     console.warn(`[InMem] Memorial with ID ${id} already exists. Overwriting for demo purposes. In production, this might be an error.`);
+export async function createMemorial(userIdFromAction: string, data: MemorialData): Promise<MemorialData> {
+  const id = data.id || uuidv4();
+  const memorialUserId = data.userId;
+
+  console.log(`[InMem] createMemorial called. Action UserID: ${userIdFromAction}, Data UserID (from payload): ${data.userId}, Memorial ID to be used: ${id}`);
+
+  if (!memorialUserId) {
+    console.error("[InMem] CRITICAL: data.userId is missing in createMemorial payload. This means saveMemorialAction didn't set it or it was lost.");
+    throw new Error("User ID missing in memorial data during creation. Cannot associate memorial with a user.");
   }
-  const newMemorial: MemorialData = { ...data, id, userId }; // Ensure id and userId are set
+  
+  if (userIdFromAction !== memorialUserId) {
+      console.warn(`[InMem] Mismatch between action userId (${userIdFromAction}) and payload userId (${memorialUserId}). Using payload userId as primary.`);
+  }
+
+  if (memorials.has(id)) {
+    console.warn(`[InMem] Memorial with ID ${id} already exists. Overwriting for demo purposes. In production, this should be handled (e.g., throw error or use a different ID).`);
+  }
+  
+  const newMemorial: MemorialData = { ...data, id, userId: memorialUserId }; // Ensure the correct userId from payload is used.
   memorials.set(id, newMemorial);
-  console.log(`[InMem] Memorial created with ID: ${id} for user ${userId}.`);
+  console.log(`[InMem] Memorial CREATED with ID: ${id} for user ${newMemorial.userId}. Total memorials: ${memorials.size}`);
+  console.log('[InMem] Stored content for new memorial:', JSON.stringify(newMemorial, null, 2));
   return newMemorial;
 }
 
-// Admin function: delete memorial
 export async function deleteMemorial(memorialId: string, userId: string): Promise<void> {
   console.log(`[InMem] deleteMemorial called for ID: ${memorialId}, User: ${userId}`);
   const memorial = memorials.get(memorialId);
   if (memorial) {
     if (memorial.userId !== userId) {
+      console.error(`[InMem] Unauthorized: User ${userId} cannot delete memorial ${memorialId} owned by ${memorial.userId}.`);
       throw new Error(`Unauthorized: User ${userId} cannot delete memorial ${memorialId} owned by ${memorial.userId}.`);
     }
     memorials.delete(memorialId);
-    console.log(`[InMem] Memorial deleted: ${memorialId}.`);
+    console.log(`[InMem] Memorial DELETED: ${memorialId}. Total memorials: ${memorials.size}`);
   } else {
     console.warn(`[InMem] Memorial with ID ${memorialId} not found for deletion.`);
+     // Not throwing an error here, as deleting a non-existent item might be acceptable in some flows.
+     // Or, throw new Error(`Memorial with ID ${memorialId} not found.`);
   }
 }
+
+    

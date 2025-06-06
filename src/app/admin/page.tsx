@@ -2,25 +2,37 @@
 "use client"; 
 
 import Link from 'next/link';
-import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; 
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; 
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
-import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react'; 
-import { getAllMemorialsForUser } from '@/lib/data'; 
+import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2 } from 'lucide-react'; 
+import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { format } from 'date-fns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from '@/hooks/use-toast';
 
-// Define a type for the memorials displayed on this page
 type UserMemorial = {
   id: string;
   deceasedName: string;
   birthDate: string;
   deathDate: string;
-  profilePhotoUrl?: string; // Added for profile photo
+  profilePhotoUrl?: string;
 };
+
+export const dynamic = 'force-dynamic';
 
 export default function AdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -28,6 +40,9 @@ export default function AdminDashboardPage() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const router = useRouter(); 
   const [pageBaseUrl, setPageBaseUrl] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [memorialToDelete, setMemorialToDelete] = useState<UserMemorial | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -35,29 +50,33 @@ export default function AdminDashboardPage() {
     } else if (process.env.NEXT_PUBLIC_BASE_URL) {
       setPageBaseUrl(process.env.NEXT_PUBLIC_BASE_URL);
     } else {
-      setPageBaseUrl('http://localhost:9002'); // Fallback
+      setPageBaseUrl('http://localhost:9002'); 
     }
   }, []);
 
   useEffect(() => {
     async function fetchMemorials() {
       if (user && !authLoading) {
+        console.log(`[AdminDashboardPage] useEffect running for user ${user.uid}. Fetching memorials.`);
         setIsLoadingData(true);
         try {
-          const userMemorials = await getAllMemorialsForUser(user.uid);
-          setMemorials(userMemorials);
+          const userMemorialsData = await getAllMemorialsForUser(user.uid);
+          console.log(`[AdminDashboardPage] Received memorials data from getAllMemorialsForUser:`, userMemorialsData);
+          setMemorials(userMemorialsData);
         } catch (error) {
-          console.error("Failed to fetch memorials:", error);
+          console.error("[AdminDashboardPage] Failed to fetch memorials:", error);
+          toast({ title: "Error", description: "Could not load your memorials.", variant: "destructive" });
         } finally {
           setIsLoadingData(false);
         }
       } else if (!authLoading) {
+        console.log("[AdminDashboardPage] useEffect: No user or auth still loading. Clearing memorials.");
         setMemorials([]);
         setIsLoadingData(false);
       }
     }
     fetchMemorials();
-  }, [user, authLoading]);
+  }, [user, authLoading, toast]); // Added toast to dependency array
 
   const formatDateRange = (birthDateStr: string, deathDateStr: string) => {
     try {
@@ -65,11 +84,28 @@ export default function AdminDashboardPage() {
       const death = format(new Date(deathDateStr), 'dd MMM yyyy');
       return `${birth} – ${death}`;
     } catch (e) {
-      // Fallback for invalid dates
       return `${birthDateStr} – ${deathDateStr}`;
     }
   };
 
+  const handleDeleteClick = (memorial: UserMemorial) => {
+    setMemorialToDelete(memorial);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (memorialToDelete && user) {
+      try {
+        await deleteMemorial(memorialToDelete.id, user.uid);
+        setMemorials(prevMemorials => prevMemorials.filter(m => m.id !== memorialToDelete.id));
+        toast({ title: "Deleted", description: `Memorial for ${memorialToDelete.deceasedName} has been deleted.` });
+      } catch (error: any) {
+        toast({ title: "Error", description: error.message || "Failed to delete memorial.", variant: "destructive" });
+      }
+    }
+    setShowDeleteDialog(false);
+    setMemorialToDelete(null);
+  };
 
   if (authLoading || isLoadingData) {
     return (
@@ -91,7 +127,6 @@ export default function AdminDashboardPage() {
     );
   }
 
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -103,6 +138,7 @@ export default function AdminDashboardPage() {
         </Button>
       </div>
 
+      {console.log("[AdminDashboardPage] Rendering. Number of memorials in state:", memorials.length)}
       {memorials.length === 0 && !isLoadingData ? (
         <Card className="text-center py-12">
           <CardHeader>
@@ -126,16 +162,18 @@ export default function AdminDashboardPage() {
           {memorials.map((memorial) => (
             <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4 pt-5 text-center flex flex-col items-center">
-                <div className="w-20 h-24 mb-3 rounded-full overflow-hidden shadow-md border border-gray-200 dark:border-gray-700">
-                  <Image
-                    src={memorial.profilePhotoUrl || `https://placehold.co/80x96.png`}
-                    alt={`Profile photo of ${memorial.deceasedName}`}
-                    width={80}
-                    height={96}
-                    className="object-cover w-full h-full filter grayscale"
-                    data-ai-hint="profile person"
-                  />
-                </div>
+                {memorial.profilePhotoUrl && (
+                  <div className="w-20 h-24 mb-3 rounded-full overflow-hidden shadow-md border border-gray-200 dark:border-gray-700">
+                    <Image
+                      src={memorial.profilePhotoUrl}
+                      alt={`Profile photo of ${memorial.deceasedName}`}
+                      width={80}
+                      height={96}
+                      className="object-cover w-full h-full filter grayscale"
+                      data-ai-hint="profile person"
+                    />
+                  </div>
+                )}
                 <CardTitle className="font-headline text-xl leading-tight truncate">
                   {memorial.deceasedName}
                 </CardTitle>
@@ -146,7 +184,7 @@ export default function AdminDashboardPage() {
               <CardContent className="flex-grow flex flex-col items-center justify-center pt-2 pb-4">
                 <QRCodeDisplay url={`${pageBaseUrl}/memorial/${memorial.id}`} size={128} />
               </CardContent>
-              <div className="flex justify-around items-center p-3 border-t"> 
+              <CardFooter className="flex justify-around items-center p-3 border-t"> 
                 <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
                   <Link href={`/admin/edit/${memorial.id}`}>
                     <Edit3 className="h-5 w-5" />
@@ -159,11 +197,31 @@ export default function AdminDashboardPage() {
                     <span className="sr-only">View</span>
                   </Link>
                 </Button>
-              </div>
+                <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
+                  <Trash2 className="h-5 w-5 text-destructive" />
+                  <span className="sr-only">Delete</span>
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </div>
       )}
+       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the memorial for {memorialToDelete?.deceasedName}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

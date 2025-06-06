@@ -15,8 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import type { MemorialData, Photo, OrganizedContent } from '@/lib/types';
-import { handleGenerateBiography, handleOrganizeContent } from '@/lib/actions'; // Server actions for AI
-import { createMemorial, saveMemorial, getMemorialById } from '@/lib/data'; // Direct Firestore calls
+import { handleGenerateBiography, handleOrganizeContent, saveMemorialAction } from '@/lib/actions'; // Server actions for AI
 import { Wand2, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
@@ -62,7 +61,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       deathDate: initialData?.deathDate || '',
       lifeSummary: initialData?.lifeSummary || '',
       biography: initialData?.biography || '',
-      photos: initialData?.photos?.map(p => ({ ...p, id: p.id || uuidv4() })) || [], // Ensure photos have IDs
+      photos: initialData?.photos?.map(p => ({ ...p, id: p.id || uuidv4() })) || [],
       tributes: initialData?.tributes || [],
       stories: initialData?.stories || [],
     },
@@ -156,35 +155,32 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     const currentUserId = user.uid;
     console.log("[MemorialForm] onSubmit called. User ID:", currentUserId);
     
-
     startTransition(async () => {
       try {
-        let savedMemorial: MemorialData;
         const payload: MemorialData = {
           ...data,
           userId: currentUserId, 
-          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })), // Ensure all photos have IDs
+          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })),
         };
         
-        console.log("[MemorialForm] Form data (before ID assignment for create):", data);
-
-        if (memorialId) {
-          payload.id = memorialId;
-          console.log(`[MemorialForm] Attempting to save existing memorial. ID: ${memorialId}, User ID: ${currentUserId}`);
-          console.log("[MemorialForm] Payload for update:", JSON.stringify(payload, null, 2));
-          savedMemorial = await saveMemorial(memorialId, currentUserId, payload);
+        if (!memorialId) { // Only assign new ID if it's a new memorial
+          payload.id = uuidv4();
+          console.log(`[MemorialForm] Preparing to CREATE new memorial. Generated ID: ${payload.id}. User ID: ${currentUserId}`);
         } else {
-          payload.id = uuidv4(); // Generate ID for new memorial
-          console.log(`[MemorialForm] Attempting to create new memorial with generated ID: ${payload.id}. User ID: ${currentUserId}`);
-          console.log("[MemorialForm] Payload for create:", JSON.stringify(payload, null, 2));
-          savedMemorial = await createMemorial(currentUserId, payload);
+          payload.id = memorialId;
+           console.log(`[MemorialForm] Preparing to UPDATE existing memorial. ID: ${memorialId}, User ID: ${currentUserId}`);
         }
+        
+        console.log("[MemorialForm] Payload for saveMemorialAction:", JSON.stringify(payload, null, 2));
+        
+        const savedMemorial = await saveMemorialAction(currentUserId, payload);
+        console.log("[MemorialForm] saveMemorialAction successful. Response:", JSON.stringify(savedMemorial, null, 2));
         
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${memorialId ? 'updated' : 'created'}.` });
         router.push('/admin');
-        router.refresh(); // To ensure dashboard updates
+        router.refresh(); 
       } catch (error: any) {
-        console.error("[MemorialForm] Error saving memorial:", error);
+        console.error("[MemorialForm] Error in onSubmit after calling saveMemorialAction:", error);
         toast({ title: "Error saving memorial", description: error.message || "An unexpected error occurred.", variant: "destructive" });
       }
     });
@@ -353,3 +349,5 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
+
+    
