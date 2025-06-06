@@ -1,8 +1,6 @@
 
 import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'; // Added getFirestore and connectFirestoreEmulator
-
 // Add other Firebase services as needed, e.g., getStorage
 
 const firebaseConfig: FirebaseOptions = {
@@ -65,17 +63,15 @@ After adding or updating environment variables, you MUST restart/redeploy your a
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app); // Initialize Firestore
 
 // If running in development and using Firebase Emulator
 if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true') {
   // Default emulator ports: Auth: 9099, Firestore: 8080, Storage: 9199
   // Ensure your firebase.json specifies these or update here.
   // connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
-  // connectFirestoreEmulator(db, 'localhost', 8080); // Uncomment if using Firestore emulator
   // connectStorageEmulator(storage, 'localhost', 9199);
   // console.log("Firebase connected to EMULATORS");
 }
 
 
-export { app, auth, db, firebaseConfig }; // Export db
+export { app, auth, firebaseConfig };

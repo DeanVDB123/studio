@@ -87,9 +87,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true });
-        if (!getValues(`photos.${index}.id`)) {
-          setValue(`photos.${index}.id`, uuidv4());
-        }
       };
       reader.readAsDataURL(file);
     }
