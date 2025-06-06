@@ -1,20 +1,23 @@
 
-"use client"; // Make this a client component to use useAuth and fetch user-specific data
+"use client"; 
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Removed CardDescription, CardFooter
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; 
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
-import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react'; // Removed QrCode
+import { PlusCircle, Edit3, ExternalLink, Loader2 } from 'lucide-react'; 
 import { getAllMemorialsForUser } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
+import { format } from 'date-fns';
 
 // Define a type for the memorials displayed on this page
 type UserMemorial = {
   id: string;
   deceasedName: string;
+  birthDate: string;
+  deathDate: string;
 };
 
 export default function AdminDashboardPage() {
@@ -53,6 +56,17 @@ export default function AdminDashboardPage() {
     }
     fetchMemorials();
   }, [user, authLoading]);
+
+  const formatDateRange = (birthDateStr: string, deathDateStr: string) => {
+    try {
+      const birth = format(new Date(birthDateStr), 'MMM d, yyyy');
+      const death = format(new Date(deathDateStr), 'MMM d, yyyy');
+      return `${birth} – ${death}`;
+    } catch (e) {
+      // Fallback for invalid dates
+      return `${birthDateStr} – ${deathDateStr}`;
+    }
+  };
 
 
   if (authLoading || isLoadingData) {
@@ -97,7 +111,7 @@ export default function AdminDashboardPage() {
               Start by creating a new memorial page for a loved one.
             </p>
           </CardContent>
-          <div className="flex justify-center pt-4"> {/* Replaced CardFooter */}
+          <div className="flex justify-center pt-4"> 
              <Button asChild className="mt-4">
               <Link href="/admin/create">
                 <PlusCircle className="mr-2 h-5 w-5" /> Create Memorial
@@ -109,15 +123,18 @@ export default function AdminDashboardPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memorials.map((memorial) => (
             <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-2">
-                <CardTitle className="font-headline text-xl leading-tight truncate text-center">
+              <CardHeader className="pb-2 text-center">
+                <CardTitle className="font-headline text-xl leading-tight truncate">
                   {memorial.deceasedName}
                 </CardTitle>
+                <p className="text-xs text-muted-foreground font-body">
+                  {formatDateRange(memorial.birthDate, memorial.deathDate)}
+                </p>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col items-center justify-center pt-2 pb-4">
                 <QRCodeDisplay url={`${pageBaseUrl}/memorial/${memorial.id}`} size={128} />
               </CardContent>
-              <div className="flex justify-around items-center p-3 border-t"> {/* Replaced CardFooter */}
+              <div className="flex justify-around items-center p-3 border-t"> 
                 <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
                   <Link href={`/admin/edit/${memorial.id}`}>
                     <Edit3 className="h-5 w-5" />
@@ -138,3 +155,5 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+    

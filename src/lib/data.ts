@@ -18,13 +18,13 @@ if (!global.__memorials_map_cache) {
   const janeMemorialId = 'jane-doe-dev-memorial';
   global.__memorials_map_cache.set(janeMemorialId, {
     id: janeMemorialId,
-    userId: 'sample-user-jane', // Assign a dummy userId for potential viewing without login if needed, or leave blank
+    userId: 'sample-user-jane', 
     deceasedName: 'Jane Doe (Sample)',
     birthDate: '1950-01-01',
     deathDate: '2023-01-01',
     lifeSummary: 'A life well lived, full of joy and kindness. Jane loved gardening and spending time with her family.',
     biography: 'Jane Doe was born in a small town and grew up to be a beacon of light in her community. She dedicated her life to helping others and was known for her infectious laughter and warm heart. Her passions included gardening, where she found peace and joy, and spending cherished moments with her beloved family and friends. She will be dearly missed by all who knew her.',
-    photos: [{ id: 'jane-photo-1', url: 'https://placehold.co/600x400.png', dataAiHint: 'woman smiling', caption: 'A beautiful memory' }, { id: 'jane-photo-2', url: 'https://placehold.co/600x400.png', dataAiHint: 'family gathering', caption: 'Happy times' }],
+    photos: [{ id: 'jane-photo-1', url: 'https://placehold.co/600x400.png', storagePath: '', caption: 'A beautiful memory' }, { id: 'jane-photo-2', url: 'https://placehold.co/600x400.png', storagePath: '', caption: 'Happy times' }],
     tributes: ['A wonderful person, deeply missed.', 'Her kindness touched so many.'],
     stories: ['I remember when Jane helped me with... it showed her true character.', 'One funny story about Jane...'],
   });
@@ -38,7 +38,7 @@ if (!global.__memorials_map_cache) {
     deathDate: '2024-03-10',
     lifeSummary: 'John was an avid explorer and a loving father. He enjoyed hiking and telling stories.',
     biography: 'John Smith was a man of adventure and warmth. His love for the great outdoors was matched only by his devotion to his family. Known for his captivating stories and generous spirit, John left an indelible mark on everyone he met. He found solace in nature, often hiking through mountains and forests, and shared his passion with those around him. His legacy of curiosity and love will live on.',
-    photos: [{ id: 'john-photo-1', url: 'https://placehold.co/600x400.png', dataAiHint: 'man nature', caption: 'Adventure time' }],
+    photos: [{ id: 'john-photo-1', url: 'https://placehold.co/600x400.png', storagePath: '', caption: 'Adventure time' }],
     tributes: ['A true inspiration.', 'We will never forget his laughter.'],
     stories: ['John once climbed a mountain just to see the sunrise...', 'He told the best campfire stories.'],
   });
@@ -53,11 +53,13 @@ memorials = global.__memorials_map_cache;
 export async function getMemorialById(id: string): Promise<MemorialData | undefined> {
   console.log(`[Server Action] getMemorialById called for ID: ${id}`);
   console.log('[Server Action] Current memorials map keys:', Array.from(memorials.keys()));
-  return memorials.get(id);
+  const memorial = memorials.get(id);
+  console.log(`[Server Action] Memorial found for ID ${id}:`, memorial ? {name: memorial.deceasedName, userId: memorial.userId} : 'Not found');
+  return memorial;
 }
 
 // Admin function: get all memorials for a specific user
-export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string }[]> {
+export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; }[]> {
   console.log(`[Server Action] getAllMemorialsForUser called for user: ${userId}`);
   console.log('[Server Action] Current memorials map (before filter):', Array.from(memorials.values()).map(m => ({id: m.id, name: m.deceasedName, userId: m.userId })));
   const userMemorials = Array.from(memorials.values())
@@ -65,6 +67,8 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
     .map(memorial => ({
       id: memorial.id!,
       deceasedName: memorial.deceasedName,
+      birthDate: memorial.birthDate,
+      deathDate: memorial.deathDate,
     }));
   console.log(`[Server Action] Found ${userMemorials.length} memorials for user ${userId}:`, userMemorials);
   return userMemorials;
@@ -75,25 +79,75 @@ export async function saveMemorial(id: string, userId: string, data: MemorialDat
   console.log(`[Server Action] saveMemorial called for ID: ${id}, User: ${userId}`);
   const existingMemorial = memorials.get(id);
   if (existingMemorial && existingMemorial.userId !== userId) {
-    console.error(`[Server Action] Unauthorized attempt to save memorial ID: ${id} by user ${userId}. Owner is ${existingMemorial.userId}`);
-    throw new Error("Unauthorized: You can only edit your own memorials.");
+    const errorMsg = `Unauthorized: User ${userId} cannot edit memorial ${id} owned by ${existingMemorial.userId}.`;
+    console.error(`[Server Action] saveMemorial Error: ${errorMsg}`);
+    throw new Error(errorMsg);
   }
+  
   const memorialToSave: MemorialData = { ...data, id, userId }; 
   memorials.set(id, memorialToSave);
   console.log(`[Server Action] Memorial saved: ${id}. Current count: ${memorials.size}`);
   return memorialToSave;
 }
 
-// Admin function: create memorial for a specific user
-// Made id optional for the caller, but we still can pass it for fixed dummy data.
-export async function createMemorial(userId: string, data: Omit<MemorialData, 'id' | 'userId'>, id?: string): Promise<MemorialData> {
-  const memorialId = id || crypto.randomUUID();
-  console.log(`[Server Action] createMemorial called for User: ${userId}. Attempting to create/use ID: ${memorialId}`);
+
+export async function createMemorial(userId: string, data: MemorialData): Promise<MemorialData> {
+  const memorialId = data.id; // ID is now expected to be set by the client (e.g., UUID)
+  console.log(`[Firestore] createMemorial called for User: ${userId}. Using pre-generated ID: ${memorialId}`);
+  if (!memorialId) {
+    throw new Error("Memorial ID is required to create a memorial.");
+  }
+  if (memorials.has(memorialId)) {
+     console.warn(`[Firestore] Memorial with ID ${memorialId} already exists. Overwriting for demo purposes. In production, this might be an error.`);
+  }
+
+  const dataToSave: MemorialData = {
+    ...data, // this includes the client-generated id
+    userId: userId, // ensure server sets/overrides userId
+  };
+
+  console.log('[Firestore] Data received by createMemorial:', data);
+  console.log('[Firestore] Final data being sent to setDoc for createMemorial:', dataToSave);
+
+  memorials.set(memorialId, dataToSave);
+  console.log(`[Firestore] Memorial created with ID: ${memorialId} for user ${userId}. Current map size: ${memorials.size}`);
   
-  // Ensure data passed to createMemorial does not already contain an id or userId to avoid confusion
-  const newMemorial: MemorialData = { ...data, id: memorialId, userId };
-  memorials.set(memorialId, newMemorial);
-  console.log(`[Server Action] Memorial created with ID: ${memorialId} for user ${userId}. Current map size: ${memorials.size}`);
-  console.log('[Server Action] Current memorials map keys after create:', Array.from(memorials.keys()));
-  return newMemorial;
+  const created = memorials.get(memorialId);
+  if (!created) {
+    console.error(`[Firestore] CRITICAL: Failed to retrieve memorial ${memorialId} immediately after setDoc.`);
+    throw new Error(`Failed to create memorial ${memorialId}.`);
+  }
+  return created;
 }
+
+export async function deleteMemorial(memorialId: string, userId: string): Promise<void> {
+  console.log(`[Server Action] deleteMemorial called for ID: ${memorialId}, User: ${userId}`);
+  const memorial = memorials.get(memorialId);
+  if (!memorial) {
+    console.warn(`[Server Action] Memorial with ID ${memorialId} not found for deletion.`);
+    return; // Or throw new Error("Memorial not found.");
+  }
+  if (memorial.userId !== userId) {
+    console.error(`[Server Action] Unauthorized attempt to delete memorial ID: ${memorialId} by user ${userId}. Owner is ${memorial.userId}`);
+    throw new Error("Unauthorized: You can only delete your own memorials.");
+  }
+
+  // In a real Firebase Storage scenario, you'd delete files here.
+  // For now, we just remove from the map.
+  // Example:
+  // const storage = getStorage();
+  // for (const photo of memorial.photos) {
+  //   if (photo.storagePath) {
+  //     const photoRef = ref(storage, photo.storagePath);
+  //     await deleteObject(photoRef).catch(err => console.error(`Failed to delete photo ${photo.storagePath}:`, err));
+  //   }
+  // }
+  // If other folders like /video, /comments are used, delete them too.
+  // const folderRef = ref(storage, `memorials/${memorialId}`);
+  // await deleteFolderContents(folderRef); // You'd need a helper for this
+
+  memorials.delete(memorialId);
+  console.log(`[Server Action] Memorial deleted: ${memorialId}. Current count: ${memorials.size}`);
+}
+
+    
