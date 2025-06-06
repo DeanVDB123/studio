@@ -20,6 +20,7 @@ import { createMemorial, saveMemorial, getMemorialById } from '@/lib/data'; // D
 import { Wand2, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
+import { v4 as uuidv4 } from 'uuid';
 
 const photoSchema = z.object({
   id: z.string().optional(),
@@ -61,7 +62,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       deathDate: initialData?.deathDate || '',
       lifeSummary: initialData?.lifeSummary || '',
       biography: initialData?.biography || '',
-      photos: initialData?.photos || [],
+      photos: initialData?.photos?.map(p => ({ ...p, id: p.id || uuidv4() })) || [], // Ensure photos have IDs
       tributes: initialData?.tributes || [],
       stories: initialData?.stories || [],
     },
@@ -86,6 +87,9 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true });
+        if (!getValues(`photos.${index}.id`)) {
+          setValue(`photos.${index}.id`, uuidv4());
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -154,7 +158,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
 
     const currentUserId = user.uid;
     console.log("[MemorialForm] onSubmit called. User ID:", currentUserId);
-    console.log("[MemorialForm] Form data:", data);
+    
 
     startTransition(async () => {
       try {
@@ -162,16 +166,20 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         const payload: MemorialData = {
           ...data,
           userId: currentUserId, 
+          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })), // Ensure all photos have IDs
         };
         
-        console.log("[MemorialForm] Payload to be saved:", JSON.stringify(payload, null, 2));
+        console.log("[MemorialForm] Form data (before ID assignment for create):", data);
 
         if (memorialId) {
           payload.id = memorialId;
           console.log(`[MemorialForm] Attempting to save existing memorial. ID: ${memorialId}, User ID: ${currentUserId}`);
+          console.log("[MemorialForm] Payload for update:", JSON.stringify(payload, null, 2));
           savedMemorial = await saveMemorial(memorialId, currentUserId, payload);
         } else {
-          console.log(`[MemorialForm] Attempting to create new memorial. User ID: ${currentUserId}`);
+          payload.id = uuidv4(); // Generate ID for new memorial
+          console.log(`[MemorialForm] Attempting to create new memorial with generated ID: ${payload.id}. User ID: ${currentUserId}`);
+          console.log("[MemorialForm] Payload for create:", JSON.stringify(payload, null, 2));
           savedMemorial = await createMemorial(currentUserId, payload);
         }
         
@@ -276,7 +284,11 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                   onChange={(e) => handleFileChange(e, index)}
                   className="text-sm"
                 />
-                <Input type="hidden" {...register(`photos.${index}.url`)} />
+                <Controller
+                  name={`photos.${index}.url`}
+                  control={control}
+                  render={({ field: urlField }) => <Input type="hidden" {...urlField} />}
+                />
                 {errors.photos?.[index]?.url && <p className="text-sm text-destructive mt-1">{errors.photos[index]?.url?.message}</p>}
                 
                 <Label htmlFor={`photos.${index}.caption`}>Caption (Optional)</Label>
@@ -287,7 +299,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
               </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendPhoto({ url: '', caption: '' })} disabled={isSubmitting || isPending}>
+          <Button type="button" variant="outline" onClick={() => appendPhoto({ id: uuidv4(), url: '', caption: '' })} disabled={isSubmitting || isPending}>
             <PlusCircle className="mr-2 h-4 w-4" /> Add Photo
           </Button>
         </CardContent>
@@ -344,5 +356,3 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
-
-    
