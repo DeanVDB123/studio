@@ -153,34 +153,37 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     }
 
     const currentUserId = user.uid;
-    console.log("[MemorialForm] onSubmit called. User ID:", currentUserId);
+    const isUpdating = !!memorialId; // Determine if it's an update based on prop from edit page
+
+    console.log(`[MemorialForm] onSubmit called. User ID: ${currentUserId}. Is Updating: ${isUpdating}`);
     
     startTransition(async () => {
       try {
         const payload: MemorialData = {
-          ...data,
-          userId: currentUserId, 
-          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })),
+          ...data, // Form field values from react-hook-form
+          userId: currentUserId, // Stamp the authenticated user's ID
+          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })), // Ensure photos have IDs
         };
         
-        if (!memorialId) { // Only assign new ID if it's a new memorial
-          payload.id = uuidv4();
-          console.log(`[MemorialForm] Preparing to CREATE new memorial. Generated ID: ${payload.id}. User ID: ${currentUserId}`);
+        if (isUpdating) {
+          payload.id = memorialId; // Use existing memorialId for updates
+          console.log(`[MemorialForm] Preparing to UPDATE existing memorial. ID: ${memorialId}. User ID: ${currentUserId}`);
         } else {
-          payload.id = memorialId;
-           console.log(`[MemorialForm] Preparing to UPDATE existing memorial. ID: ${memorialId}, User ID: ${currentUserId}`);
+          payload.id = uuidv4(); // Generate new ID for new memorials
+          console.log(`[MemorialForm] Preparing to CREATE new memorial. Generated ID: ${payload.id}. User ID: ${currentUserId}`);
         }
         
         console.log("[MemorialForm] Payload for saveMemorialAction:", JSON.stringify(payload, null, 2));
+        console.log(`[MemorialForm] Calling saveMemorialAction with isUpdate: ${isUpdating}`);
         
-        const savedMemorial = await saveMemorialAction(currentUserId, payload);
+        const savedMemorial = await saveMemorialAction(currentUserId, payload, isUpdating);
         console.log("[MemorialForm] saveMemorialAction successful. Response:", JSON.stringify(savedMemorial, null, 2));
         
-        toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${memorialId ? 'updated' : 'created'}.` });
+        toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${isUpdating ? 'updated' : 'created'}.` });
         router.push('/admin');
         router.refresh(); 
       } catch (error: any) {
-        console.error("[MemorialForm] Error in onSubmit after calling saveMemorialAction:", error);
+        console.error(`[MemorialForm] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
         toast({ title: "Error saving memorial", description: error.message || "An unexpected error occurred.", variant: "destructive" });
       }
     });
@@ -254,7 +257,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Photo Gallery</CardTitle>
-          <CardDescription>Upload photos to remember them by. AI Organization uses uploaded photos.</CardDescription>
+          <CardDescription>Upload photos to remember them by. AI Organization uses uploaded photos. The first photo will be used as the profile picture on the memorial card and public page.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {photoFields.map((field, index) => (
@@ -349,5 +352,4 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
-
     
