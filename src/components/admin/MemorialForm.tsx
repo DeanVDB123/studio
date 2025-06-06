@@ -153,23 +153,23 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     }
 
     const currentUserId = user.uid;
-    const isUpdating = !!memorialId; // Determine if it's an update based on prop from edit page
+    const isUpdating = !!memorialId; 
 
     console.log(`[MemorialForm] onSubmit called. User ID: ${currentUserId}. Is Updating: ${isUpdating}`);
     
     startTransition(async () => {
       try {
         const payload: MemorialData = {
-          ...data, // Form field values from react-hook-form
-          userId: currentUserId, // Stamp the authenticated user's ID
-          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })), // Ensure photos have IDs
+          ...data, 
+          userId: currentUserId, 
+          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })), 
         };
         
         if (isUpdating) {
-          payload.id = memorialId; // Use existing memorialId for updates
+          payload.id = memorialId; 
           console.log(`[MemorialForm] Preparing to UPDATE existing memorial. ID: ${memorialId}. User ID: ${currentUserId}`);
         } else {
-          payload.id = uuidv4(); // Generate new ID for new memorials
+          payload.id = uuidv4(); 
           console.log(`[MemorialForm] Preparing to CREATE new memorial. Generated ID: ${payload.id}. User ID: ${currentUserId}`);
         }
         
@@ -180,7 +180,9 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         console.log("[MemorialForm] saveMemorialAction successful. Response:", JSON.stringify(savedMemorial, null, 2));
         
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${isUpdating ? 'updated' : 'created'}.` });
-        router.push('/admin');
+        
+        // Navigate with a refreshKey query parameter
+        router.push(`/admin?refreshKey=${Date.now()}`);
         router.refresh(); 
       } catch (error: any) {
         console.error(`[MemorialForm] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
@@ -352,4 +354,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
+    
+
     

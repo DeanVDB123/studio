@@ -10,7 +10,7 @@ import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2 } from 'lucide-react';
 import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; 
+import { useRouter, useSearchParams } from 'next/navigation'; 
 import { format } from 'date-fns';
 import {
   AlertDialog,
@@ -39,6 +39,7 @@ export default function AdminDashboardPage() {
   const [memorials, setMemorials] = useState<UserMemorial[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const router = useRouter(); 
+  const searchParams = useSearchParams(); // For reading query parameters
   const [pageBaseUrl, setPageBaseUrl] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [memorialToDelete, setMemorialToDelete] = useState<UserMemorial | null>(null);
@@ -57,7 +58,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function fetchMemorials() {
       if (user && !authLoading) {
-        console.log(`[AdminDashboardPage] useEffect running for user ${user.uid}. Fetching memorials.`);
+        console.log(`[AdminDashboardPage] useEffect running for user ${user.uid}. Fetching memorials. refreshKey: ${searchParams.get('refreshKey')}`);
         setIsLoadingData(true);
         try {
           const userMemorialsData = await getAllMemorialsForUser(user.uid);
@@ -76,7 +77,7 @@ export default function AdminDashboardPage() {
       }
     }
     fetchMemorials();
-  }, [user, authLoading, toast]); // Added toast to dependency array
+  }, [user, authLoading, toast, searchParams]); // Added searchParams to dependency array
 
   const formatDateRange = (birthDateStr: string, deathDateStr: string) => {
     try {
@@ -225,5 +226,7 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+    
 
     
