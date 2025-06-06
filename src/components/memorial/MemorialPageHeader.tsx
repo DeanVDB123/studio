@@ -1,15 +1,17 @@
 
 import { AppLogo } from '@/components/shared/AppLogo';
 import { format } from 'date-fns';
+import Image from 'next/image'; // Import next/image
 
 interface MemorialPageHeaderProps {
   deceasedName: string;
   birthDate: string;
   deathDate: string;
-  lifeSummary?: string; // Make it optional in case it's not always provided
+  lifeSummary?: string;
+  profilePhotoUrl?: string; // Added profile photo URL
 }
 
-export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSummary }: MemorialPageHeaderProps) {
+export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSummary, profilePhotoUrl }: MemorialPageHeaderProps) {
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'MMMM d, yyyy');
@@ -21,8 +23,24 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
   return (
     <header className="py-12 bg-gradient-to-b from-primary/20 to-background text-center border-b border-primary/30 shadow-sm">
       <div className="container mx-auto px-4">
-        <h1 className="text-5xl md:text-6xl font-headline text-primary-foreground mb-2">{deceasedName}</h1>
-        <p className="text-xl text-foreground/80 font-body">
+        <h1 className="text-5xl md:text-6xl font-headline text-primary-foreground mb-3">{deceasedName}</h1>
+
+        {profilePhotoUrl && (
+          <div className="my-6 flex justify-center">
+            <div className="w-32 h-32 rounded-full overflow-hidden shadow-lg border-2 border-background/50">
+              <Image
+                src={profilePhotoUrl}
+                alt={`Profile photo of ${deceasedName}`}
+                width={128}
+                height={128}
+                className="object-cover w-full h-full filter grayscale"
+                data-ai-hint="profile person"
+              />
+            </div>
+          </div>
+        )}
+
+        <p className="text-xl text-foreground/80 font-body mt-3">
           {formatDate(birthDate)} &ndash; {formatDate(deathDate)}
         </p>
         {lifeSummary && (

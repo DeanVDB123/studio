@@ -50,6 +50,7 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
   }
 
   const permalink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:9002'}/memorial/${params.memorialId}`;
+  const profilePhotoUrl = memorial.photos && memorial.photos.length > 0 ? memorial.photos[0].url : undefined;
 
   return (
     <div className="bg-background min-h-screen font-body">
@@ -58,6 +59,7 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
         birthDate={memorial.birthDate}
         deathDate={memorial.deathDate}
         lifeSummary={memorial.lifeSummary}
+        profilePhotoUrl={profilePhotoUrl} // Pass the profile photo URL
       />
       <main className="container mx-auto py-8 px-4 md:px-6 lg:px-8 space-y-12">
         <BiographySection biography={memorial.biography} />
