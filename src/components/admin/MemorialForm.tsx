@@ -25,7 +25,6 @@ const photoSchema = z.object({
   id: z.string().optional(),
   url: z.string().min(1, "Image URL is required."),
   caption: z.string().optional(),
-  dataAiHint: z.string().optional(),
 });
 
 const memorialFormSchema = z.object({
@@ -87,7 +86,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true });
-        setValue(`photos.${index}.dataAiHint`, 'person memory', { shouldValidate: false });
       };
       reader.readAsDataURL(file);
     }
@@ -262,13 +260,15 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
             <div key={field.id} className="flex items-start gap-4 p-4 border rounded-md">
               <div className="flex-shrink-0 w-24 h-24 bg-muted rounded-md flex items-center justify-center overflow-hidden">
                 {watchPhotos[index]?.url ? (
-                  <Image src={watchPhotos[index].url} alt={watchPhotos[index]?.caption || `Photo ${index + 1}`} width={96} height={96} className="object-cover w-full h-full" data-ai-hint={watchPhotos[index]?.dataAiHint || "person memory"} />
+                  <Image src={watchPhotos[index].url} alt={watchPhotos[index]?.caption || `Photo ${index + 1}`} width={96} height={96} className="object-cover w-full h-full" />
                 ) : (
                   <FileImage className="w-10 h-10 text-muted-foreground" />
                 )}
               </div>
               <div className="flex-grow space-y-2">
-                <Label htmlFor={`photos.${index}.file`}>Upload Image</Label>
+                <Label htmlFor={`photos.${index}.file`}>
+                  {index === 0 ? "Upload Profile Photo (Main photo for card)" : `Upload Gallery Image ${index + 1}`}
+                </Label>
                 <Input
                   id={`photos.${index}.file`}
                   type="file"
@@ -280,16 +280,14 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                 {errors.photos?.[index]?.url && <p className="text-sm text-destructive mt-1">{errors.photos[index]?.url?.message}</p>}
                 
                 <Label htmlFor={`photos.${index}.caption`}>Caption (Optional)</Label>
-                <Input id={`photos.${index}.caption`} {...register(`photos.${index}.caption`)} placeholder="e.g., Graduation Day, 2010" />
-                 <Label htmlFor={`photos.${index}.dataAiHint`}>AI Hint (Optional)</Label>
-                <Input id={`photos.${index}.dataAiHint`} {...register(`photos.${index}.dataAiHint`)} placeholder="e.g., person memory" />
+                <Input id={`photos.${index}.caption`} {...register(`photos.${index}.caption`)} placeholder={index === 0 ? "e.g., A cherished portrait" : `e.g., Graduation Day, 2010`} />
               </div>
               <Button type="button" variant="ghost" size="icon" onClick={() => removePhoto(index)} aria-label="Remove photo" disabled={isSubmitting || isPending}>
                 <Trash2 className="h-5 w-5 text-destructive" />
               </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendPhoto({ url: '', caption: '', dataAiHint: 'person memory' })} disabled={isSubmitting || isPending}>
+          <Button type="button" variant="outline" onClick={() => appendPhoto({ url: '', caption: '' })} disabled={isSubmitting || isPending}>
             <PlusCircle className="mr-2 h-4 w-4" /> Add Photo
           </Button>
         </CardContent>
@@ -347,3 +345,4 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   );
 }
 
+    
