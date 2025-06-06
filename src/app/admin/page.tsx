@@ -2,6 +2,7 @@
 "use client"; 
 
 import Link from 'next/link';
+import Image from 'next/image'; // Import next/image
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; 
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
@@ -18,6 +19,7 @@ type UserMemorial = {
   deceasedName: string;
   birthDate: string;
   deathDate: string;
+  profilePhotoUrl?: string; // Added for profile photo
 };
 
 export default function AdminDashboardPage() {
@@ -123,7 +125,17 @@ export default function AdminDashboardPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memorials.map((memorial) => (
             <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-2 text-center">
+              <CardHeader className="pb-4 pt-5 text-center flex flex-col items-center">
+                <div className="w-20 h-24 mb-3 rounded-full overflow-hidden shadow-md border border-gray-200 dark:border-gray-700">
+                  <Image
+                    src={memorial.profilePhotoUrl || `https://placehold.co/80x96.png`}
+                    alt={`Profile photo of ${memorial.deceasedName}`}
+                    width={80}
+                    height={96}
+                    className="object-cover w-full h-full filter grayscale"
+                    data-ai-hint="profile person"
+                  />
+                </div>
                 <CardTitle className="font-headline text-xl leading-tight truncate">
                   {memorial.deceasedName}
                 </CardTitle>
