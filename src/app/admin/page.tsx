@@ -59,8 +59,8 @@ export default function AdminDashboardPage() {
 
   const formatDateRange = (birthDateStr: string, deathDateStr: string) => {
     try {
-      const birth = format(new Date(birthDateStr), 'MMM d, yyyy');
-      const death = format(new Date(deathDateStr), 'MMM d, yyyy');
+      const birth = format(new Date(birthDateStr), 'dd/MM/yyyy');
+      const death = format(new Date(deathDateStr), 'dd/MM/yyyy');
       return `${birth} – ${death}`;
     } catch (e) {
       // Fallback for invalid dates
