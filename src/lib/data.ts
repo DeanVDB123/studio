@@ -2,145 +2,158 @@
 'use server';
 
 import type { MemorialData, Photo } from '@/lib/types';
+import { db } from '@/lib/firebase'; // Import Firestore instance
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 
-// HMR-resilient in-memory store for development & demo
-declare global {
-  // eslint-disable-next-line no-var
-  var __memorials_map_cache: Map<string, MemorialData> | undefined;
-}
+// The in-memory store (global.__memorials_map_cache and 'memorials' Map) is no longer needed.
+// Sample data initialization is also removed as data will be in Firestore.
 
-let memorials: Map<string, MemorialData>;
-
-if (!global.__memorials_map_cache) {
-  console.log('Initializing __memorials_map_cache for the first time.');
-  global.__memorials_map_cache = new Map<string, MemorialData>();
-
-  const janeMemorialId = 'jane-doe-dev-memorial';
-  global.__memorials_map_cache.set(janeMemorialId, {
-    id: janeMemorialId,
-    userId: 'sample-user-jane', 
-    deceasedName: 'Jane Doe (Sample)',
-    birthDate: '1950-01-01',
-    deathDate: '2023-01-01',
-    lifeSummary: 'A life well lived, full of joy and kindness. Jane loved gardening and spending time with her family.',
-    biography: 'Jane Doe was born in a small town and grew up to be a beacon of light in her community. She dedicated her life to helping others and was known for her infectious laughter and warm heart. Her passions included gardening, where she found peace and joy, and spending cherished moments with her beloved family and friends. She will be dearly missed by all who knew her.',
-    photos: [{ id: 'jane-photo-1', url: 'https://placehold.co/600x400.png', caption: 'A beautiful memory' }, { id: 'jane-photo-2', url: 'https://placehold.co/600x400.png', caption: 'Happy times' }],
-    tributes: ['A wonderful person, deeply missed.', 'Her kindness touched so many.'],
-    stories: ['I remember when Jane helped me with... it showed her true character.', 'One funny story about Jane...'],
-  });
-
-  const johnMemorialId = 'john-smith-dev-memorial';
-  global.__memorials_map_cache.set(johnMemorialId, {
-    id: johnMemorialId,
-    userId: 'sample-user-john',
-    deceasedName: 'John Smith (Sample)',
-    birthDate: '1965-07-15',
-    deathDate: '2024-03-10',
-    lifeSummary: 'John was an avid explorer and a loving father. He enjoyed hiking and telling stories.',
-    biography: 'John Smith was a man of adventure and warmth. His love for the great outdoors was matched only by his devotion to his family. Known for his captivating stories and generous spirit, John left an indelible mark on everyone he met. He found solace in nature, often hiking through mountains and forests, and shared his passion with those around him. His legacy of curiosity and love will live on.',
-    photos: [{ id: 'john-photo-1', url: 'https://placehold.co/600x400.png', caption: 'Adventure time' }],
-    tributes: ['A true inspiration.', 'We will never forget his laughter.'],
-    stories: ['John once climbed a mountain just to see the sunrise...', 'He told the best campfire stories.'],
-  });
-  console.log('Sample data initialized into __memorials_map_cache. Count:', global.__memorials_map_cache.size);
-} else {
-  console.log('Re-using existing __memorials_map_cache. Count:', global.__memorials_map_cache.size);
-}
-memorials = global.__memorials_map_cache;
-
-
-// Public memorial pages should still be able to fetch by ID without userId check
+// Public memorial pages can fetch by ID without userId check
 export async function getMemorialById(id: string): Promise<MemorialData | undefined> {
-  console.log(`[Server Action] getMemorialById called for ID: ${id}`);
-  console.log('[Server Action] Current memorials map keys:', Array.from(memorials.keys()));
-  const memorial = memorials.get(id);
-  console.log(`[Server Action] Memorial found for ID ${id}:`, memorial ? {name: memorial.deceasedName, userId: memorial.userId} : 'Not found');
-  return memorial;
+  console.log(`[Firestore] getMemorialById called for ID: ${id}`);
+  try {
+    const memorialRef = doc(db, 'memorials', id);
+    const memorialSnap = await getDoc(memorialRef);
+
+    if (memorialSnap.exists()) {
+      const data = memorialSnap.data() as MemorialData;
+      console.log(`[Firestore] Memorial found for ID ${id}:`, { name: data.deceasedName, userId: data.userId });
+      return { ...data, id: memorialSnap.id }; // Ensure id is part of the returned object
+    } else {
+      console.log(`[Firestore] No memorial found for ID ${id}`);
+      return undefined;
+    }
+  } catch (error) {
+    console.error(`[Firestore] Error fetching memorial by ID ${id}:`, error);
+    throw new Error('Failed to fetch memorial data.');
+  }
 }
 
 // Admin function: get all memorials for a specific user
 export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; profilePhotoUrl?: string; }[]> {
-  console.log(`[Server Action] getAllMemorialsForUser called for user: ${userId}`);
-  console.log('[Server Action] Current memorials map (before filter):', Array.from(memorials.values()).map(m => ({id: m.id, name: m.deceasedName, userId: m.userId })));
-  const userMemorials = Array.from(memorials.values())
-    .filter(memorial => memorial.userId === userId)
-    .map(memorial => ({
-      id: memorial.id!,
-      deceasedName: memorial.deceasedName,
-      birthDate: memorial.birthDate,
-      deathDate: memorial.deathDate,
-      profilePhotoUrl: memorial.photos && memorial.photos.length > 0 ? memorial.photos[0].url : undefined,
-    }));
-  console.log(`[Server Action] Found ${userMemorials.length} memorials for user ${userId}:`, userMemorials.map(m => ({ ...m, profilePhotoUrl: m.profilePhotoUrl ? 'Exists' : 'None' })));
-  return userMemorials;
-}
+  console.log(`[Firestore] getAllMemorialsForUser called for user: ${userId}`);
+  try {
+    const memorialsCol = collection(db, 'memorials');
+    const q = query(memorialsCol, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
 
-// Admin function: save memorial, ensuring it's for the correct user
-export async function saveMemorial(id: string, userId: string, data: MemorialData): Promise<MemorialData> {
-  console.log(`[Server Action] saveMemorial called for ID: ${id}, User: ${userId}`);
-  const existingMemorial = memorials.get(id);
-  if (!existingMemorial) {
-    // This case should ideally be handled by createMemorial if ID is new.
-    // If ID exists but no memorial, it implies an issue or new creation intent.
-    // For robustness, let's ensure data.userId is set if we proceed.
-    console.warn(`[Server Action] saveMemorial: Memorial with ID ${id} not found. Treating as potential new save under this ID if data aligns.`);
-  } else if (existingMemorial.userId !== userId) {
-    const errorMsg = `Unauthorized: User ${userId} cannot edit memorial ${id} owned by ${existingMemorial.userId}.`;
-    console.error(`[Server Action] saveMemorial Error: ${errorMsg}`);
-    throw new Error(errorMsg);
+    const userMemorials = querySnapshot.docs.map(docSnap => {
+      const data = docSnap.data() as MemorialData;
+      return {
+        id: docSnap.id,
+        deceasedName: data.deceasedName,
+        birthDate: data.birthDate,
+        deathDate: data.deathDate,
+        profilePhotoUrl: data.photos && data.photos.length > 0 ? data.photos[0].url : undefined,
+      };
+    });
+    console.log(`[Firestore] Found ${userMemorials.length} memorials for user ${userId}`);
+    return userMemorials;
+  } catch (error) {
+    console.error(`[Firestore] Error fetching memorials for user ${userId}:`, error);
+    throw new Error('Failed to fetch user memorials.');
   }
-  
-  const memorialToSave: MemorialData = { ...data, id, userId }; 
-  memorials.set(id, memorialToSave);
-  console.log(`[Server Action] Memorial saved: ${id}. Current count: ${memorials.size}`);
-  return memorialToSave;
 }
 
+// Admin function: save/update memorial, ensuring it's for the correct user
+export async function saveMemorial(id: string, userId: string, data: MemorialData): Promise<MemorialData> {
+  console.log(`[Firestore] saveMemorial called for ID: ${id}, User: ${userId}`);
+  try {
+    const memorialRef = doc(db, 'memorials', id);
+    const memorialSnap = await getDoc(memorialRef);
 
+    if (!memorialSnap.exists()) {
+      const errorMsg = `Memorial with ID ${id} not found for update.`;
+      console.error(`[Firestore] saveMemorial Error: ${errorMsg}`);
+      throw new Error(errorMsg);
+    }
+
+    const existingData = memorialSnap.data() as MemorialData;
+    if (existingData.userId !== userId) {
+      const errorMsg = `Unauthorized: User ${userId} cannot edit memorial ${id} owned by ${existingData.userId}.`;
+      console.error(`[Firestore] saveMemorial Error: ${errorMsg}`);
+      throw new Error(errorMsg);
+    }
+
+    // Ensure the passed 'data' includes the 'id' and 'userId' for consistency,
+    // though 'id' is from param and 'userId' is validated.
+    const dataToUpdate: Partial<MemorialData> = { ...data };
+    delete dataToUpdate.id; // ID is not part of the fields to update, it's the doc identifier
+    
+    await updateDoc(memorialRef, dataToUpdate);
+    console.log(`[Firestore] Memorial updated: ${id}`);
+    return { ...data, id }; // Return the complete data as it should be after update
+  } catch (error) {
+    console.error(`[Firestore] Error saving memorial ${id}:`, error);
+    if (error instanceof Error) {
+        throw error;
+    }
+    throw new Error('Failed to save memorial data.');
+  }
+}
+
+// Admin function: create a new memorial
 export async function createMemorial(userId: string, data: MemorialData): Promise<MemorialData> {
-  const memorialId = data.id; 
-  console.log(`[Firestore] createMemorial called for User: ${userId}. Using pre-generated ID: ${memorialId}`);
-  if (!memorialId) {
+  if (!data.id) {
+    console.error("[Firestore] createMemorial Error: Memorial ID is missing in data payload.");
     throw new Error("Memorial ID is required to create a memorial.");
   }
-  if (memorials.has(memorialId)) {
-     console.warn(`[Firestore] Memorial with ID ${memorialId} already exists. Overwriting for demo purposes. In production, this might be an error.`);
-  }
-
-  const dataToSave: MemorialData = {
-    ...data, 
-    userId: userId, 
-  };
-
-  console.log('[Firestore] Data received by createMemorial:', JSON.stringify(data, (key, value) => key === 'photos' ? `${(value as Photo[]).length} photos` : value, 2));
-  console.log('[Firestore] Final data being sent to setDoc for createMemorial:', JSON.stringify(dataToSave, (key, value) => key === 'photos' ? `${(value as Photo[]).length} photos` : value, 2));
-
-
-  memorials.set(memorialId, dataToSave);
-  console.log(`[Firestore] Memorial created with ID: ${memorialId} for user ${userId}. Current map size: ${memorials.size}`);
+  const memorialId = data.id;
+  console.log(`[Firestore] createMemorial called for User: ${userId}. Memorial ID: ${memorialId}`);
   
-  const created = memorials.get(memorialId);
-  if (!created) {
-    console.error(`[Firestore] CRITICAL: Failed to retrieve memorial ${memorialId} immediately after setDoc.`);
-    throw new Error(`Failed to create memorial ${memorialId}.`);
+  try {
+    const memorialRef = doc(db, 'memorials', memorialId);
+    // The 'data' object should already include 'id'. We ensure 'userId' is correctly set.
+    const dataToSave: MemorialData = {
+      ...data,
+      userId: userId, // Ensure userId from parameter is authoritative for storage
+    };
+
+    await setDoc(memorialRef, dataToSave);
+    console.log(`[Firestore] Memorial created with ID: ${memorialId} for user ${userId}.`);
+    return dataToSave; // Return the data that was saved
+  } catch (error) {
+    console.error(`[Firestore] Error creating memorial ${memorialId}:`, error);
+    throw new Error('Failed to create memorial.');
   }
-  return created;
 }
 
+// Admin function: delete memorial
 export async function deleteMemorial(memorialId: string, userId: string): Promise<void> {
-  console.log(`[Server Action] deleteMemorial called for ID: ${memorialId}, User: ${userId}`);
-  const memorial = memorials.get(memorialId);
-  if (!memorial) {
-    console.warn(`[Server Action] Memorial with ID ${memorialId} not found for deletion.`);
-    return; 
-  }
-  if (memorial.userId !== userId) {
-    console.error(`[Server Action] Unauthorized attempt to delete memorial ID: ${memorialId} by user ${userId}. Owner is ${memorial.userId}`);
-    throw new Error("Unauthorized: You can only delete your own memorials.");
-  }
+  console.log(`[Firestore] deleteMemorial called for ID: ${memorialId}, User: ${userId}`);
+  try {
+    const memorialRef = doc(db, 'memorials', memorialId);
+    const memorialSnap = await getDoc(memorialRef);
 
-  memorials.delete(memorialId);
-  console.log(`[Server Action] Memorial deleted: ${memorialId}. Current count: ${memorials.size}`);
+    if (!memorialSnap.exists()) {
+      console.warn(`[Firestore] Memorial with ID ${memorialId} not found for deletion.`);
+      return; // Or throw error if preferred
+    }
+
+    const existingData = memorialSnap.data() as MemorialData;
+    if (existingData.userId !== userId) {
+      const errorMsg = `Unauthorized: User ${userId} cannot delete memorial ${memorialId} owned by ${existingData.userId}.`;
+      console.error(`[Firestore] deleteMemorial Error: ${errorMsg}`);
+      throw new Error(errorMsg);
+    }
+
+    await deleteDoc(memorialRef);
+    console.log(`[Firestore] Memorial deleted: ${memorialId}.`);
+  } catch (error) {
+    console.error(`[Firestore] Error deleting memorial ${memorialId}:`, error);
+    if (error instanceof Error) {
+        throw error;
+    }
+    throw new Error('Failed to delete memorial.');
+  }
 }
-
-    
