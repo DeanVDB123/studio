@@ -24,8 +24,21 @@ function formatFirestoreError(error: any, operation: string, contextId?: string)
   message += '.';
 
   if (error instanceof Error && error.message) {
-    message += ` Firebase error: ${error.message}`;
+    // Check if the error message already contains "Firebase error" to avoid duplication
+    if (!error.message.toLowerCase().includes('firebase error')) {
+      message += ` Firebase error: ${error.message}`;
+    } else {
+      message += ` ${error.message}`; // Append original message if it's already formatted
+    }
+  } else if (typeof error === 'object' && error !== null && 'message' in error && typeof error.message === 'string') {
+    // Handle cases where error is an object with a message property (like FirebaseError)
+     if (!error.message.toLowerCase().includes('firebase error')) {
+      message += ` Firebase error: ${error.message}`;
+    } else {
+      message += ` ${error.message}`;
+    }
   }
+
   if (typeof error === 'object' && error !== null && 'code' in error) {
     message += ` (Code: ${(error as {code: string}).code})`;
   }
@@ -89,25 +102,25 @@ export async function saveMemorial(id: string, userId: string, data: MemorialDat
     if (!memorialSnap.exists()) {
       const errorMsg = `Memorial with ID ${id} not found for update.`;
       console.error(`[Firestore] saveMemorial Error: ${errorMsg}`);
-      throw new Error(errorMsg); // Specific error, not using formatFirestoreError here for not found
+      throw new Error(errorMsg);
     }
 
     const existingData = memorialSnap.data() as MemorialData;
     if (existingData.userId !== userId) {
       const errorMsg = `Unauthorized: User ${userId} cannot edit memorial ${id} owned by ${existingData.userId}.`;
       console.error(`[Firestore] saveMemorial Error: ${errorMsg}`);
-      throw new Error(errorMsg); // Specific error for unauthorized
+      throw new Error(errorMsg);
     }
 
     const dataToUpdate: Partial<MemorialData> = { ...data };
-    delete dataToUpdate.id;
+    delete dataToUpdate.id; // ID should not be part of the update payload itself for updateDoc
     
+    console.log(`[Firestore] Attempting to updateDoc for memorialId: ${id} with data.userId: ${data.userId}. Authenticated user param was: ${userId}`);
     await updateDoc(memorialRef, dataToUpdate);
     console.log(`[Firestore] Memorial updated: ${id}`);
-    return { ...data, id };
+    return { ...data, id }; // Return the full data including the ID passed in
   } catch (error) {
     console.error(`[Firestore] Error saving memorial ${id}:`, error);
-    // Check if it's one of the custom errors thrown above, if so, rethrow it
     if (error instanceof Error && (error.message.startsWith("Memorial with ID") || error.message.startsWith("Unauthorized:"))) {
       throw error;
     }
@@ -120,7 +133,7 @@ export async function createMemorial(userId: string, data: MemorialData): Promis
   if (!data.id) {
     const errMsg = "[Firestore] createMemorial Error: Memorial ID is missing in data payload.";
     console.error(errMsg);
-    throw new Error("Memorial ID is required to create a memorial.");
+    throw new Error("Memorial ID is required in the payload to create a memorial.");
   }
   const memorialId = data.id;
   console.log(`[Firestore] createMemorial called for User: ${userId}. Memorial ID: ${memorialId}`);
@@ -129,9 +142,11 @@ export async function createMemorial(userId: string, data: MemorialData): Promis
     const memorialRef = doc(db, 'memorials', memorialId);
     const dataToSave: MemorialData = {
       ...data,
-      userId: userId,
+      userId: userId, // Ensure the userId from the parameter (authenticated user) is authoritative
     };
 
+    console.log(`[Firestore] Attempting to setDoc for memorialId: ${memorialId}. dataToSave.userId is: '${dataToSave.userId}'. Authenticated userId param was: '${userId}'.`);
+    
     await setDoc(memorialRef, dataToSave);
     console.log(`[Firestore] Memorial created with ID: ${memorialId} for user ${userId}.`);
     return dataToSave;
@@ -157,9 +172,10 @@ export async function deleteMemorial(memorialId: string, userId: string): Promis
     if (existingData.userId !== userId) {
       const errorMsg = `Unauthorized: User ${userId} cannot delete memorial ${memorialId} owned by ${existingData.userId}.`;
       console.error(`[Firestore] deleteMemorial Error: ${errorMsg}`);
-      throw new Error(errorMsg); // Specific error for unauthorized
+      throw new Error(errorMsg);
     }
-
+    
+    console.log(`[Firestore] Attempting to deleteDoc for memorialId: ${memorialId}. Owner userId is: ${existingData.userId}. Requester userId is: ${userId}`);
     await deleteDoc(memorialRef);
     console.log(`[Firestore] Memorial deleted: ${memorialId}.`);
   } catch (error) {
@@ -170,3 +186,4 @@ export async function deleteMemorial(memorialId: string, userId: string): Promis
     throw formatFirestoreError(error, 'delete', memorialId);
   }
 }
+
