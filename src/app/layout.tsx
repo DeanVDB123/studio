@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'HonoringLives',
+  title: 'HonouredLives',
   description: 'Create beautiful memorial pages for your loved ones.',
 };
 
