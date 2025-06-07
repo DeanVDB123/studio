@@ -131,7 +131,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-headline">Your Loved Ones</h1>
+        <h1 className="text-3xl font-headline">Your Loved Ones.</h1>
         <Button asChild>
           <Link href="/admin/create">
             <PlusCircle className="mr-2 h-5 w-5" /> Create New Memorial
@@ -230,3 +230,4 @@ export default function AdminDashboardPage() {
     
 
     
+
