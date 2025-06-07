@@ -12,11 +12,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { CalendarIcon, Wand2, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { MemorialData, Photo, OrganizedContent } from '@/lib/types';
 import { handleGenerateBiography, handleOrganizeContent, saveMemorialAction } from '@/lib/actions'; // Server actions for AI
-import { Wand2, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
@@ -221,14 +224,74 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
               {errors.lifeSummary && <p className="text-sm text-destructive mt-1">{errors.lifeSummary.message}</p>}
             </div>
             <div>
-              <Label htmlFor="birthDate">Birth Date</Label>
-              <Input id="birthDate" type="date" {...register('birthDate')} />
-              {errors.birthDate && <p className="text-sm text-destructive mt-1">{errors.birthDate.message}</p>}
+                <Label htmlFor="birthDate">Birth Date</Label>
+                <Controller
+                    control={control}
+                    name="birthDate"
+                    render={({ field }) => (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {field.value ? format(parseISO(field.value), "dd/MM/yyyy") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={field.value ? parseISO(field.value) : undefined}
+                                    onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : '')}
+                                    initialFocus
+                                    captionLayout="dropdown-buttons"
+                                    fromYear={1900}
+                                    toYear={new Date().getFullYear()}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                />
+                {errors.birthDate && <p className="text-sm text-destructive mt-1">{errors.birthDate.message}</p>}
             </div>
             <div>
-              <Label htmlFor="deathDate">Death Date</Label>
-              <Input id="deathDate" type="date" {...register('deathDate')} />
-              {errors.deathDate && <p className="text-sm text-destructive mt-1">{errors.deathDate.message}</p>}
+                <Label htmlFor="deathDate">Death Date</Label>
+                <Controller
+                    control={control}
+                    name="deathDate"
+                    render={({ field }) => (
+                         <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {field.value ? format(parseISO(field.value), "dd/MM/yyyy") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={field.value ? parseISO(field.value) : undefined}
+                                    onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : '')}
+                                    initialFocus
+                                    captionLayout="dropdown-buttons"
+                                    fromYear={1900}
+                                    toYear={new Date().getFullYear() + 5} // Allow future dates for death date if needed
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                />
+                {errors.deathDate && <p className="text-sm text-destructive mt-1">{errors.deathDate.message}</p>}
             </div>
           </div>
         </CardContent>
@@ -237,7 +300,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Biography</CardTitle>
-          <CardDescription>Share their life story. You can use the "Life Summary" field above to help the AI generate a starting point using the "Organize All Content with AI" button below.</CardDescription>
+          <CardDescription>Share their life story. You can use the "Life Summary" field above to help write a comprehensive biography.</CardDescription>
         </CardHeader>
         <CardContent>
           <Textarea id="biography" {...register('biography')} rows={10} placeholder="Write the biography here..." />
@@ -245,21 +308,10 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         </CardContent>
       </Card>
       
-      <Separator />
-
-      <div className="flex justify-end">
-          <Button type="button" onClick={onOrganizeContent} variant="secondary" disabled={isAiOrganizeLoading || isAiBioLoading || authLoading || !user || isSubmitting || isPending}>
-            {isAiOrganizeLoading || isAiBioLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-            Organize All Content with AI
-          </Button>
-      </div>
-
-      <Separator />
-
       <Card>
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Photo Gallery</CardTitle>
-          <CardDescription>Upload photos to remember them by. AI Organization uses uploaded photos. The first photo will be used as the profile picture on the memorial card and public page.</CardDescription>
+          <CardDescription>Upload photos to remember them by. The first photo will be used as the profile picture on the memorial card and public page.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {photoFields.map((field, index) => (
@@ -354,6 +406,8 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
+    
+
     
 
     
