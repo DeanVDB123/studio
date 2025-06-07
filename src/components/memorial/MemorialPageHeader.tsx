@@ -14,8 +14,16 @@ interface MemorialPageHeaderProps {
 export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSummary, profilePhotoUrl }: MemorialPageHeaderProps) {
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), 'MMMM d, yyyy');
+      // Ensure the date string is treated as UTC to avoid timezone issues
+      // HTML date inputs usually provide YYYY-MM-DD, which is timezone-agnostic
+      // but new Date() can sometimes interpret it based on local timezone.
+      // Adding 'T00:00:00Z' or splitting and using Date.UTC can help,
+      // but for display, directly parsing YYYY-MM-DD should be fine with date-fns.
+      // If dateString can be in other formats, more robust parsing might be needed.
+      const date = new Date(dateString + 'T00:00:00'); // Treat as midnight UTC
+      return format(date, 'dd MMM yyyy');
     } catch (e) {
+      console.error("Error formatting date:", dateString, e);
       return dateString; // fallback if date is invalid
     }
   };
