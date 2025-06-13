@@ -1,171 +1,87 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HonouredLives – Celebrate and Remember</title>
-  <meta name="theme-color" content="#ffffff" />
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
-  </style>
-  <link rel="stylesheet" href="Style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Open+Sans&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HonouredLives</title>
+    <link rel="stylesheet" href="Style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Belleza&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 </head>
-<body class="page">
-  <header class="hero" role="banner" aria-label="HonouredLives introduction section">
-    <div class="overlay animate-fade">
-      <div class="hero-content">
-        <h1 class="hero-title gradient-text">HonouredLives</h1>
-        <div class="hero-text-box">
-          <p>Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.</p>
-          <p>Scan the QR code at your loved one’s resting place to revisit their story, reflect on cherished memories, and keep their legacy close—wherever you are. Share their tribute with others, spark conversations, and ensure that their memory continues to inspire generations to come.</p>
+<body>
+    <header>
+        <div class="logo">HonouredLives</div>
+        <nav>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="font-headline">Create Lasting Tributes</h1>
+            <p class="font-body">Honor the memory of your loved ones with beautifully crafted memorial pages. Share stories, photos, and messages in a serene and respectful online space.</p>
+            <a href="/login" class="button">Get Started</a>
         </div>
-        <a id="learn-btn" class="cta-button glow" aria-label="Learn how to create a memorial">Learn how</a>
-      </div>
-    </div>
-  </header>
+    </section>
 
-  <section class="about-honouredlives">
-    <div class="highlight-box animated-border">
-      <h2 class="section-header">About HonouredLives</h2>
-      <p class="about-text">
-        HonouredLives is dedicated to helping families preserve memories and celebrate legacies through innovative digital tributes. 
-        Our platform offers an easy, heartfelt way to keep stories alive and share them with future generations.
-      </p>
-    </div>
-  </section>
-
-  <section id="steps" class="steps">
-    <div class="section-header">
-      <h2>Create a Memorial in 3 Simple Steps</h2>
-      <p class="subtitle">An easy way to honour and preserve a legacy.</p>
-    </div>
-    <div class="animated-steps-grid">
-      <div class="step card animated-step step-1" id="step1">
-        <div class="step-content">
-          <h3>Step 1</h3>
-          <p>Sign in and create a profile to begin, then create a new memorial for your loved one.</p>
+    <section id="features" class="features">
+        <h2 class="font-headline">Why Choose HonouredLives?</h2>
+        <div class="feature-cards">
+            <div class="card">
+                <img src="https://placehold.co/100x100.png" alt="Customizable Pages Icon" data-ai-hint="settings customization">
+                <h3 class="font-headline">Customizable Pages</h3>
+                <p class="font-body">Personalize memorial pages with various templates, themes, and sections to truly reflect the life and spirit of your loved one.</p>
+            </div>
+            <div class="card">
+                <img src="https://placehold.co/100x100.png" alt="AI Assistance Icon" data-ai-hint="robot ai">
+                <h3 class="font-headline">AI-Powered Assistance</h3>
+                <p class="font-body">Utilize AI to help draft biographies, organize content, and suggest meaningful ways to commemorate.</p>
+            </div>
+            <div class="card">
+                <img src="https://placehold.co/100x100.png" alt="Secure & Private Icon" data-ai-hint="shield security">
+                <h3 class="font-headline">Secure & Private</h3>
+                <p class="font-body">Control who can view and contribute to memorial pages with robust privacy settings, ensuring a safe space for remembrance.</p>
+            </div>
+            <div class="card">
+                <img src="https://placehold.co/100x100.png" alt="QR Code Access Icon" data-ai-hint="qr code">
+                <h3 class="font-headline">Easy QR Code Access</h3>
+                <p class="font-body">Generate unique QR codes for each memorial page, allowing easy sharing and access for friends and family.</p>
+            </div>
         </div>
-      </div>
-      <div class="step card animated-step step-2" id="step2">
-        <div class="step-content">
-          <h3>Step 2</h3>
-          <p>Enter their details and upload photos, memories, and meaningful stories.</p>
+    </section>
+
+    <section id="about" class="about-us">
+        <div class="about-content">
+            <h2 class="font-headline">Our Mission</h2>
+            <p class="font-body">At HonouredLives, we believe in the power of remembrance. Our mission is to provide a compassionate and beautiful platform where memories can be cherished and shared, creating a lasting legacy for generations to come. We strive to make the process of creating a memorial as simple and comforting as possible during difficult times.</p>
+            <img src="https://placehold.co/600x400.png" alt="Team Photo or Symbolic Image" data-ai-hint="team people">
         </div>
-      </div>
-      <div class="step card animated-step step-3" id="step3">
-        <div class="step-content">
-          <h3>Step 3</h3>
-          <p>Share their memorial page via the permalink or QR code and return anytime to reflect and remember.</p>
+    </section>
+
+    <section id="contact" class="contact-us">
+        <h2 class="font-headline">Get in Touch</h2>
+        <p class="font-body">Have questions or need support? We're here to help.</p>
+        <form class="contact-form">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+            <button type="submit" class="button">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 HonouredLives. All rights reserved.</p>
+        <div class="social-links">
+            <a href="#">Facebook</a>
+            <a href="#">Twitter</a>
+            <a href="#">Instagram</a>
         </div>
-      </div>
-    </div>
-  </section>
+    </footer>
 
-  <section class="why-choose">
-    <div class="container">
-      <div class="section-header">
-        <h2>Why Choose HonouredLives</h2>
-        <p class="subtitle">Experience a meaningful way to celebrate and remember.</p>
-      </div>
-      <div class="steps-grid">
-        <div class="step card step-1">
-          <div class="step-content">
-            <h3>Personalized Tributes</h3>
-            <p>Create unique profiles that reflect the life and legacy of your loved ones.</p>
-          </div>
-        </div>
-        <div class="step card step-2">
-          <div class="step-content">
-            <h3>Easy Sharing</h3>
-            <p>Share memories easily through QR codes placed at resting places or online.</p>
-          </div>
-        </div>
-        <div class="step card step-3">
-          <div class="step-content">
-            <h3>Community Support</h3>
-            <p>Connect with others who share your commitment to honoring heritage.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="stories">
-    <div class="section-header">
-      <h2>Tell Their Story</h2>
-      <p class="subtitle">A timeless way to honor and remember</p>
-    </div>
-    <div class="story-container">
-      <div class="story card glass fade-in-delayed">
-        <h3 aria-label="Tribute to Emily Grace Taylor">Emily Grace Taylor – Beloved Teacher</h3>
-        <p>A beloved teacher whose passion for learning lit up every classroom. Her compassion and warmth continue to inspire generations.</p>
-      </div>
-      <div class="story card glass fade-in-delayed">
-        <h3 aria-label="Tribute to James Okoro">James "Jimmy" Okoro – Community Hero</h3>
-        <p>A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others.</p>
-      </div>
-      <div class="story card glass fade-in-delayed">
-        <h3 aria-label="Tribute to Nokuthula Maseko">Nokuthula Maseko – Resilient Storyteller</h3>
-        <p>A mother, storyteller, and beacon of resilience—her words and wisdom live on through the lives she touched in her village and beyond.</p>
-      </div>
-      <!-- Add more stories as needed -->
-    </div>
-  </section>
-
-  <section class="join">
-    <div class="section-header">
-      <h2>Join Us Today</h2>
-      <p class="subtitle">Be part of a heartfelt movement to preserve memories.</p>
-    </div>
-    <a id="create-tribute-btn" class="cta-button glow" href="https://studio--forevermark-ft522.us-central1.hosted.app/" target="_blank" rel="noopener noreferrer">Get Started</a>
-  </section>
-
-  <footer>
-    <div class="footer-content">
-      <p>&copy; 2025 HonouredLives. All rights reserved. Crafted with care to preserve legacy.</p>
-    </div>
-  </footer>
-
-<script>
-  window.scrollTo(0, 0);
-  function revealStep(id, delay) {
-    setTimeout(() => {
-      const step = document.getElementById(id);
-      step.classList.remove('visible');
-      void step.offsetWidth; // trigger reflow
-      step.classList.add('visible');
-    }, delay);
-  }
-
-  let stepsAnimated = false;
-
-  function animateSteps() {
-    if (stepsAnimated) return;
-    revealStep('step1', 0);
-    revealStep('step2', 1000);
-    revealStep('step3', 2000);
-    stepsAnimated = true;
-  }
-
-  // Attach to CTA button
-  document.getElementById('learn-btn').addEventListener('click', (e) => {
-    e.preventDefault();
-    animateSteps();
-    document.getElementById('steps').scrollIntoView({ behavior: 'smooth' });
-  });
-
-
-  // Scroll detection for steps section
-  window.addEventListener('scroll', () => {
-    const stepsSection = document.getElementById('steps');
-    const rect = stepsSection.getBoundingClientRect();
-    if (rect.top < window.innerHeight && !stepsAnimated) {
-      animateSteps();
-    }
-  });
-</script>
 </body>
 </html>
