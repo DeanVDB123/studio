@@ -1,0 +1,486 @@
+.hero-text-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #ffffff;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  max-width: 600px;
+  margin-right: auto;
+  text-align: left;
+}
+
+.hero-text-box p {
+  color: #f0f0f0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+/* Hero Title Styles */
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: transparent; /* makes the stroke visible */
+  -webkit-text-stroke: 1.2px white; /* white letter outline */
+  text-shadow: none; /* optional: remove if you want cleaner outline */
+  background: linear-gradient(to right, #00c6ff, #0072ff); /* optional fill */
+  -webkit-background-clip: text;
+  background-clip: text;
+  padding: 0.3rem 0.8rem;
+  border: none; /* remove box */
+  border-radius: 0; /* optional: no rounded corners */
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade {
+  animation: fadeInUp 1s ease-out both;
+}
+
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body.page {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f7f7f7;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+  color: #2c2c2c;
+}
+
+p {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(to bottom, #00203f, #444);
+  color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.hero .overlay {
+  max-width: 100%;
+  padding: 0 1rem;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #5c6bc0;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #3f51b5;
+}
+
+/* Section Styles */
+section {
+  padding: 4rem 2rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #5c6bc0;
+}
+
+/* Steps and Stories */
+.step-container, .story-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.card {
+  background: linear-gradient(to bottom right, #ffffff, #f0f0f0);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  max-width: 300px;
+  text-align: center;
+  width: 100%;
+  min-height: 180px;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-1,
+.step-2,
+.step-3,
+.step-4,
+.step-5 {
+  background-color: #4a4a4a;
+}
+
+/* Step 4 and 5 right offset margins */
+.step-4 {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  justify-self: center;
+  transform: translateX(25%);
+  margin-left: 0;
+}
+
+.step-5 {
+  grid-column: 2 / span 2;
+  grid-row: 2;
+  justify-self: center;
+  transform: translateX(-25%);
+  margin-left: 0;
+}
+
+/* Join Section */
+.join {
+  background-color: #fff;
+  text-align: center;
+}
+
+/* Footer */
+footer {
+  background-color: #2c2c2c;
+  color: white;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-container, .story-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-out both;
+}
+
+@keyframes fadeInUpDelayed {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-delayed {
+  animation: fadeInUpDelayed 1.5s ease-out both;
+}
+/* Animated Steps Grid Layout */
+.animated-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 1.5rem;
+  justify-items: center;
+  align-items: stretch;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animated-step {
+  opacity: 0;
+  transform: translateX(50px) scale(0.5);
+  width: 100%;
+}
+
+.animated-step.visible {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+ 
+/* Login Hero Box */
+header.login-hero {
+  width: 100%;
+  background-color: #00203f;
+  padding: 5px 0;
+  display: flex;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  height: auto;
+  transition: all 0.5s ease-in-out;
+}
+
+header.login-hero .hero-content {
+  width: max-content;
+  padding: 0 30px;
+}
+
+header.login-hero .cta-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+header.login-hero .cta-button:hover {
+  background-color: #0056b3;
+}
+
+/* OVERRIDE: Remove gradient background and overlay for login hero */
+header.login-hero {
+  background: none !important;
+  background-color: #00203f !important;
+}
+
+header.login-hero .overlay {
+  background: none !important;
+}
+
+.about-honouredlives {
+  background: #fff9f5; /* warm soft cream */
+  border-left: 6px solid #00203f; /* bright accent line on left */
+  padding: 3rem 2rem;
+  max-width: 800px;
+  margin: 3rem auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(40, 5, 237, 0.25);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #4b4b4b;
+}
+
+.about-honouredlives .highlight-box {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.about-honouredlives .section-header {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #00203f;
+}
+
+.about-honouredlives .about-text {
+  font-size: 1.15rem;
+  line-height: 1.65;
+  color: #333333;
+  font-weight: 400;
+}
+.cta-button.glow {
+  box-shadow: 0 0 12px rgba(92, 107, 192, 0.6), 0 0 24px rgba(92, 107, 192, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+.cta-button.glow::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: linear-gradient(45deg, #5c6bc0, #3f51b5, #7c4dff, #5c6bc0);
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(10px);
+  animation: glowPulse 6s linear infinite;
+  border-radius: 8px;
+}
+
+@keyframes glowPulse {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Glassmorphism Card Style */
+.card.glass {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Animated Border for Section */
+.animated-border {
+  position: relative;
+  padding: 2rem;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.animated-border::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #ff4081, #7c4dff, #448aff);
+  background-size: 400% 400%;
+  z-index: -1;
+  animation: animatedBorderFlow 10s ease infinite;
+}
+
+@keyframes animatedBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Gradient Text Utility */
+.gradient-text {
+  background: linear-gradient(to right, #5c6bc0, #00bcd4, #5c6bc0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtle animated background (optional) */
+.animated-background {
+  background: linear-gradient(-45deg, #00203f, #4a4a4a, #00203f, #444);
+  background-size: 400% 400%;
+  animation: backgroundShift 15s ease infinite;
+}
+
+@keyframes backgroundShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Scroll indicator class */
+.scroll-indicator {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  color: white;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+/* Paragraph Style Variants */
+.paragraph-style-a {
+  background: #fff9f5;
+  border-left: 5px solid #5c6bc0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(92, 107, 192, 0.1);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.paragraph-style-b {
+  background: rgba(0, 32, 63, 0.05);
+  border-left: 4px solid #448aff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #2c2c2c;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.paragraph-style-c {
+  background: linear-gradient(to bottom, #ffffff, #f4f4f4);
+  border-left: 6px double #7c4dff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #444;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+}
