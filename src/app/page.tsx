@@ -1,30 +1,14 @@
 
-"use client"; // Needs to be client to use router and auth context for conditional redirect
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  const router = useRouter();
-  const { user, loading } = useAuth();
-
-  useEffect(() => {
-    if (!loading) {
-      if (user) {
-        router.replace('/admin');
-      } else {
-        router.replace('/login');
-      }
-    }
-  }, [user, loading, router]);
-
-  // Show loading indicator while auth state is being determined
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      <p className="ml-4 text-lg">Loading...</p>
-    </div>
-  );
+  // According to Next.js documentation, if app/page.tsx (or .js) exists,
+  // it takes precedence over public/index.html for the root path.
+  // To display the content of public/index.html, we redirect to it.
+  // This will change the URL in the browser to /index.html.
+  // A cleaner solution, if possible, would be to remove or rename this app/page.tsx file
+  // so that public/index.html is served directly for the root path.
+  redirect('/index.html');
+  // redirect() throws an error that Next.js handles to perform the redirection,
+  // so no explicit return is needed here in a Server Component.
 }
