@@ -46,7 +46,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto mb-8">
               <Image
-                src="https://placehold.co/800x300.png"
+                src="/handsholding.jpg"
                 alt="A serene and thoughtful image representing remembrance"
                 width={800}
                 height={300}
@@ -167,7 +167,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="flex flex-col">
                 <Image
-                  src="https://placehold.co/300x200.png"
+                  src="/teacher.webp"
                   alt="Illustrative image for Emily Grace Taylor's story"
                   width={300}
                   height={200}
@@ -183,7 +183,7 @@ export default function HomePage() {
               </Card>
               <Card className="flex flex-col">
                 <Image
-                  src="https://placehold.co/300x200.png"
+                  src="/oldman.avif"
                   alt="Illustrative image for James Okoro's story"
                   width={300}
                   height={200}
@@ -199,7 +199,7 @@ export default function HomePage() {
               </Card>
               <Card className="flex flex-col">
                 <Image
-                  src="https://placehold.co/300x200.png"
+                  src="/motherdaughter.webp"
                   alt="Illustrative image for Nokuthula Maseko's story"
                   width={300}
                   height={200}
