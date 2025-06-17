@@ -17,7 +17,7 @@ export default function HomePage() {
       <header className="bg-card text-card-foreground py-5 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
           <div className="flex-shrink-0 mb-4 sm:mb-0">
-            {/* Assuming logo.png is in /public folder */}
+            {/* Ensure logo.png is in /public folder */}
             <Image
               src="/logo.png"
               alt="HonouredLives Logo"
@@ -44,6 +44,17 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="bg-gradient-to-b from-primary/20 to-background py-16 sm:py-24 text-center">
           <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto mb-8">
+              <Image
+                src="https://placehold.co/800x300.png"
+                alt="A serene and thoughtful image representing remembrance"
+                width={800}
+                height={300}
+                className="w-full h-auto object-cover rounded-lg shadow-lg"
+                data-ai-hint="serene landscape"
+                priority
+              />
+            </div>
             <h1 className="text-4xl sm:text-5xl font-headline text-primary-foreground mb-6">
               HonouredLives
             </h1>
@@ -82,27 +93,27 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">An easy way to honour and preserve a legacy.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Step 1</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>Sign in and create a profile to begin, then create a new memorial for your loved one.</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Step 2</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>Enter their details and upload photos, memories, and meaningful stories.</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Step 3</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>Share their memorial page via the permalink or QR code and return anytime to reflect and remember.</p>
                 </CardContent>
               </Card>
@@ -118,27 +129,27 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">Experience a meaningful way to celebrate and remember.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Personalized Tributes</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>Create unique profiles that reflect the life and legacy of your loved ones.</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Easy Sharing</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>Share memories easily through QR codes placed at resting places or online.</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="flex flex-col">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Community Support</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>Connect with others who share your commitment to honoring heritage.</p>
                 </CardContent>
               </Card>
@@ -154,27 +165,51 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">A timeless way to honor and remember</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card>
+              <Card className="flex flex-col">
+                <Image
+                  src="https://placehold.co/300x200.png"
+                  alt="Illustrative image for Emily Grace Taylor's story"
+                  width={300}
+                  height={200}
+                  className="w-full h-auto object-cover rounded-t-lg"
+                  data-ai-hint="teacher classroom"
+                />
                 <CardHeader>
                   <CardTitle className="font-headline text-lg">Emily Grace Taylor – Beloved Teacher</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>A beloved teacher whose passion for learning lit up every classroom. Her compassion and warmth continue to inspire generations.</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="flex flex-col">
+                <Image
+                  src="https://placehold.co/300x200.png"
+                  alt="Illustrative image for James Okoro's story"
+                  width={300}
+                  height={200}
+                  className="w-full h-auto object-cover rounded-t-lg"
+                  data-ai-hint="community volunteer"
+                />
                 <CardHeader>
                   <CardTitle className="font-headline text-lg">James "Jimmy" Okoro – Community Hero</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others.</p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="flex flex-col">
+                <Image
+                  src="https://placehold.co/300x200.png"
+                  alt="Illustrative image for Nokuthula Maseko's story"
+                  width={300}
+                  height={200}
+                  className="w-full h-auto object-cover rounded-t-lg"
+                  data-ai-hint="storyteller elder"
+                />
                 <CardHeader>
                   <CardTitle className="font-headline text-lg">Nokuthula Maseko – Resilient Storyteller</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-grow">
                   <p>A mother, storyteller, and beacon of resilience—her words and wisdom live on through the lives she touched in her village and beyond.</p>
                 </CardContent>
               </Card>
@@ -205,5 +240,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
