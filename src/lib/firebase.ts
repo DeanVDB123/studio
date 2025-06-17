@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getAuth, connectAuthEmulator, GoogleAuthProvider } from 'firebase/auth';
 // Add other Firebase services as needed, e.g., getStorage
 
 const firebaseConfig: FirebaseOptions = {
@@ -63,6 +63,7 @@ After adding or updating environment variables, you MUST restart/redeploy your a
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
+const googleAuthProvider = new GoogleAuthProvider(); // Initialize Google Auth Provider
 
 // If running in development and using Firebase Emulator
 if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true') {
@@ -74,4 +75,6 @@ if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBA
 }
 
 
-export { app, auth, firebaseConfig };
+export { app, auth, googleAuthProvider, firebaseConfig }; // Export googleAuthProvider
+
+    

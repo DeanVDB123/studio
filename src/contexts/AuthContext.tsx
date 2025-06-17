@@ -1,11 +1,18 @@
 
 "use client";
 
-import type { User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import type { User, UserCredential } from 'firebase/auth';
+import { auth, googleAuthProvider } from '@/lib/firebase'; // Import googleAuthProvider
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, type AuthError } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup, // Import signInWithPopup
+  type AuthError,
+} from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
 
 interface AuthContextType {
@@ -14,6 +21,7 @@ interface AuthContextType {
   error: AuthError | null;
   signUp: typeof createUserWithEmailAndPassword;
   logIn: typeof signInWithEmailAndPassword;
+  signInWithGoogle: () => Promise<UserCredential | void>; // Updated type
   logOut: () => Promise<void>;
 }
 
@@ -39,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       await firebaseSignOut(auth);
-      setUser(null);
+      setUser(null); // Explicitly set user to null
       setError(null);
     } catch (err) {
       setError(err as AuthError);
@@ -47,8 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-  
-  // Functions to wrap Firebase methods to handle errors and loading state
+
   const signUpWithFeedback = async (...args: Parameters<typeof createUserWithEmailAndPassword>) => {
     setLoading(true);
     setError(null);
@@ -56,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return await createUserWithEmailAndPassword(...args);
     } catch (err) {
       setError(err as AuthError);
-      throw err; // Re-throw for the form to handle
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -69,17 +76,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return await signInWithEmailAndPassword(...args);
     } catch (err) {
       setError(err as AuthError);
-      throw err; // Re-throw for the form to handle
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  // The global loader was removed from here.
-  // Components like AuthGuard will handle their own loading UI based on context.
-  
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await signInWithPopup(auth, googleAuthProvider);
+      // User state will be updated by onAuthStateChanged
+      return result;
+    } catch (err) {
+      setError(err as AuthError);
+      // Check for specific Google Sign-In errors if needed
+      if ((err as AuthError).code === 'auth/popup-closed-by-user') {
+        console.log('Google Sign-In popup closed by user.');
+        // Don't necessarily throw this as an error to display to user,
+        // unless you want to inform them.
+      } else if ((err as AuthError).code === 'auth/account-exists-with-different-credential') {
+         setError(err as AuthError); // Let the component display this
+         throw err;
+      } else {
+        throw err; // Re-throw for the form to handle
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, signUp: signUpWithFeedback, logIn: logInWithFeedback, logOut }}>
+    <AuthContext.Provider value={{ user, loading, error, signUp: signUpWithFeedback, logIn: logInWithFeedback, signInWithGoogle, logOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -93,3 +122,4 @@ export const useAuth = () => {
   return context;
 };
 
+    

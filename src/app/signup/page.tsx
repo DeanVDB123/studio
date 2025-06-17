@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, type FormEvent, useEffect } from 'react'; // Added useEffect
+import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,17 +9,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2, UserPlus, Chrome } from 'lucide-react'; // Added Chrome for Google icon
 import { auth } from '@/lib/firebase';
+import { Separator } from '@/components/ui/separator';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { signUp, loading: authLoading, error: authError, user } = useAuth();
+  const { signUp, signInWithGoogle, loading: authLoading, error: authError, user } = useAuth();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     if (!authLoading && user) {
       router.push('/admin');
@@ -43,7 +44,7 @@ export default function SignupPage() {
     }
     try {
       await signUp(auth, email, password);
-      router.push('/admin'); 
+      router.push('/admin');
     } catch (err: any) {
       if (err.code) {
         switch (err.code) {
@@ -67,6 +68,25 @@ export default function SignupPage() {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    setFormError(null);
+    try {
+      await signInWithGoogle();
+      // User state change will trigger useEffect to redirect
+      router.push('/admin');
+    } catch (err: any) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        setFormError('Sign-up process was cancelled.');
+      } else if (err.code === 'auth/account-exists-with-different-credential') {
+        setFormError('An account already exists with the same email address using a different sign-in method. Please log in instead.');
+      }
+      else {
+        setFormError('Failed to sign up with Google. Please try again.');
+        console.error("Google Sign-Up error:", err);
+      }
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <Card className="w-full max-w-md shadow-2xl">
@@ -75,7 +95,7 @@ export default function SignupPage() {
           <CardTitle className="text-3xl font-headline">Create Account</CardTitle>
           <CardDescription>Join HonouredLives to create lasting memorials.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -117,6 +137,20 @@ export default function SignupPage() {
               Sign Up
             </Button>
           </form>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={authLoading}>
+            {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
+            Sign up with Google
+          </Button>
         </CardContent>
         <CardFooter className="flex flex-col items-center space-y-2 pt-4">
           <p className="text-sm text-muted-foreground">
@@ -130,3 +164,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    
