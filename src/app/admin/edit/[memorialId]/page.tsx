@@ -6,7 +6,7 @@ import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
 import { getMemorialById } from '@/lib/data'; // Public fetch
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Globe, Link2, AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react'; // Removed Globe, Link2
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, use } from 'react'; // Added 'use'
@@ -46,20 +46,17 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
 
       setIsLoading(true);
       try {
+        console.log(`[EditPage] Fetching memorial with ID: ${memorialId}`);
         const data = await getMemorialById(memorialId);
         if (data) {
-          // User authorization check (if data.userId exists)
-          // For client-side Firestore, direct userId check might not be available on 'data'
-          // if rules handle security. Assuming getMemorialById just fetches,
-          // and any further authorization logic would be distinct or enforced by rules.
-          // For now, as rules are open, we primarily check if the memorial exists.
-          // If we were to enforce user ownership here, we'd need to compare data.userId with user.uid
+          console.log(`[EditPage] Memorial data fetched:`, data.deceasedName);
           setMemorialData(data);
         } else {
+          console.warn(`[EditPage] Memorial not found for ID: ${memorialId}`);
           setMemorialData(null); // Not found
         }
       } catch (error) {
-        console.error("Failed to fetch memorial data:", error);
+        console.error("[EditPage] Failed to fetch memorial data:", error);
         setMemorialData(null); // Error case
         toast({ title: "Error", description: "Failed to load memorial data.", variant: "destructive"});
       } finally {
@@ -78,10 +75,10 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
     );
   }
   
-  if (memorialData === null) { // Explicitly check for null (not found or unauthorized)
+  if (memorialData === null) { 
     let alertDescriptionText = "The memorial page you are looking for does not exist or may have been removed.";
      if (process.env.NODE_ENV === 'development') {
-       alertDescriptionText += " If you're in a development environment, this could be due to a server restart clearing in-memory data or an ID mismatch for sample data if using Firestore and the document ID is incorrect or rules prevent access (though current rules are open).";
+       alertDescriptionText += " This could be due to a server restart clearing in-memory data or an ID mismatch. For Firestore, ensure the document ID is correct or rules allow access.";
      }
     return (
       <>
@@ -101,8 +98,6 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
     );
   }
   
-  // If memorialData is defined (not undefined and not null)
-  // Consistently use NEXT_PUBLIC_BASE_URL for permalink generation.
   const permalink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:9002'}/memorial/${memorialId}`;
 
   return (
@@ -112,24 +107,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
         <MemorialForm initialData={memorialData} memorialId={memorialId} />
       </div>
       <div className="lg:col-span-1 space-y-6 lg:pt-20">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-xl flex items-center">
-              <Link2 className="mr-2 h-5 w-5 text-primary" /> Permalink
-            </CardTitle>
-            <CardDescription>This is the permanent link to the memorial page.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href={permalink} target="_blank" className="text-primary hover:underline break-all block">
-              {permalink}
-            </Link>
-             <Button asChild variant="outline" size="sm" className="mt-2">
-              <Link href={permalink} target="_blank">
-                <Globe className="mr-2 h-4 w-4" /> Visit Page
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Permalink Card Removed */}
         <Card>
            <CardHeader>
             <CardTitle className="font-headline text-xl">QR Code</CardTitle>
