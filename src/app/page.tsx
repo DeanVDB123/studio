@@ -57,11 +57,11 @@ export default function HomePage() {
             <h1 className="text-4xl sm:text-5xl font-headline text-primary-foreground mb-6">
               HonouredLives
             </h1>
-            <div className="max-w-2xl mx-auto bg-card/80 p-6 rounded-lg shadow-lg border border-border">
+            <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-xl border border-border">
               <p className="text-lg text-card-foreground mb-4">
                 Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.
               </p>
-              <p className="text-md text-card-foreground/80">
+              <p className="text-md text-card-foreground/90">
                 Scan the QR code at your loved one’s resting place to revisit their story, reflect on cherished memories, and keep their legacy close—wherever you are. Share their tribute with others, spark conversations, and ensure that their memory continues to inspire generations to come.
               </p>
             </div>
