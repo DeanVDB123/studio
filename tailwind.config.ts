@@ -66,6 +66,7 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        'logo-background': '#2B3145', // Added new logo background color
       },
       borderRadius: {
         lg: 'var(--radius)',

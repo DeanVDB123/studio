@@ -14,15 +14,14 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="bg-card text-card-foreground py-5 shadow-md">
+      <header className="bg-logo-background text-white py-5 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
           <div className="flex-shrink-0 mb-4 sm:mb-0">
-            {/* Ensure logo.png is in /public folder */}
             <Image
-              src="/logo.png"
+              src="/HonouredLives.jpg"
               alt="HonouredLives Logo"
-              width={180}
-              height={60}
+              width={100}
+              height={56}
               className="h-14 w-auto"
               data-ai-hint="logo company"
               priority
