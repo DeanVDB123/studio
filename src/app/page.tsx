@@ -20,9 +20,9 @@ export default function HomePage() {
             <Image
               src="/HonouredLives.jpg"
               alt="HonouredLives Logo"
-              width={100}
-              height={56}
-              className="h-14 w-auto"
+              width={142}
+              height={80}
+              className="h-20 w-auto"
               data-ai-hint="logo company"
               priority
             />
