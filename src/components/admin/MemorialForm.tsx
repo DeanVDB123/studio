@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { ChangeEvent, FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
@@ -14,12 +14,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Wand2, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
+import { CalendarIcon, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import type { MemorialData, Photo, OrganizedContent } from '@/lib/types';
-import { handleGenerateBiography, handleOrganizeContent, saveMemorialAction } from '@/lib/actions'; // Server actions for AI
+import type { MemorialData, Photo } from '@/lib/types';
+import { saveMemorialAction } from '@/lib/actions';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
@@ -34,12 +34,24 @@ const memorialFormSchema = z.object({
   deceasedName: z.string().min(1, "Deceased's name is required."),
   birthDate: z.string().min(1, "Birth date is required."),
   deathDate: z.string().min(1, "Death date is required."),
-  lifeSummary: z.string().min(1, "Life summary is required for AI biography generation."),
+  lifeSummary: z.string().min(1, "Life summary is required."),
   biography: z.string().min(1, "Biography is required."),
   photos: z.array(photoSchema).min(0, "At least one photo is recommended."),
   tributes: z.array(z.string()).min(0, "At least one tribute is recommended."),
   stories: z.array(z.string()).min(0, "At least one story is recommended."),
-});
+}).refine(
+  (data) => {
+    if (data.birthDate && data.deathDate) {
+      return new Date(data.deathDate) >= new Date(data.birthDate);
+    }
+    return true;
+  },
+  {
+    message: "Death date must be on or after the birth date.",
+    path: ["deathDate"],
+  }
+);
+
 
 type MemorialFormValues = z.infer<typeof memorialFormSchema>;
 
@@ -53,10 +65,10 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const [isPending, startTransition] = useTransition();
-  const [isAiBioLoading, setIsAiBioLoading] = useState(false);
-  const [isAiOrganizeLoading, setIsAiOrganizeLoading] = useState(false);
+  const [isBirthDatePickerOpen, setIsBirthDatePickerOpen] = useState(false);
+  const [isDeathDatePickerOpen, setIsDeathDatePickerOpen] = useState(false);
 
-  const { control, handleSubmit, register, watch, setValue, getValues, formState: { errors, isSubmitting } } = useForm<MemorialFormValues>({
+  const { control, handleSubmit, register, watch, setValue, formState: { errors, isSubmitting } } = useForm<MemorialFormValues>({
     resolver: zodResolver(memorialFormSchema),
     defaultValues: {
       deceasedName: initialData?.deceasedName || '',
@@ -69,6 +81,9 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       stories: initialData?.stories || [],
     },
   });
+  
+  const birthDateValue = watch('birthDate');
+  const deathDateValue = watch('deathDate');
 
   const { fields: photoFields, append: appendPhoto, remove: removePhoto } = useFieldArray({ control, name: "photos" });
   const { fields: tributeFields, append: appendTribute, remove: removeTribute } = useFieldArray({ control, name: "tributes" });
@@ -91,60 +106,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true });
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const onOrganizeContent = async () => {
-    if (!user) {
-      toast({ title: "Authentication Error", description: "You must be logged in to use AI features.", variant: "destructive" });
-      return;
-    }
-    const { biography, tributes, stories, photos, lifeSummary, deceasedName, birthDate, deathDate } = getValues();
-    if (!lifeSummary && !biography && tributes.length === 0 && stories.length === 0 && photos.length === 0) {
-      toast({ title: "Missing Content", description: "Please add a life summary (for AI Bio generation) or other content (biography, tributes, stories, or photos) to organize.", variant: "destructive" });
-      return;
-    }
-    
-    setIsAiOrganizeLoading(true);
-    try {
-      let currentBiography = biography;
-      if (!currentBiography && lifeSummary && deceasedName && birthDate && deathDate) {
-        setIsAiBioLoading(true);
-        toast({ title: "Generating Biography Draft...", description: "The AI is crafting a biography based on the life summary." });
-        currentBiography = await handleGenerateBiography({
-            name: deceasedName,
-            birthDate: birthDate,
-            deathDate: deathDate,
-            lifeSummary: lifeSummary,
-        });
-        setValue('biography', currentBiography, { shouldValidate: true });
-        toast({ title: "AI Biography Draft Generated!", description: "The biography has been populated. You can edit it further." });
-        setIsAiBioLoading(false);
-      }
-
-      const photosDataUris = photos.map(p => p.url).filter(url => url && url.startsWith('data:'));
-      if (photos.some(p => p.url && !p.url.startsWith('data:')) && photos.length > 0) {
-         toast({ title: "Warning", description: "Some photos are not data URIs and will be ignored by the AI organization process. Please ensure all photos are uploaded directly.", variant: "default" });
-      }
-
-      const organized: OrganizedContent = await handleOrganizeContent({
-        biography: currentBiography,
-        tributes,
-        stories,
-        photosDataUris,
-      });
-
-      setValue('biography', organized.biography, { shouldValidate: true });
-      setValue('tributes', organized.tributes, { shouldValidate: true });
-      setValue('stories', organized.stories, { shouldValidate: true });
-      
-      toast({ title: "Content Organized by AI", description: "Biography, tributes, and stories have been updated." });
-
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setIsAiOrganizeLoading(false);
-      setIsAiBioLoading(false);
     }
   };
   
@@ -229,7 +190,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                     control={control}
                     name="birthDate"
                     render={({ field }) => (
-                        <Popover>
+                        <Popover open={isBirthDatePickerOpen} onOpenChange={setIsBirthDatePickerOpen}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={"outline"}
@@ -246,7 +207,13 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                                 <Calendar
                                     mode="single"
                                     selected={field.value ? parseISO(field.value) : undefined}
-                                    onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : '')}
+                                    onSelect={(date) => {
+                                        field.onChange(date ? format(date, "yyyy-MM-dd") : '');
+                                        setIsBirthDatePickerOpen(false);
+                                    }}
+                                    disabled={(date) =>
+                                        date > new Date() || (deathDateValue ? date > new Date(deathDateValue) : false)
+                                    }
                                     initialFocus
                                     captionLayout="dropdown-buttons"
                                     fromYear={1900}
@@ -264,7 +231,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                     control={control}
                     name="deathDate"
                     render={({ field }) => (
-                         <Popover>
+                         <Popover open={isDeathDatePickerOpen} onOpenChange={setIsDeathDatePickerOpen}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={"outline"}
@@ -281,11 +248,17 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                                 <Calendar
                                     mode="single"
                                     selected={field.value ? parseISO(field.value) : undefined}
-                                    onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : '')}
+                                    onSelect={(date) => {
+                                        field.onChange(date ? format(date, "yyyy-MM-dd") : '');
+                                        setIsDeathDatePickerOpen(false);
+                                    }}
+                                    disabled={(date) =>
+                                        date > new Date() || (birthDateValue ? date < new Date(birthDateValue) : false)
+                                    }
                                     initialFocus
                                     captionLayout="dropdown-buttons"
                                     fromYear={1900}
-                                    toYear={new Date().getFullYear() + 5} // Allow future dates for death date if needed
+                                    toYear={new Date().getFullYear()}
                                 />
                             </PopoverContent>
                         </Popover>
@@ -398,8 +371,8 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       </Card>
 
       <CardFooter className="flex justify-end sticky bottom-0 bg-background py-4 border-t">
-        <Button type="submit" disabled={isPending || isAiBioLoading || isAiOrganizeLoading || authLoading || !user || isSubmitting} size="lg">
-          {isPending || isAiBioLoading || isAiOrganizeLoading || authLoading || isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        <Button type="submit" disabled={isPending || authLoading || !user || isSubmitting} size="lg">
+          {isPending || authLoading || isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           {memorialId ? 'Update' : 'Create'} Memorial Page
         </Button>
       </CardFooter>
