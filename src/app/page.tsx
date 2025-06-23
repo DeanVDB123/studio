@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-primary/20 to-background text-foreground">
       {/* Header */}
       <header className="bg-logo-background text-white py-5 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
@@ -42,7 +42,7 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="bg-gradient-to-b from-primary/20 to-background py-16 sm:py-24 text-center">
+        <section className="py-16 sm:py-24 text-center">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto mb-8">
               <Image
@@ -83,7 +83,7 @@ export default function HomePage() {
         </section>
 
         {/* Create a Memorial in 3 Simple Steps Section */}
-        <section id="steps-section" className="py-12 sm:py-16 bg-gradient-to-b from-primary/20 to-background">
+        <section id="steps-section" className="py-12 sm:py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-headline text-foreground mb-2">Create a Memorial in 3 Simple Steps</h2>
@@ -155,7 +155,7 @@ export default function HomePage() {
         </section>
 
         {/* Tell Their Story Section */}
-        <section id="stories-section" className="py-12 sm:py-16 bg-gradient-to-b from-primary/20 to-background">
+        <section id="stories-section" className="py-12 sm:py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-headline text-foreground mb-2">Tell Their Story</h2>
@@ -215,7 +215,7 @@ export default function HomePage() {
         </section>
 
         {/* Join Us Today Section */}
-        <section className="py-16 sm:py-20 text-center bg-gradient-to-t from-primary/20 to-background">
+        <section className="py-16 sm:py-20 text-center">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-headline text-primary-foreground mb-3">Join Us Today</h2>
             <p className="text-lg text-foreground/80 mb-8 max-w-xl mx-auto">
