@@ -164,7 +164,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="flex flex-col">
                 <Image
-                  src="/teacher.webp"
+                  src="/teacher.jpg"
                   alt="Illustrative image for Emily Grace Taylor's story"
                   width={300}
                   height={200}
@@ -196,7 +196,7 @@ export default function HomePage() {
               </Card>
               <Card className="flex flex-col">
                 <Image
-                  src="/motherdaughter.webp"
+                  src="/mother.webp"
                   alt="Illustrative image for Nokuthula Maseko's story"
                   width={300}
                   height={200}
