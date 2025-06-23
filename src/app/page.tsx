@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'HonouredLives - Welcome',
+  title: 'HonouredLives',
   description: 'Remember, Celebrate, and Honor A Life. Create a beautiful and lasting online memorial for your loved ones.',
 };
 

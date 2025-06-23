@@ -3,24 +3,18 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /memorials/{memorialId} {
-      // Rule 1: Anyone can read a memorial. This is for the public memorial pages.
+      // Anyone can read a public memorial page.
       allow read: if true;
 
-      // Rule 2: To create a memorial, a user must be logged in, and the
-      // 'userId' field in the new document must match their own user ID.
-      // This ensures users can only create memorials for themselves.
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Users can only create memorials for themselves.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
 
-      // Rule 3: To update a memorial, a user must be logged in, be the
-      // owner of the existing document, and not change the owner ID.
-      // `resource.data` is the document before the change.
-      // `request.resource.data` is the document after the change.
-      allow update: if request.auth != null
+      // Users can only update memorials they own, and they cannot change the owner (userId).
+      allow update: if request.auth != null 
                     && resource.data.userId == request.auth.uid
                     && request.resource.data.userId == resource.data.userId;
 
-      // Rule 4: To delete a memorial, a user must be logged in and be
-      // the owner of the document.
+      // Users can only delete memorials they own.
       allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }

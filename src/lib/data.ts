@@ -44,7 +44,7 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
 export async function saveMemorial(data: MemorialData): Promise<MemorialData> {
   if (!data.id) throw new Error("Memorial ID is required for saving.");
   if (!data.userId) throw new Error("User ID is required for saving.");
-
+  
   console.log(`[Firestore] saveMemorial (UPDATE) called for ID: ${data.id}, User: ${data.userId}`);
   const docRef = doc(memorialsCollection, data.id);
   
