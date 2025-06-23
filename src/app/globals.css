@@ -17,8 +17,8 @@
     --primary: 225 23% 22%; /* Dark Blue-Gray from logo */
     --primary-foreground: 0 0% 98%; /* White text for primary */
 
-    --secondary: 257 30% 92%; /* Lighter lavender for secondary elements */
-    --secondary-foreground: 257 30% 25%; /* Text on secondary */
+    --secondary: 42 73% 79%; /* Warm Gold */
+    --secondary-foreground: 42 30% 30%; /* Dark brown text for secondary */
 
     --muted: 0 0% 92%; /* Very light gray */
     --muted-foreground: 0 0% 45%; /* Medium gray for muted text */
@@ -60,8 +60,8 @@
     --primary: 225 23% 40%; 
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 257 30% 25%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 42 45% 40%; /* Dark Gold */
+    --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 20%;
     --muted-foreground: 0 0% 60%;
