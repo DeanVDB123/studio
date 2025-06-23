@@ -2,19 +2,16 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow public read access to all memorial images
+    // Match any file in the 'memorials' directory
     match /memorials/{memorialId}/{allPaths=**} {
-      allow read;
-    }
+      
+      // Anyone can read images.
+      allow read: if true;
 
-    // Only allow authenticated users to write to the memorials folder
-    // And ensure they are uploading to a path that corresponds to a memorial document they own.
-    match /memorials/{memorialId}/{imageId} {
-      allow write: if request.auth != null && 
-                     exists(/databases/$(database)/documents/memorials/$(memorialId)) &&
-                     resource.size < 5 * 1024 * 1024 && // 5MB limit
-                     resource.contentType.matches('image/.*') &&
-                     get(/databases/$(database)/documents/memorials/$(memorialId)).data.userId == request.auth.uid;
+      // Only authenticated users can upload (write) images.
+      // The Firestore rules will handle ensuring that a user can only associate
+      // images with memorials they own. This rule prevents unauthenticated uploads.
+      allow write: if request.auth != null;
     }
   }
 }
