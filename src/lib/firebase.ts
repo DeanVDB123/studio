@@ -1,8 +1,8 @@
 
 import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth, connectAuthEmulator, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'; // Import getFirestore
-// Add other Firebase services as needed, e.g., getStorage
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -64,28 +64,28 @@ After adding or updating environment variables, you MUST restart/redeploy your a
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const googleAuthProvider = new GoogleAuthProvider(); // Initialize Google Auth Provider
-
-// Initialize Firestore for the (default) database
+const googleAuthProvider = new GoogleAuthProvider();
 const firestore = getFirestore(app);
-// const firestore = getFirestore(app, "hlus"); // This line was for a named database "hlus"
+const storage = getStorage(app);
 
 // If running in development and using Firebase Emulator
 if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true') {
-  // Default emulator ports: Auth: 9099, Firestore: 8080, Storage: 9199
   try {
-    // Check if emulators are already connected to prevent re-connection errors
-    // @ts-ignore // auth.emulatorConfig is an internal detail not in public types
+    // @ts-ignore
     if (!auth.emulatorConfig) {
        connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
        console.log("Firebase Auth connected to EMULATOR on port 9099");
     }
-    // @ts-ignore // firestore.emulatorConfig is an internal detail not in public types
+    // @ts-ignore
     if (!firestore.emulatorConfig) {
         connectFirestoreEmulator(firestore, 'localhost', 8080);
         console.log("Firebase Firestore connected to EMULATOR on port 8080");
     }
-    // connectStorageEmulator(storage, 'localhost', 9199);
+    // @ts-ignore
+    if (!storage.emulator) {
+        connectStorageEmulator(storage, 'localhost', 9199);
+        console.log("Firebase Storage connected to EMULATOR on port 9199");
+    }
     console.log("Firebase services configured for EMULATORS (if not already connected).");
   } catch (e) {
     console.warn("Error connecting to Firebase Emulators. This might happen on HMR. Details:", e);
@@ -93,5 +93,5 @@ if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBA
 }
 
 
-export { app, auth, firestore, googleAuthProvider, firebaseConfig }; // Export firestore & googleAuthProvider
+export { app, auth, firestore, storage, googleAuthProvider, firebaseConfig };
     
