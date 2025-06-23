@@ -231,7 +231,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                     control={control}
                     name="deathDate"
                     render={({ field }) => (
-                         <Popover open={isDeathDatePickerOpen} onOpenChange={setIsDeathDatePickerOpen}>
+                        <Popover open={isDeathDatePickerOpen} onOpenChange={setIsDeathDatePickerOpen}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={"outline"}

@@ -1,7 +1,6 @@
 
 "use client"; // Make it a client component to use useAuth
 
-import { AppLogo } from '@/components/shared/AppLogo';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { UserCircle, LogOut } from 'lucide-react';
