@@ -23,8 +23,8 @@
     --muted: 0 0% 92%; /* Very light gray */
     --muted-foreground: 0 0% 45%; /* Medium gray for muted text */
 
-    --accent: 51 100% 50%; /* Pale Gold #FFD700 */
-    --accent-foreground: 51 100% 15%; /* Dark brown/black for text on accent */
+    --accent: 42 73% 79%; /* Warm Gold, matching secondary */
+    --accent-foreground: 42 30% 30%; /* Dark brown text on accent, matching secondary */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -57,7 +57,7 @@
     --popover: 0 0% 15%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 225 23% 40%; 
+    --primary: 225 23% 22%; 
     --primary-foreground: 0 0% 98%;
 
     --secondary: 42 45% 40%; /* Dark Gold */
@@ -66,8 +66,8 @@
     --muted: 0 0% 20%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 51 100% 60%;
-    --accent-foreground: 0 0% 5%;
+    --accent: 42 45% 40%; /* Dark Gold, matching secondary */
+    --accent-foreground: 0 0% 98%; /* Matching secondary */
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
