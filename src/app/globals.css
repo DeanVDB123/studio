@@ -38,10 +38,10 @@
     /* Sidebar specific colors, can be adjusted if sidebar has a different theme */
     --sidebar-background: 225 23% 22%; /* Match logo background */
     --sidebar-foreground: 0 0% 95%; /* Light text for dark background */
-    --sidebar-primary: 257 44% 82%; /* Slightly darker primary for sidebar active items */
+    --sidebar-primary: 257 44% 82%; /* Main accent color for sidebar */
     --sidebar-primary-foreground: 257 40% 25%;
-    --sidebar-accent: 257 44% 90%; /* Lighter primary for hover */
-    --sidebar-accent-foreground: 257 40% 30%;
+    --sidebar-accent: 257 44% 82%; /* Accent for hover/active items */
+    --sidebar-accent-foreground: 257 40% 30%; /* Text on accent */
     --sidebar-border: 0 0% 25%;
     --sidebar-ring: 257 50% 75%;
   }
@@ -80,7 +80,7 @@
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 257 44% 55%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 257 44% 20%;
+    --sidebar-accent: 257 44% 35%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 25%;
     --sidebar-ring: 257 50% 65%;

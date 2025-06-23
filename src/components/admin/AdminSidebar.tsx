@@ -59,10 +59,7 @@ export function AdminSidebar() {
                 <SidebarMenuButton
                   isActive={pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))}
                   tooltip={{children: item.label, side: 'right', align: 'center'}}
-                  className={cn(
-                    "w-full justify-start",
-                    (pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))) ? "bg-primary/20 text-primary-foreground" : ""
-                  )}
+                  className="w-full justify-start"
                 >
                   <item.icon className="h-5 w-5" />
                   <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
