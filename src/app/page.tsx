@@ -217,7 +217,7 @@ export default function HomePage() {
         {/* Join Us Today Section */}
         <section className="py-16 sm:py-20 text-center">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-headline text-primary-foreground mb-3">Join Us Today</h2>
+            <h2 className="text-3xl font-headline text-primary mb-3">Join Us Today</h2>
             <p className="text-lg text-foreground/80 mb-8 max-w-xl mx-auto">
               Be part of a heartfelt movement to preserve memories. Create a lasting digital tribute.
             </p>
