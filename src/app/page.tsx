@@ -83,7 +83,7 @@ export default function HomePage() {
         </section>
 
         {/* Create a Memorial in 3 Simple Steps Section */}
-        <section id="steps-section" className="py-12 sm:py-16 bg-secondary/30">
+        <section id="steps-section" className="py-12 sm:py-16 bg-gradient-to-b from-primary/20 to-background">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-headline text-foreground mb-2">Create a Memorial in 3 Simple Steps</h2>
@@ -155,7 +155,7 @@ export default function HomePage() {
         </section>
 
         {/* Tell Their Story Section */}
-        <section id="stories-section" className="py-12 sm:py-16 bg-secondary/30">
+        <section id="stories-section" className="py-12 sm:py-16 bg-gradient-to-b from-primary/20 to-background">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-headline text-foreground mb-2">Tell Their Story</h2>
