@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,7 +28,7 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
   };
 
   return (
-    <header className="relative py-12 bg-gradient-to-b from-primary/20 to-background text-center border-b border-primary/30 shadow-sm">
+    <header className="relative py-12 bg-[rgb(40,45,60)] text-center border-b border-gray-700 shadow-sm">
       <div className="absolute top-4 left-4 z-10">
         <Link href="/">
           <Image
@@ -43,7 +42,7 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
         </Link>
       </div>
       <div className="container mx-auto px-4">
-        <h1 className="text-5xl md:text-6xl font-headline text-primary-foreground mb-3">{deceasedName}</h1>
+        <h1 className="text-5xl md:text-6xl font-headline text-primary mb-3">{deceasedName}</h1>
 
         {profilePhotoUrl && (
           <div className="my-6 flex justify-center">
@@ -60,15 +59,15 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
           </div>
         )}
 
-        <p className="text-xl text-foreground/80 font-body mt-3">
+        <p className="text-xl text-primary/90 font-body mt-3">
           {formatDate(birthDate)} &ndash; {formatDate(deathDate)}
         </p>
         {lifeSummary && (
-          <p className="mt-4 text-lg font-body text-foreground/70 italic max-w-2xl mx-auto">
+          <p className="mt-4 text-lg font-body text-gray-300 italic max-w-2xl mx-auto">
             {lifeSummary}
           </p>
         )}
-        <p className="mt-6 text-2xl font-headline text-accent-foreground italic">Forever in our hearts</p>
+        <p className="mt-6 text-2xl font-headline text-accent italic">Forever in our hearts</p>
       </div>
     </header>
   );
