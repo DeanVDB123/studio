@@ -229,7 +229,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card text-card-foreground/80 py-8 text-center">
+      <footer className="bg-logo-background text-white/80 py-8 text-center">
         <div className="container mx-auto px-4">
           <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved. Crafted with care to preserve legacy.</p>
         </div>
