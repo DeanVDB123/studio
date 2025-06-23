@@ -39,9 +39,6 @@ export function AdminHeader() {
       <div className="flex items-center gap-2 md:hidden">
          <SidebarTrigger />
       </div>
-      <div className="hidden md:block">
-        <AppLogo />
-      </div>
       <nav className="flex-1 flex items-center justify-end gap-4">
         {user ? (
           <DropdownMenu>

@@ -1,7 +1,7 @@
 
-import { AppLogo } from '@/components/shared/AppLogo';
 import { format } from 'date-fns';
-import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface MemorialPageHeaderProps {
   deceasedName: string;
@@ -29,7 +29,19 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
   };
 
   return (
-    <header className="py-12 bg-gradient-to-b from-primary/20 to-background text-center border-b border-primary/30 shadow-sm">
+    <header className="relative py-12 bg-gradient-to-b from-primary/20 to-background text-center border-b border-primary/30 shadow-sm">
+      <div className="absolute top-4 left-4 z-10">
+        <Link href="/">
+          <Image
+            src="/hlb.png"
+            alt="HonouredLives Logo"
+            width={80}
+            height={45}
+            className="h-auto"
+            data-ai-hint="logo company"
+          />
+        </Link>
+      </div>
       <div className="container mx-auto px-4">
         <h1 className="text-5xl md:text-6xl font-headline text-primary-foreground mb-3">{deceasedName}</h1>
 
