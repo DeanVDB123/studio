@@ -18,7 +18,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
           <div className="flex-shrink-0 mb-4 sm:mb-0">
             <Image
-              src="/HonouredLives.jpg"
+              src="/hl.png"
               alt="HonouredLives Logo"
               width={142}
               height={80}
@@ -33,6 +33,7 @@ export default function HomePage() {
               <li><Link href="#steps-section" className="hover:text-primary transition-colors">How It Works</Link></li>
               <li><Link href="#why-choose-section" className="hover:text-primary transition-colors">Why Us</Link></li>
               <li><Link href="#stories-section" className="hover:text-primary transition-colors">Stories</Link></li>
+              <li><Link href="/login" className="hover:text-success transition-colors">Get Started</Link></li>
             </ul>
           </nav>
         </div>
