@@ -29,11 +29,11 @@ export default function HomePage() {
           </div>
           <nav>
             <ul className="flex space-x-4 sm:space-x-6 text-sm">
-              <li><Link href="#about-section" className="hover:text-primary transition-colors">About</Link></li>
-              <li><Link href="#steps-section" className="hover:text-primary transition-colors">How It Works</Link></li>
-              <li><Link href="#why-choose-section" className="hover:text-primary transition-colors">Why Us</Link></li>
-              <li><Link href="#stories-section" className="hover:text-primary transition-colors">Stories</Link></li>
-              <li><Link href="/login" className="hover:text-primary transition-colors">Try it</Link></li>
+              <li><Link href="#about-section" className="hover:text-secondary transition-colors">About</Link></li>
+              <li><Link href="#steps-section" className="hover:text-secondary transition-colors">How It Works</Link></li>
+              <li><Link href="#why-choose-section" className="hover:text-secondary transition-colors">Why Us</Link></li>
+              <li><Link href="#stories-section" className="hover:text-secondary transition-colors">Stories</Link></li>
+              <li><Link href="/login" className="hover:text-secondary transition-colors">Try it</Link></li>
             </ul>
           </nav>
         </div>
