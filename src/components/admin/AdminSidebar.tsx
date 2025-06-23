@@ -74,8 +74,8 @@ export function AdminSidebar() {
             <Image 
               src="/hlb.png" 
               alt="HonouredLives Decorative Logo" 
-              width={80} 
-              height={45}
+              width={120} 
+              height={68}
               className="opacity-75"
               data-ai-hint="logo company"
             />
