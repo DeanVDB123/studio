@@ -46,7 +46,10 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
   
   // Handle image uploads before saving to Firestore
   try {
-    const uploadPromises = memorialData.photos.map(async (photo) => {
+    // Filter out photos with no URL to avoid trying to upload empty data
+    const photosToProcess = memorialData.photos.filter(photo => photo.url && photo.url.trim() !== '');
+
+    const uploadPromises = photosToProcess.map(async (photo) => {
       // If the URL is a data URI, it's a new file that needs to be uploaded.
       // Existing photos will have http/https URLs and will be skipped.
       if (photo.url.startsWith('data:image')) {
