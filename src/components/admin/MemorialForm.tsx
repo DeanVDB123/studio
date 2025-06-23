@@ -184,8 +184,8 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${isUpdating ? 'updated' : 'created'}.` });
         
-        // Navigate with a refreshKey query parameter
-        router.push(`/admin?refreshKey=${Date.now()}`);
+        // Navigate to the admin dashboard and refresh the page to show the new data
+        router.push('/admin');
         router.refresh(); 
       } catch (error: any) {
         console.error(`[MemorialForm] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
@@ -406,8 +406,3 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     </form>
   );
 }
-    
-
-    
-
-    
