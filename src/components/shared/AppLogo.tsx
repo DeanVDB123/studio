@@ -7,7 +7,7 @@ interface AppLogoProps {
 
 export function AppLogo({ className }: AppLogoProps) {
   return (
-    <Link href="/admin" className={`font-headline text-2xl font-bold text-primary ${className}`}>
+    <Link href="/" className={`font-headline text-2xl font-bold text-primary ${className}`}>
       HonouredLives
     </Link>
   );

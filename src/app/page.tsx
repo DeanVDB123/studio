@@ -33,7 +33,7 @@ export default function HomePage() {
               <li><Link href="#steps-section" className="hover:text-primary transition-colors">How It Works</Link></li>
               <li><Link href="#why-choose-section" className="hover:text-primary transition-colors">Why Us</Link></li>
               <li><Link href="#stories-section" className="hover:text-primary transition-colors">Stories</Link></li>
-              <li><Link href="/login" className="hover:text-success transition-colors">Get Started</Link></li>
+              <li><Link href="/login" className="hover:text-primary transition-colors">Try it</Link></li>
             </ul>
           </nav>
         </div>
@@ -55,9 +55,6 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-headline text-primary-foreground mb-6">
-              HonouredLives
-            </h1>
             <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-xl border border-border">
               <p className="text-lg text-card-foreground mb-4">
                 Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.
