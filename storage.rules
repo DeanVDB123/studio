@@ -1,14 +1,11 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Match any file in a memorial's folder
+    // Files are publicly readable.
+    // Writes are only allowed by authenticated users to their own memorial folders.
     match /memorials/{memorialId}/{allPaths=**} {
-      // Allow anyone to read images for public memorial pages
       allow read: if true;
-      
-      // Allow authenticated users to upload.
-      // Firestore rules will ensure only owners can link these images to a memorial.
-      allow write: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/memorials/$(memorialId)).data.userId;
     }
   }
 }

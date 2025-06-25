@@ -1,21 +1,16 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Memorials are public to read, but can only be created, updated, or deleted
+    // by the user who created them.
     match /memorials/{memorialId} {
-      // Anyone can read a public memorial page.
       allow read: if true;
-
-      // Users can only create memorials for themselves.
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-
-      // Users can only update memorials they own, and they cannot change the owner (userId).
-      allow update: if request.auth != null 
-                    && resource.data.userId == request.auth.uid
-                    && request.resource.data.userId == resource.data.userId;
-
-      // Users can only delete memorials they own.
-      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // User data can only be accessed by the authenticated user themselves.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
