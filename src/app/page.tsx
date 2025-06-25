@@ -87,7 +87,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-headline text-foreground mb-2">Create a Memorial in 3 Simple Steps</h2>
-              <p className="text-lg text-muted-foreground">An easy way to honour and preserve a legacy.</p>
+              <p className="text-lg text-muted-foreground">An easy way to honour and preserve a loved one.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="flex flex-col">
@@ -95,7 +95,7 @@ export default function HomePage() {
                   <CardTitle className="font-headline text-xl">Step 1</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>Sign in and create a profile to begin, then create a new memorial for your loved one.</p>
+                  <p>Sign in and create a profile to begin.</p>
                 </CardContent>
               </Card>
               <Card className="flex flex-col">
@@ -103,7 +103,7 @@ export default function HomePage() {
                   <CardTitle className="font-headline text-xl">Step 2</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>Enter their details and upload photos, memories, and meaningful stories.</p>
+                  <p>Creat a new memorial, simply enter their details, upload photos, memories, and meaningful stories.</p>
                 </CardContent>
               </Card>
               <Card className="flex flex-col">
@@ -111,7 +111,7 @@ export default function HomePage() {
                   <CardTitle className="font-headline text-xl">Step 3</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>Share their memorial page via the permalink or QR code and return anytime to reflect and remember.</p>
+                  <p>Share their memorial page and return anytime to reflect and remember.</p>
                 </CardContent>
               </Card>
             </div>
