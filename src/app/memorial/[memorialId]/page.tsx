@@ -68,7 +68,12 @@ export default async function MemorialPage({ params }: MemorialPageProps) {
         <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved.</p>
         <p className="text-sm">Created with love and remembrance.</p>
         {memorial.userId && (
-          <p className="text-xs mt-4">Owner UID: {memorial.userId}</p>
+          <div className="text-xs mt-4 space-y-1">
+            <p>Owner UID: {memorial.userId}</p>
+            {memorial.ownerStatus && (
+              <p>Owner Status: <span className="font-semibold">{memorial.ownerStatus}</span></p>
+            )}
+          </div>
         )}
       </footer>
     </div>

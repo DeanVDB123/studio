@@ -15,7 +15,24 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    return docSnap.data() as MemorialData;
+    const memorialData = docSnap.data() as MemorialData;
+
+    if (memorialData.userId) {
+      console.log(`[Firestore] Found memorial owner UID: ${memorialData.userId}. Fetching status.`);
+      const signupsQuery = query(signupsCollection, where("userId", "==", memorialData.userId));
+      const signupSnapshot = await getDocs(signupsQuery);
+
+      if (!signupSnapshot.empty) {
+        const signupData = signupSnapshot.docs[0].data() as SignupEvent;
+        memorialData.ownerStatus = signupData.status || 'N/A';
+        console.log(`[Firestore] Found owner status: ${memorialData.ownerStatus}`);
+      } else {
+        console.warn(`[Firestore] No signup record found for user ID: ${memorialData.userId}`);
+        memorialData.ownerStatus = 'Unknown';
+      }
+    }
+
+    return memorialData;
   } else {
     console.warn(`[Firestore] No memorial found with ID: ${id}`);
     return undefined;
@@ -90,9 +107,10 @@ export async function logSignupEvent(eventData: { userId: string; email: string 
       userId: eventData.userId,
       email: eventData.email || 'N/A',
       signupDate: new Date().toISOString(),
+      status: 'FREE', // Assign default status
     };
     await addDoc(signupsCollection, dataToLog);
-    console.log(`[Firestore] Signup event logged successfully for user ${eventData.userId}.`);
+    console.log(`[Firestore] Signup event logged successfully for user ${eventData.userId} with status 'FREE'.`);
   } catch (error) {
     console.error('[Firestore] Failed to log signup event:', error);
     // Do not re-throw, as this background task should not prevent the user from signing up.

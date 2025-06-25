@@ -17,6 +17,7 @@ export interface MemorialData {
   photos: Photo[];
   tributes: string[]; // Array of tribute messages
   stories: string[]; // Array of stories
+  ownerStatus?: string; // Status of the memorial owner
 }
 
 export interface OrganizedContent {
@@ -30,4 +31,5 @@ export interface SignupEvent {
   userId: string;
   email: string;
   signupDate: string; // ISO 8601 format
+  status: string; // e.g., 'FREE', 'PAID'
 }
