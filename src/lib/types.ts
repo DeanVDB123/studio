@@ -25,3 +25,9 @@ export interface OrganizedContent {
   stories: string[];
   photoGallery: string[]; // Array of photo data URIs
 }
+
+export interface SignupEvent {
+  userId: string;
+  email: string;
+  signupDate: string; // ISO 8601 format
+}

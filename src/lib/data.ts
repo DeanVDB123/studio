@@ -3,10 +3,11 @@
 'use server';
 
 import { firestore } from '@/lib/firebase';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
-import type { MemorialData } from '@/lib/types';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc } from 'firebase/firestore';
+import type { MemorialData, SignupEvent } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
+const signupsCollection = collection(firestore, 'signups');
 
 export async function getMemorialById(id: string): Promise<MemorialData | undefined> {
   console.log(`[Firestore] getMemorialById called for ID: ${id}`);
@@ -80,4 +81,20 @@ export async function deleteMemorial(memorialId: string, userId: string): Promis
   
   console.log(`[Firestore] Memorial DELETED: ${memorialId}.`);
   // Note: This doesn't delete associated images from Storage. That would require another step.
+}
+
+export async function logSignupEvent(eventData: { userId: string; email: string | null }): Promise<void> {
+  console.log(`[Firestore] logSignupEvent called for user: ${eventData.userId}`);
+  try {
+    const dataToLog: SignupEvent = {
+      userId: eventData.userId,
+      email: eventData.email || 'N/A',
+      signupDate: new Date().toISOString(),
+    };
+    await addDoc(signupsCollection, dataToLog);
+    console.log(`[Firestore] Signup event logged successfully for user ${eventData.userId}.`);
+  } catch (error) {
+    console.error('[Firestore] Failed to log signup event:', error);
+    // Do not re-throw, as this background task should not prevent the user from signing up.
+  }
 }

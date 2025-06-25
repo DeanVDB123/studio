@@ -11,9 +11,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup, // Import signInWithPopup
+  getAdditionalUserInfo, // Import getAdditionalUserInfo
   type AuthError,
 } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
+import { logSignupEvent } from '@/lib/data';
 
 interface AuthContextType {
   user: User | null;
@@ -60,7 +62,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      return await createUserWithEmailAndPassword(...args);
+      const userCredential = await createUserWithEmailAndPassword(...args);
+      // Log the signup event for new email/password users
+      if (userCredential.user) {
+        await logSignupEvent({
+          userId: userCredential.user.uid,
+          email: userCredential.user.email,
+        });
+      }
+      return userCredential;
     } catch (err) {
       setError(err as AuthError);
       throw err;
@@ -87,7 +97,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
-      // User state will be updated by onAuthStateChanged
+      // Check if it's a new user and log the signup event
+      const additionalInfo = getAdditionalUserInfo(result);
+      if (additionalInfo?.isNewUser && result.user) {
+        await logSignupEvent({
+          userId: result.user.uid,
+          email: result.user.email,
+        });
+      }
       return result;
     } catch (err) {
       setError(err as AuthError);
