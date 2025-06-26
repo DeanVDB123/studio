@@ -76,8 +76,7 @@ export default function HomePage() {
             <div className="max-w-3xl mx-auto text-center bg-card p-8 rounded-lg shadow-md border border-border">
               <h2 className="text-3xl font-headline text-card-foreground mb-4">About HonouredLives</h2>
               <p className="text-lg text-card-foreground/90">
-                HonouredLives is dedicated to helping families preserve memories and celebrate legacies through innovative digital tributes.
-                Our platform offers an easy, heartfelt way to keep stories alive and share them with future generations.
+              HonouredLives is a compassionate digital platform devoted to helping people preserve cherished memories and celebrate the legacies of their loved ones. We believe every life deserves to be remembered with dignity and meaning. Through innovative memorial pages, multimedia storytelling, and user-friendly tools, we make it simple to create heartfelt tributes that endure. Whether you're sharing a life story, photos, messages, or milestones, HonouredLives ensures these precious memories are kept alive—easily accessible for generations to come. Our mission is to honour the past, support the present, and inspire remembrance for the future.
               </p>
             </div>
           </div>
@@ -91,7 +90,7 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">An easy way to honour and preserve a loved one.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="flex flex-col">
+              <Card className="flex flex-col border-4 border-primary">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Step 1</CardTitle>
                 </CardHeader>
@@ -99,7 +98,7 @@ export default function HomePage() {
                   <p>Sign in and create a profile to begin.</p>
                 </CardContent>
               </Card>
-              <Card className="flex flex-col">
+              <Card className="flex flex-col border-4 border-primary">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Step 2</CardTitle>
                 </CardHeader>
@@ -107,7 +106,7 @@ export default function HomePage() {
                   <p>Creat a new memorial, simply enter their details, upload photos, memories, and meaningful stories.</p>
                 </CardContent>
               </Card>
-              <Card className="flex flex-col">
+              <Card className="flex flex-col border-4 border-primary">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Step 3</CardTitle>
                 </CardHeader>
@@ -127,7 +126,7 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">Experience a meaningful way to celebrate and remember.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="flex flex-col">
+              <Card className="flex flex-col border-4 border-secondary">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Personalized Tributes</CardTitle>
                 </CardHeader>
@@ -135,7 +134,7 @@ export default function HomePage() {
                   <p>Create unique profiles that reflect the life and legacy of your loved ones.</p>
                 </CardContent>
               </Card>
-              <Card className="flex flex-col">
+              <Card className="flex flex-col border-4 border-secondary">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Easy Sharing</CardTitle>
                 </CardHeader>
@@ -143,7 +142,7 @@ export default function HomePage() {
                   <p>Share memories easily through QR codes placed at resting places or online.</p>
                 </CardContent>
               </Card>
-              <Card className="flex flex-col">
+              <Card className="flex flex-col border-4 border-secondary">
                 <CardHeader>
                   <CardTitle className="font-headline text-xl">Community Support</CardTitle>
                 </CardHeader>
@@ -164,6 +163,7 @@ export default function HomePage() {
             </div>
             <div className="grid md:grid-cols-3 gap-8 md:items-start">
               <StoryCard
+                className="border-4 border-primary"
                 imageUrl="/techer.png"
                 imageAlt="Illustrative image for Emily Grace Taylor's story"
                 imageHint="teacher classroom"
@@ -173,6 +173,7 @@ export default function HomePage() {
                 story="A beloved teacher whose passion for learning lit up every classroom, Emily Grace Taylor was a beacon of light and knowledge to all who knew her. From her earliest days, Emily was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Emily believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations."
               />
               <StoryCard
+                className="border-4 border-primary"
                 imageUrl="/james.png"
                 imageAlt="Illustrative image for James Okoro's story"
                 imageHint="community volunteer"
@@ -182,6 +183,7 @@ export default function HomePage() {
                 story="A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others. Known for his warm heart and unwavering commitment to helping those in need, he devoted his time to uplifting his community through volunteer work, mentorship, and quiet acts of kindness. Whether organizing local events or offering a listening ear, Jimmy made everyone feel seen, heard, and valued. His legacy lives on in the countless lives he impacted and the enduring spirit of compassion he leaves behind."
               />
               <StoryCard
+                className="border-4 border-primary"
                 imageUrl="/mother.png"
                 imageAlt="Illustrative image for Nokuthula Maseko's story"
                 imageHint="storyteller elder"

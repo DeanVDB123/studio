@@ -16,13 +16,14 @@ interface StoryCardProps {
   timeline: string;
   qrCodeUrl: string;
   story: string;
+  className?: string;
 }
 
-export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCodeUrl, story }: StoryCardProps) {
+export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCodeUrl, story, className }: StoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card className="flex flex-col">
+    <Card className={cn("flex flex-col", className)}>
       <Image
         src={imageUrl}
         alt={imageAlt}
