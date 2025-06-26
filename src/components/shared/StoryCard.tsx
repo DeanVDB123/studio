@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -33,14 +34,14 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
         />
       </div>
       <CardHeader className="text-center items-center">
-        <CardTitle className="font-headline text-lg">{name}</CardTitle>
+        <CardTitle className="font-headline text-lg h-14 flex items-center justify-center">{name}</CardTitle>
         <p className="text-sm text-muted-foreground">{timeline}</p>
         <div className="pt-2">
           <QRCodeDisplay url={qrCodeUrl} size={100} />
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col">
-        <div className={cn("flex-grow relative", !isExpanded && "max-h-24 overflow-hidden")}>
+        <div className={cn("relative", !isExpanded ? "h-24 overflow-hidden" : "h-auto")}>
           <p className={cn("text-foreground/90 transition-all duration-300")}>
             {story}
           </p>
@@ -49,7 +50,7 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
         <Button
           variant="link"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="self-start px-0 mt-1 text-sm"
+          className="self-start px-0 mt-auto pt-2 text-sm"
         >
           {isExpanded ? 'Read less' : 'Read more'}
         </Button>
