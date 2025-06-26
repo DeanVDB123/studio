@@ -123,7 +123,7 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">Experience a meaningful way to celebrate and remember.</p>
             </div>
           </div>
-          <div className="grid md:grid-cols-3 border-y-4 border-secondary divide-y-4 md:divide-y-0 md:divide-x-4 divide-secondary">
+          <div className="grid md:grid-cols-3 border-4 border-secondary divide-y-4 md:divide-y-0 md:divide-x-4 divide-secondary">
             <Card className="flex flex-col rounded-none border-0 shadow-none">
               <CardHeader>
                 <CardTitle className="font-headline text-xl">Personalized Tributes</CardTitle>
