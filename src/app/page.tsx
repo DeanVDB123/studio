@@ -56,7 +56,7 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-xl border border-border">
+            <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-xl border-4 border-primary">
               <p className="text-lg text-card-foreground mb-4">
                 Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.
               </p>
@@ -73,7 +73,7 @@ export default function HomePage() {
         {/* About HonouredLives Section */}
         <section id="about-section" className="py-12 sm:py-16">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center bg-card p-8 rounded-lg shadow-md border border-border">
+            <div className="max-w-3xl mx-auto text-center bg-card p-8 rounded-lg shadow-md border-4 border-secondary">
               <h2 className="text-3xl font-headline text-card-foreground mb-4">About HonouredLives</h2>
               <p className="text-lg text-card-foreground/90">
               HonouredLives is a compassionate digital platform devoted to helping people preserve cherished memories and celebrate the legacies of their loved ones. We believe every life deserves to be remembered with dignity and meaning. Through innovative memorial pages, multimedia storytelling, and user-friendly tools, we make it simple to create heartfelt tributes that endure. Whether you're sharing a life story, photos, messages, or milestones, HonouredLives ensures these precious memories are kept alive—easily accessible for generations to come. Our mission is to honour the past, support the present, and inspire remembrance for the future.
