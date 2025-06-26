@@ -111,9 +111,9 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
         <TributesSection tributes={memorialData.tributes} />
         <StoriesSection stories={memorialData.stories} />
       </main>
-      <footer className="py-8 text-center text-muted-foreground border-t">
+      <footer className="py-8 text-center bg-primary text-primary-foreground/80">
         <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved.</p>
-        <p className="text-sm">Created with love and remembrance.</p>
+        <p className="text-sm mt-1">Created with love and remembrance.</p>
         {/* {memorialData.userId && (
           <div className="text-xs mt-4 space-y-1">
             <p>Owner UID: {memorialData.userId}</p>

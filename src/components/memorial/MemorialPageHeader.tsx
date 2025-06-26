@@ -28,7 +28,7 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
   };
 
   return (
-    <header className="relative py-12 bg-[rgb(40,45,60)] text-center border-b border-gray-700 shadow-sm">
+    <header className="relative py-12 bg-primary text-center border-b border-border shadow-sm">
       <div className="absolute top-4 left-4 z-10">
         <Link href="/admin">
           <Image
@@ -59,11 +59,11 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
           </div>
         )}
 
-        <p className="text-xl text-gray-300 font-body mt-3">
+        <p className="text-xl text-primary-foreground/80 font-body mt-3">
           {formatDate(birthDate)} &ndash; {formatDate(deathDate)}
         </p>
         {lifeSummary && (
-          <p className="mt-4 text-lg font-body text-gray-300 italic max-w-2xl mx-auto">
+          <p className="mt-4 text-lg font-body text-primary-foreground/80 italic max-w-2xl mx-auto">
             {lifeSummary}
           </p>
         )}
