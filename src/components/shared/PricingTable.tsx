@@ -32,7 +32,7 @@ const tiers = [
   },
   {
     name: 'ETERNAL',
-    icon: <><Heart className="h-6 w-6 text-red-400" /></>,
+    icon: <><Heart className="h-6 w-6 text-yellow-400" /></>,
     features: [
       'All features from LEGACY plan.',
       'Memorials are hosted and shareable for eternity.',
@@ -44,7 +44,7 @@ const tiers = [
 
 export function PricingTable() {
   return (
-    <section id="pricing-section" className="py-12 sm:py-16 bg-background">
+    <section id="pricing-section" className="py-12 sm:py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-headline text-foreground mb-2">Our Plans</h2>
