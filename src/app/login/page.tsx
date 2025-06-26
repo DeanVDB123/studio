@@ -7,11 +7,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
-import { Loader2, LogInIcon, Chrome } from 'lucide-react'; // Added Chrome for Google icon
+import { Loader2, Chrome } from 'lucide-react'; // Added Chrome for Google icon
 import { auth } from '@/lib/firebase';
 import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -83,9 +84,15 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="text-center">
-          <LogInIcon className="mx-auto h-12 w-12 text-primary mb-4" />
-          <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
+        <CardHeader className="text-center flex flex-col items-center">
+          <Image
+            src="/hlb.png"
+            alt="HonouredLives Logo"
+            width={120}
+            height={68}
+            className="mb-6"
+            data-ai-hint="logo company"
+          />
           <CardDescription>Log in to manage your memorial pages.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
