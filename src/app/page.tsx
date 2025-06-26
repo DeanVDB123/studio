@@ -158,7 +158,7 @@ export default function HomePage() {
               <h2 className="text-3xl font-headline text-foreground mb-2">Tell Their Story</h2>
               <p className="text-lg text-muted-foreground">A timeless way to honor and remember</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 md:items-start gap-8">
               <StoryCard
                 className="border-4 border-primary"
                 imageUrl="/techer.png"
