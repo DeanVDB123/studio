@@ -64,9 +64,6 @@ export default function HomePage() {
                 Scan the QR code at your loved one’s resting place to revisit their story, reflect on cherished memories, and keep their legacy close—wherever you are. Share their tribute with others, spark conversations, and ensure that their memory continues to inspire generations to come.
               </p>
             </div>
-            <Button asChild size="lg" className="mt-8">
-              <Link href="#steps-section">Learn How</Link>
-            </Button>
           </div>
         </section>
 
@@ -125,32 +122,32 @@ export default function HomePage() {
               <h2 className="text-3xl font-headline text-foreground mb-2">Why Choose HonouredLives</h2>
               <p className="text-lg text-muted-foreground">Experience a meaningful way to celebrate and remember.</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="flex flex-col border-4 border-secondary">
-                <CardHeader>
-                  <CardTitle className="font-headline text-xl">Personalized Tributes</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>Create unique profiles that reflect the life and legacy of your loved ones.</p>
-                </CardContent>
-              </Card>
-              <Card className="flex flex-col border-4 border-secondary">
-                <CardHeader>
-                  <CardTitle className="font-headline text-xl">Easy Sharing</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>Share memories easily through QR codes placed at resting places or online.</p>
-                </CardContent>
-              </Card>
-              <Card className="flex flex-col border-4 border-secondary">
-                <CardHeader>
-                  <CardTitle className="font-headline text-xl">Community Support</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>Connect with others who share your commitment to honoring heritage.</p>
-                </CardContent>
-              </Card>
-            </div>
+          </div>
+          <div className="grid md:grid-cols-3 border-y-4 border-secondary divide-y-4 md:divide-y-0 md:divide-x-4 divide-secondary">
+            <Card className="flex flex-col rounded-none border-0 shadow-none">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl">Personalized Tributes</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p>Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
+              </CardContent>
+            </Card>
+            <Card className="flex flex-col rounded-none border-0 shadow-none">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl">Easy Sharing</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p>Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
+              </CardContent>
+            </Card>
+            <Card className="flex flex-col rounded-none border-0 shadow-none">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl">Community Support</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p>You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
