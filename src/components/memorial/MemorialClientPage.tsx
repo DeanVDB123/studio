@@ -114,14 +114,14 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
       <footer className="py-8 text-center text-muted-foreground border-t">
         <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved.</p>
         <p className="text-sm">Created with love and remembrance.</p>
-        {memorialData.userId && (
+        {/* {memorialData.userId && (
           <div className="text-xs mt-4 space-y-1">
             <p>Owner UID: {memorialData.userId}</p>
             {memorialData.ownerStatus && (
               <p>Owner Status: <span className="font-semibold">{memorialData.ownerStatus}</span></p>
             )}
           </div>
-        )}
+        )} */}
       </footer>
     </div>
   );

@@ -30,7 +30,7 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
   return (
     <header className="relative py-12 bg-[rgb(40,45,60)] text-center border-b border-gray-700 shadow-sm">
       <div className="absolute top-4 left-4 z-10">
-        <Link href="/">
+        <Link href="/admin">
           <Image
             src="/hlb.png"
             alt="HonouredLives Logo"
