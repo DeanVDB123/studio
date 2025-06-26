@@ -160,10 +160,10 @@ export default function AdminDashboardPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memorials.map((memorial) => (
-            <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-4 pt-5 px-4 text-center flex flex-col items-center">
+            <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+              <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
                 {memorial.profilePhotoUrl && (
-                  <div className="w-20 h-24 mb-3 rounded-full overflow-hidden shadow-md border border-gray-200 dark:border-gray-700">
+                  <div className="w-20 h-24 mb-3 rounded-full overflow-hidden shadow-md border border-primary-foreground/50">
                     <Image
                       src={memorial.profilePhotoUrl}
                       alt={`Profile photo of ${memorial.deceasedName}`}
@@ -177,7 +177,7 @@ export default function AdminDashboardPage() {
                 <CardTitle className="font-headline text-xl leading-tight truncate w-full">
                   {memorial.deceasedName}
                 </CardTitle>
-                <p className="text-xs text-muted-foreground font-body">
+                <p className="text-xs text-primary-foreground/80 font-body">
                   {formatDateRange(memorial.birthDate, memorial.deathDate)}
                 </p>
               </CardHeader>
