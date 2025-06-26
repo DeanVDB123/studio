@@ -1,4 +1,5 @@
-import { Leaf, Sprout, TreeDeciduous, Candlestick } from 'lucide-react';
+
+import { Leaf, Sprout, TreeDeciduous, CandlestickChart } from 'lucide-react';
 import React from 'react';
 
 const tiers = [
@@ -31,7 +32,7 @@ const tiers = [
   },
   {
     name: 'ETERNAL',
-    icon: <><Candlestick className="h-6 w-6 text-gray-200" /><Candlestick className="h-6 w-6 text-gray-200" /></>,
+    icon: <><CandlestickChart className="h-6 w-6 text-gray-200" /><CandlestickChart className="h-6 w-6 text-gray-200" /></>,
     features: [
       'All features from LEGACY plan.',
       'Memorials are hosted and shareable for eternity.',
