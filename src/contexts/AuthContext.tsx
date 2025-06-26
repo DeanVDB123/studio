@@ -15,10 +15,11 @@ import {
   type AuthError,
 } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
-import { logSignupEvent } from '@/lib/data';
+import { logSignupEvent, getUserStatus } from '@/lib/data';
 
 interface AuthContextType {
   user: User | null;
+  userStatus: string | null;
   loading: boolean;
   error: AuthError | null;
   signUp: typeof createUserWithEmailAndPassword;
@@ -31,15 +32,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userStatus, setUserStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AuthError | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        const status = await getUserStatus(currentUser.uid);
+        setUserStatus(status);
+      } else {
+        setUserStatus(null);
+      }
       setLoading(false);
     }, (err) => {
       setError(err);
+      setUser(null);
+      setUserStatus(null);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -50,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await firebaseSignOut(auth);
       setUser(null); // Explicitly set user to null
+      setUserStatus(null);
       setError(null);
     } catch (err) {
       setError(err as AuthError);
@@ -125,7 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, signUp: signUpWithFeedback, logIn: logInWithFeedback, signInWithGoogle, logOut }}>
+    <AuthContext.Provider value={{ user, loading, error, userStatus, signUp: signUpWithFeedback, logIn: logInWithFeedback, signInWithGoogle, logOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 
 export function AdminHeader() {
-  const { user, logOut: contextLogOut, loading } = useAuth();
+  const { user, userStatus, logOut: contextLogOut, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -43,9 +44,17 @@ export function AdminHeader() {
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-auto px-2 rounded-full">
-                <UserCircle className="h-6 w-6 mr-2" />
+              <Button variant="ghost" className="relative h-auto px-2 flex items-center gap-2 rounded-full">
+                <UserCircle className="h-6 w-6" />
                 <span className="text-sm hidden sm:inline">{user.email}</span>
+                 {userStatus && (
+                  <Badge
+                    variant={userStatus.toUpperCase() === 'PAID' ? 'default' : 'secondary'}
+                    className="hidden sm:inline-flex"
+                  >
+                    {userStatus.toUpperCase()}
+                  </Badge>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -55,6 +64,13 @@ export function AdminHeader() {
                   <p className="text-xs leading-none text-muted-foreground">
                     {user.email}
                   </p>
+                  {userStatus && (
+                     <div className="flex items-center pt-2">
+                       <Badge variant={userStatus.toUpperCase() === 'PAID' ? 'default' : 'secondary'}>
+                         {userStatus.toUpperCase()}
+                       </Badge>
+                    </div>
+                  )}
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

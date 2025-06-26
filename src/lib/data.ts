@@ -9,6 +9,29 @@ import type { MemorialData, SignupEvent } from '@/lib/types';
 const memorialsCollection = collection(firestore, 'memorials');
 const signupsCollection = collection(firestore, 'signups');
 
+// Helper function to get status for a user
+async function fetchUserStatus(userId: string): Promise<string> {
+  if (!userId) {
+    console.warn(`[Firestore] fetchUserStatus called with no userId.`);
+    return 'FREE'; // Default status
+  }
+  const signupsQuery = query(signupsCollection, where("userId", "==", userId));
+  const signupSnapshot = await getDocs(signupsQuery);
+
+  if (!signupSnapshot.empty) {
+    const signupData = signupSnapshot.docs[0].data() as SignupEvent;
+    return signupData.status || 'FREE'; // Default to FREE if status field is missing
+  } else {
+    console.warn(`[Firestore] No signup record found for user ID: ${userId}, defaulting to FREE.`);
+    return 'FREE'; // Default to FREE if no signup record exists
+  }
+}
+
+export async function getUserStatus(userId: string): Promise<string> {
+    console.log(`[Firestore] getUserStatus called for user: ${userId}`);
+    return await fetchUserStatus(userId);
+}
+
 export async function getMemorialById(id: string): Promise<MemorialData | undefined> {
   console.log(`[Firestore] getMemorialById called for ID: ${id}`);
   const docRef = doc(memorialsCollection, id);
@@ -19,17 +42,8 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
 
     if (memorialData.userId) {
       console.log(`[Firestore] Found memorial owner UID: ${memorialData.userId}. Fetching status.`);
-      const signupsQuery = query(signupsCollection, where("userId", "==", memorialData.userId));
-      const signupSnapshot = await getDocs(signupsQuery);
-
-      if (!signupSnapshot.empty) {
-        const signupData = signupSnapshot.docs[0].data() as SignupEvent;
-        memorialData.ownerStatus = signupData.status || 'N/A';
-        console.log(`[Firestore] Found owner status: ${memorialData.ownerStatus}`);
-      } else {
-        console.warn(`[Firestore] No signup record found for user ID: ${memorialData.userId}`);
-        memorialData.ownerStatus = 'Unknown';
-      }
+      memorialData.ownerStatus = await fetchUserStatus(memorialData.userId);
+      console.log(`[Firestore] Found owner status: ${memorialData.ownerStatus}`);
     }
 
     return memorialData;
