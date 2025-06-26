@@ -36,11 +36,11 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
       <CardHeader className="text-center items-center bg-primary text-primary-foreground">
         <CardTitle className="font-headline text-lg h-14 flex items-center justify-center">{name}</CardTitle>
         <p className="text-sm text-primary-foreground/80">{timeline}</p>
-        <div className="pt-2">
+      </CardHeader>
+      <CardContent className="flex-grow flex flex-col pt-4 px-4 pb-4">
+        <div className="flex justify-center pb-4">
           <QRCodeDisplay url={qrCodeUrl} size={100} />
         </div>
-      </CardHeader>
-      <CardContent className="flex-grow flex flex-col">
         <div className={cn("relative", !isExpanded ? "h-24 overflow-hidden" : "h-auto")}>
           <p className={cn("text-foreground/90 transition-all duration-300")}>
             {story}
