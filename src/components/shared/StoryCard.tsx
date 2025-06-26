@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -24,14 +23,15 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
 
   return (
     <Card className={cn("flex flex-col overflow-hidden", className)}>
-      <Image
-        src={imageUrl}
-        alt={imageAlt}
-        width={300}
-        height={300}
-        className="w-full h-[300px] object-cover"
-        data-ai-hint={imageHint}
-      />
+      <div className="relative w-full aspect-square">
+        <Image
+          src={imageUrl}
+          alt={imageAlt}
+          fill
+          className="object-cover"
+          data-ai-hint={imageHint}
+        />
+      </div>
       <CardHeader className="text-center items-center">
         <CardTitle className="font-headline text-lg">{name}</CardTitle>
         <p className="text-sm text-muted-foreground">{timeline}</p>
