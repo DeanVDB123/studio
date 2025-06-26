@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -31,8 +30,8 @@ export function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom-10 duration-500">
-      <Card className="max-w-2xl mx-auto shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom-10 duration-500">
+      <Card className="rounded-none border-l-0 border-r-0 border-b-0 shadow-lg">
         <CardHeader>
           <CardTitle>We Value Your Privacy</CardTitle>
         </CardHeader>
