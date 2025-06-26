@@ -59,6 +59,7 @@ export default function HomePage() {
               />
             </div>
             <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-xl border-4 border-primary">
+            <h2 className="text-3xl font-headline text-card-foreground mb-4">Our goal</h2>
               <p className="text-lg text-card-foreground mb-4">
                 Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.
               </p>

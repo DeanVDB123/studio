@@ -35,7 +35,7 @@ type UserMemorial = {
 export const dynamic = 'force-dynamic';
 
 export default function AdminDashboardPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, userStatus } = useAuth();
   const [memorials, setMemorials] = useState<UserMemorial[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const router = useRouter(); 
@@ -222,6 +222,16 @@ export default function AdminDashboardPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {userStatus === 'FREE' && (
+        <div className="flex justify-center pt-6 mt-6 border-t">
+          <Button asChild size="lg">
+              <Link href="/#pricing-section">
+                  Upgrade Now to Share!
+              </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
