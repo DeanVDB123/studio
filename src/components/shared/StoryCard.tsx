@@ -23,13 +23,13 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card className={cn("flex flex-col", className)}>
+    <Card className={cn("flex flex-col overflow-hidden", className)}>
       <Image
         src={imageUrl}
         alt={imageAlt}
         width={300}
         height={300}
-        className="w-full h-[300px] object-cover rounded-t-lg"
+        className="w-full h-[300px] object-cover"
         data-ai-hint={imageHint}
       />
       <CardHeader className="text-center items-center">
