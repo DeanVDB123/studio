@@ -33,9 +33,9 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
           data-ai-hint={imageHint}
         />
       </div>
-      <CardHeader className="text-center items-center">
+      <CardHeader className="text-center items-center bg-primary text-primary-foreground">
         <CardTitle className="font-headline text-lg h-14 flex items-center justify-center">{name}</CardTitle>
-        <p className="text-sm text-muted-foreground">{timeline}</p>
+        <p className="text-sm text-primary-foreground/80">{timeline}</p>
         <div className="pt-2">
           <QRCodeDisplay url={qrCodeUrl} size={100} />
         </div>
