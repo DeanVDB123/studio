@@ -164,50 +164,53 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="flex flex-col">
                 <Image
-                  src="/teacher.jpg"
+                  src="/techer.png"
                   alt="Illustrative image for Emily Grace Taylor's story"
                   width={300}
                   height={200}
-                       className="w-[300px] h-[200px] object-cover rounded-t-lg"
+                       className="w-[300px] h-[300px] object-cover rounded-t-lg"
                   data-ai-hint="teacher classroom"
                 />
                 <CardHeader>
                   <CardTitle className="font-headline text-lg">Emily Grace Taylor – Beloved Teacher</CardTitle>
+                  <p className="text-sm text-muted-foreground">1965 - 2022</p>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>A beloved teacher whose passion for learning lit up every classroom. Her compassion and warmth continue to inspire generations.</p>
+                  <p>A beloved teacher whose passion for learning lit up every classroom, Emily Grace Taylor was a beacon of light and knowledge to all who knew her. From her earliest days, Emily was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Emily believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations.</p>
                 </CardContent>
               </Card>
               <Card className="flex flex-col">
                 <Image
-                  src="/oldman.avif"
+                  src="/james.png"
                   alt="Illustrative image for James Okoro's story"
                   width={300}
                   height={200}
-                       className="w-[300px] h-[200px] object-cover rounded-t-lg"
+                       className="w-[300px] h-[300px] object-cover rounded-t-lg"
                   data-ai-hint="community volunteer"
                 />
                 <CardHeader>
                   <CardTitle className="font-headline text-lg">James "Jimmy" Okoro – Community Hero</CardTitle>
+                  <p className="text-sm text-muted-foreground">1958 - 2023</p>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others.</p>
+                  <p>A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others. Known for his warm heart and unwavering commitment to helping those in need, he devoted his time to uplifting his community through volunteer work, mentorship, and quiet acts of kindness. Whether organizing local events or offering a listening ear, Jimmy made everyone feel seen, heard, and valued. His legacy lives on in the countless lives he impacted and the enduring spirit of compassion he leaves behind.</p>                      
                 </CardContent>
               </Card>
               <Card className="flex flex-col">
                 <Image
-                  src="/mother.webp"
+                  src="/mother.png"
                   alt="Illustrative image for Nokuthula Maseko's story"
                   width={300}
                   height={200}
-                       className="w-[300px] h-[200px] object-cover rounded-t-lg"
+                       className="w-[300px] h-[300px] object-cover rounded-t-lg"
                   data-ai-hint="storyteller elder"
                 />
                 <CardHeader>
                   <CardTitle className="font-headline text-lg">Nokuthula Maseko – Resilient Storyteller</CardTitle>
+                  <p className="text-sm text-muted-foreground">1940 - 2021</p>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>A mother, storyteller, and beacon of resilience—her words and wisdom live on through the lives she touched in her village and beyond.</p>
+                  <p>A mother, storyteller, and beacon of resilience, Nokuthula Maseko carried the soul of her people in every word she spoke. Born and raised in a small village, she grew into a woman who faced hardship with quiet strength and unwavering dignity. Her gift for storytelling was not just an art—it was a lifeline, a way to preserve culture, pass on wisdom, and bring comfort during times of struggle. Whether seated by a fire under the stars or gathered with children in the shade of an acacia tree, Nokuthula wove tales that nurtured, healed, and empowered. Her stories live on in the hearts of those she touched, and her voice echoes in every lesson she left behind.</p>
                 </CardContent>
               </Card>
             </div>
