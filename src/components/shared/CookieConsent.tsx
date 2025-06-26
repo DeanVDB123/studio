@@ -20,18 +20,23 @@ export function CookieConsent() {
     }
   }, []);
 
-  const handleConsent = () => {
+  const handleAccept = () => {
     localStorage.setItem('cookie_consent', 'given');
     setShowConsent(false);
   };
   
+  const handleDecline = () => {
+    localStorage.setItem('cookie_consent', 'declined');
+    setShowConsent(false);
+  };
+
   if (!showConsent) {
     return null;
   }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom-10 duration-500">
-      <Card className="rounded-none border-l-0 border-r-0 border-b-0 shadow-lg">
+      <Card className="rounded-none border-t border-b-0 border-l-0 border-r-0 shadow-lg">
         <CardHeader>
           <CardTitle>We Value Your Privacy</CardTitle>
         </CardHeader>
@@ -47,7 +52,8 @@ export function CookieConsent() {
           </p>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-          <Button onClick={handleConsent}>Accept</Button>
+          <Button onClick={handleDecline} variant="outline">Decline</Button>
+          <Button onClick={handleAccept}>Accept</Button>
         </CardFooter>
       </Card>
     </div>
