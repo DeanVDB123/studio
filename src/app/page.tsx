@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StoryCard } from '@/components/shared/StoryCard';
+import { PricingTable } from '@/components/shared/PricingTable';
 
 export const metadata: Metadata = {
   title: 'HonouredLives',
@@ -34,6 +35,7 @@ export default function HomePage() {
               <li><Link href="#steps-section" className="hover:text-secondary transition-colors">How It Works</Link></li>
               <li><Link href="#why-choose-section" className="hover:text-secondary transition-colors">Why Us</Link></li>
               <li><Link href="#stories-section" className="hover:text-secondary transition-colors">Stories</Link></li>
+              <li><Link href="#pricing-section" className="hover:text-secondary transition-colors">Pricing</Link></li>
               <li><Link href="/login" className="hover:text-secondary transition-colors">Try it</Link></li>
             </ul>
           </nav>
@@ -192,6 +194,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <PricingTable />
 
         {/* Join Us Today Section */}
         <section className="py-16 sm:py-20 text-center">
