@@ -9,15 +9,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
-import { Loader2, Chrome } from 'lucide-react'; // Added Chrome for Google icon
+import { Loader2, Chrome } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const { signUp, signInWithGoogle, loading: authLoading, error: authError, user } = useAuth();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
@@ -39,10 +41,17 @@ export default function SignupPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFormError(null);
+
+    if (!agreedToTerms) {
+      setFormError("You must agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setFormError("Passwords don't match.");
       return;
     }
+    
     try {
       await signUp(auth, email, password);
       router.push('/admin');
@@ -71,6 +80,10 @@ export default function SignupPage() {
 
   const handleGoogleSignUp = async () => {
     setFormError(null);
+    if (!agreedToTerms) {
+      setFormError("You must agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
     try {
       await signInWithGoogle();
       // User state change will trigger useEffect to redirect
@@ -137,9 +150,31 @@ export default function SignupPage() {
                 required
               />
             </div>
+
+            <div className="flex items-start space-x-3">
+              <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="terms"
+                  className="text-sm font-normal text-muted-foreground"
+                >
+                  I agree to the{' '}
+                  <Link href="/terms" target="_blank" className="underline text-primary hover:text-primary/80">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" target="_blank" className="underline text-primary hover:text-primary/80">
+                    Privacy Policy
+                  </Link>
+                  .
+                </label>
+              </div>
+            </div>
+
             {formError && <p className="text-sm text-destructive text-center">{formError}</p>}
             {authError && !formError && <p className="text-sm text-destructive text-center">{authError.message}</p>}
-            <Button type="submit" className="w-full" disabled={authLoading}>
+
+            <Button type="submit" className="w-full" disabled={authLoading || !agreedToTerms}>
               {authLoading && !user ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Sign Up
             </Button>
@@ -154,7 +189,7 @@ export default function SignupPage() {
               </span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={authLoading}>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={authLoading || !agreedToTerms}>
             {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
             Sign up with Google
           </Button>
