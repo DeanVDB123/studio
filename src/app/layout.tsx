@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/contexts/AuthContext';
+import { CookieConsent } from '@/components/shared/CookieConsent';
 
 export const metadata: Metadata = {
   title: 'HonouredLives',
@@ -27,6 +28,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Toaster />
+          <CookieConsent />
         </AuthProvider>
       </body>
     </html>

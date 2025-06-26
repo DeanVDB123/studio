@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
 
             <div className="text-center pt-4 border-t mt-8">
               <Button asChild>
-                <Link href="/">Return to Home</Link>
+                <Link href="/signup">Return to sing up</Link>
               </Button>
             </div>
           </CardContent>
