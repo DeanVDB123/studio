@@ -4,7 +4,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
+import { StoryCard } from '@/components/shared/StoryCard';
 
 export const metadata: Metadata = {
   title: 'HonouredLives',
@@ -163,66 +163,33 @@ export default function HomePage() {
               <p className="text-lg text-muted-foreground">A timeless way to honor and remember</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="flex flex-col">
-                <Image
-                  src="/techer.png"
-                  alt="Illustrative image for Emily Grace Taylor's story"
-                  width={300}
-                  height={200}
-                       className="w-[300px] h-[300px] object-cover rounded-t-lg"
-                  data-ai-hint="teacher classroom"
-                />
-                <CardHeader className="text-center items-center">
-                  <CardTitle className="font-headline text-lg">Emily Grace Taylor – Beloved Teacher</CardTitle>
-                  <p className="text-sm text-muted-foreground">12 Mar 1992 – 19 Nov 2024</p>
-                  <div className="pt-2">
-                    <QRCodeDisplay url="/memorial/emily-grace-taylor-example" size={100} />
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>A beloved teacher whose passion for learning lit up every classroom, Emily Grace Taylor was a beacon of light and knowledge to all who knew her. From her earliest days, Emily was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Emily believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations.</p>
-                </CardContent>
-              </Card>
-              <Card className="flex flex-col">
-                <Image
-                  src="/james.png"
-                  alt="Illustrative image for James Okoro's story"
-                  width={300}
-                  height={200}
-                       className="w-[300px] h-[300px] object-cover rounded-t-lg"
-                  data-ai-hint="community volunteer"
-                />
-                <CardHeader className="text-center items-center">
-                  <CardTitle className="font-headline text-lg">James "Jimmy" Okoro – Community Hero</CardTitle>
-                  <p className="text-sm text-muted-foreground">17 Mar 1960 – 07 Aug 2020</p>
-                   <div className="pt-2">
-                    <QRCodeDisplay url="/memorial/james-okoro-example" size={100} />
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others. Known for his warm heart and unwavering commitment to helping those in need, he devoted his time to uplifting his community through volunteer work, mentorship, and quiet acts of kindness. Whether organizing local events or offering a listening ear, Jimmy made everyone feel seen, heard, and valued. His legacy lives on in the countless lives he impacted and the enduring spirit of compassion he leaves behind.</p>                      
-                </CardContent>
-              </Card>
-              <Card className="flex flex-col">
-                <Image
-                  src="/mother.png"
-                  alt="Illustrative image for Nokuthula Maseko's story"
-                  width={300}
-                  height={200}
-                       className="w-[300px] h-[300px] object-cover rounded-t-lg"
-                  data-ai-hint="storyteller elder"
-                />
-                <CardHeader className="text-center items-center">
-                  <CardTitle className="font-headline text-lg">Nokuthula Maseko – Resilient Storyteller</CardTitle>
-                  <p className="text-sm text-muted-foreground">04 Oct 1971 – 18 Feb 2024</p>
-                   <div className="pt-2">
-                    <QRCodeDisplay url="/memorial/nokuthula-maseko-example" size={100} />
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>A mother, storyteller, and beacon of resilience, Nokuthula Maseko carried the soul of her people in every word she spoke. Born and raised in a small village, she grew into a woman who faced hardship with quiet strength and unwavering dignity. Her gift for storytelling was not just an art—it was a lifeline, a way to preserve culture, pass on wisdom, and bring comfort during times of struggle. Whether seated by a fire under the stars or gathered with children in the shade of an acacia tree, Nokuthula wove tales that nurtured, healed, and empowered. Her stories live on in the hearts of those she touched, and her voice echoes in every lesson she left behind.</p>
-                </CardContent>
-              </Card>
+              <StoryCard
+                imageUrl="/techer.png"
+                imageAlt="Illustrative image for Emily Grace Taylor's story"
+                imageHint="teacher classroom"
+                name="Emily Grace Taylor – Beloved Teacher"
+                timeline="12 Mar 1992 – 19 Nov 2024"
+                qrCodeUrl="https://studio--forevermark-ft522.us-central1.hosted.app/memorial/3670b18f-b965-4d3f-a13e-50a3299f6da5"
+                story="A beloved teacher whose passion for learning lit up every classroom, Emily Grace Taylor was a beacon of light and knowledge to all who knew her. From her earliest days, Emily was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Emily believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations."
+              />
+              <StoryCard
+                imageUrl="/james.png"
+                imageAlt="Illustrative image for James Okoro's story"
+                imageHint="community volunteer"
+                name='James "Jimmy" Okoro – Community Hero'
+                timeline="17 Mar 1960 – 07 Aug 2020"
+                qrCodeUrl="https://studio--forevermark-ft522.us-central1.hosted.app/memorial/dcf677d0-f689-4485-8849-e63dcf550c1d"
+                story="A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others. Known for his warm heart and unwavering commitment to helping those in need, he devoted his time to uplifting his community through volunteer work, mentorship, and quiet acts of kindness. Whether organizing local events or offering a listening ear, Jimmy made everyone feel seen, heard, and valued. His legacy lives on in the countless lives he impacted and the enduring spirit of compassion he leaves behind."
+              />
+              <StoryCard
+                imageUrl="/mother.png"
+                imageAlt="Illustrative image for Nokuthula Maseko's story"
+                imageHint="storyteller elder"
+                name="Nokuthula Maseko – Resilient Storyteller"
+                timeline="04 Oct 1971 – 18 Feb 2024"
+                qrCodeUrl="https://studio--forevermark-ft522.us-central1.hosted.app/memorial/4f38044b-495b-4e80-a8e3-b894c7516382"
+                story="A mother, storyteller, and beacon of resilience, Nokuthula Maseko carried the soul of her people in every word she spoke. Born and raised in a small village, she grew into a woman who faced hardship with quiet strength and unwavering dignity. Her gift for storytelling was not just an art—it was a lifeline, a way to preserve culture, pass on wisdom, and bring comfort during times of struggle. Whether seated by a fire under the stars or gathered with children in the shade of an acacia tree, Nokuthula wove tales that nurtured, healed, and empowered. Her stories live on in the hearts of those she touched, and her voice echoes in every lesson she left behind."
+              />
             </div>
           </div>
         </section>
