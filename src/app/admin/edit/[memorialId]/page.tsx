@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Loader2 } from 'lucide-react'; // Removed Globe, Link2
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState, use } from 'react'; // Added 'use'
+import { useEffect, useState } from 'react'; // Removed 'use'
 import type { MemorialData } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -23,9 +23,7 @@ interface EditMemorialPageProps {
 }
 
 export default function EditMemorialPage({ params }: EditMemorialPageProps) {
-  // Use React.use to unwrap the params Promise
-  const resolvedParams = use(params);
-  const { memorialId } = resolvedParams; // Destructure from the resolved object
+  const { memorialId } = params; // Destructure directly from props
 
   const [memorialData, setMemorialData] = useState<MemorialData | null | undefined>(undefined); // undefined for loading, null for not found
   const [isLoading, setIsLoading] = useState(true);

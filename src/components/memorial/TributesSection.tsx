@@ -20,7 +20,7 @@ export function TributesSection({ tributes }: TributesSectionProps) {
       <CardContent className="pt-6 space-y-4">
         {tributes.map((tribute, index) => (
           <blockquote key={index} className="p-4 border-l-4 border-primary bg-primary/5 rounded-r-md shadow-sm">
-            <p className="italic text-foreground/80 font-body leading-relaxed">&ldquo;{tribute}&rdquo;</p>
+            <p className="italic text-foreground/80 font-body leading-relaxed" dangerouslySetInnerHTML={{ __html: `&ldquo;${tribute.replace(/\n/g, '<br />')}&rdquo;` }} />
           </blockquote>
         ))}
       </CardContent>

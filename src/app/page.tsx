@@ -168,7 +168,7 @@ export default function HomePage() {
                   alt="Illustrative image for Emily Grace Taylor's story"
                   width={300}
                   height={200}
-                  className="w-full h-auto object-cover rounded-t-lg"
+                       className="w-[300px] h-[200px] object-cover rounded-t-lg"
                   data-ai-hint="teacher classroom"
                 />
                 <CardHeader>
@@ -184,7 +184,7 @@ export default function HomePage() {
                   alt="Illustrative image for James Okoro's story"
                   width={300}
                   height={200}
-                  className="w-full h-auto object-cover rounded-t-lg"
+                       className="w-[300px] h-[200px] object-cover rounded-t-lg"
                   data-ai-hint="community volunteer"
                 />
                 <CardHeader>
@@ -200,7 +200,7 @@ export default function HomePage() {
                   alt="Illustrative image for Nokuthula Maseko's story"
                   width={300}
                   height={200}
-                  className="w-full h-auto object-cover rounded-t-lg"
+                       className="w-[300px] h-[200px] object-cover rounded-t-lg"
                   data-ai-hint="storyteller elder"
                 />
                 <CardHeader>

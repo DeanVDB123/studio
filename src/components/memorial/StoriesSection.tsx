@@ -20,7 +20,7 @@ export function StoriesSection({ stories }: StoriesSectionProps) {
       <CardContent className="pt-6 space-y-4">
         {stories.map((story, index) => (
           <div key={index} className="p-4 border border-border rounded-md bg-background shadow-sm">
-            <p className="text-foreground/90 font-body leading-relaxed">{story.replace(/\n/g, '<br />')}</p>
+            <p className="text-foreground/90 font-body leading-relaxed" dangerouslySetInnerHTML={{ __html: story.replace(/\n/g, '<br />') }} />
           </div>
         ))}
       </CardContent>
