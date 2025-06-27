@@ -24,16 +24,16 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
 
   return (
     <Card className={cn("flex flex-col overflow-hidden", className)}>
-      <div className="relative w-1/2 aspect-square mx-auto mt-6">
-        <Image
-          src={imageUrl}
-          alt={imageAlt}
-          fill
-          className="object-cover rounded-lg"
-          data-ai-hint={imageHint}
-        />
-      </div>
       <CardHeader className="text-center items-center bg-primary text-primary-foreground">
+        <div className="relative w-1/4 aspect-square mx-auto mb-4">
+          <Image
+            src={imageUrl}
+            alt={imageAlt}
+            fill
+            className="object-cover rounded-lg"
+            data-ai-hint={imageHint}
+          />
+        </div>
         <CardTitle className="font-headline text-lg h-14 flex items-center justify-center">{name}</CardTitle>
         <p className="text-sm text-primary-foreground/80">{timeline}</p>
       </CardHeader>
