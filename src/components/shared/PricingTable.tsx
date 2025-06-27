@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 const tiers = [
   {
     name: 'FREE',
+    price: 'Free',
     icon: <><Leaf className="h-6 w-6 text-green-400" /></>,
     features: [
       'Unlimited memorials.',
@@ -14,6 +15,8 @@ const tiers = [
   },
   {
     name: 'ESSENCE',
+    price: 'R 999',
+    priceDescription: 'Once-off',
     icon: <Sprout className="h-6 w-6 text-green-400" />,
     features: [
       'Unlimited memorials.',
@@ -23,6 +26,8 @@ const tiers = [
   },
   {
     name: 'LEGACY',
+    price: 'R 1,499',
+    priceDescription: 'Once-off',
     icon: <TreeDeciduous className="h-6 w-6 text-green-400" />,
     features: [
       'All features from ESSENCE plan.',
@@ -33,6 +38,8 @@ const tiers = [
   },
   {
     name: 'ETERNAL',
+    price: 'R 2,999',
+    priceDescription: 'Once-off',
     icon: <><Heart className="h-6 w-6 text-yellow-400" /></>,
     features: [
       'All features from LEGACY plan.',
@@ -59,6 +66,10 @@ export function PricingTable() {
                   {tier.icon}
                   <h3 className="text-2xl font-headline tracking-wider">{tier.name}</h3>
                 </div>
+              </div>
+              <div className="bg-secondary text-secondary-foreground p-4 text-center">
+                <p className="text-2xl font-bold font-headline">{tier.price}</p>
+                {tier.priceDescription && <p className="text-xs uppercase tracking-widest">{tier.priceDescription}</p>}
               </div>
               <div className="p-6 bg-card flex-grow flex flex-col">
                 <ul className="space-y-4 list-disc pl-5 text-card-foreground/90 flex-grow">
