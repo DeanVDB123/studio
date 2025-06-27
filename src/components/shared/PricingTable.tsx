@@ -68,15 +68,19 @@ export function PricingTable() {
                     </li>
                   ))}
                 </ul>
-                {tier.name !== 'FREE' && (
-                  <div className="mt-6 text-center">
+                <div className="mt-6 text-center">
+                  {tier.name === 'FREE' ? (
+                    <Button variant="outline" className="w-full" disabled>
+                      Free
+                    </Button>
+                  ) : (
                     <Button asChild variant="outline" className="w-full">
                       <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the ${tier.name} plan`}>
                         Contact us
                       </a>
                     </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           ))}
