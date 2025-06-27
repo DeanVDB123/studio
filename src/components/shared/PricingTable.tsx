@@ -1,12 +1,12 @@
 
-import { Leaf, Sprout, TreeDeciduous, Heart } from 'lucide-react';
+import { Leaf, Sprout, TreeDeciduous, Heart, Check } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
 const tiers = [
   {
     name: 'FREE',
-    price: 'Free',
+    price: 'FREEMIUM',
     icon: <><Leaf className="h-6 w-6 text-green-400" /></>,
     features: [
       'Unlimited memorials.',
@@ -15,7 +15,7 @@ const tiers = [
   },
   {
     name: 'ESSENCE',
-    price: 'R 999',
+    price: 'R 2,999',
     priceDescription: 'Once-off',
     icon: <Sprout className="h-6 w-6 text-green-400" />,
     features: [
@@ -26,7 +26,7 @@ const tiers = [
   },
   {
     name: 'LEGACY',
-    price: 'R 1,499',
+    price: 'R 4,999',
     priceDescription: 'Once-off',
     icon: <TreeDeciduous className="h-6 w-6 text-green-400" />,
     features: [
@@ -38,7 +38,7 @@ const tiers = [
   },
   {
     name: 'ETERNAL',
-    price: 'R 2,999',
+    price: 'R 11,999',
     priceDescription: 'Once-off',
     icon: <><Heart className="h-6 w-6 text-yellow-400" /></>,
     features: [
@@ -74,10 +74,11 @@ export function PricingTable() {
                 </div>
               </div>
               <div className="p-6 bg-card flex-grow flex flex-col">
-                <ul className="space-y-4 list-disc pl-5 text-card-foreground/90 flex-grow">
+                <ul className="space-y-4 text-card-foreground/90 flex-grow">
                   {tier.features.map((feature, i) => (
-                    <li key={i} className="pl-2">
-                      {feature}
+                    <li key={i} className="flex items-start">
+                      <Check className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
