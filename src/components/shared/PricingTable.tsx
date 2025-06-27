@@ -52,7 +52,7 @@ const tiers = [
 
 export function PricingTable() {
   return (
-    <section id="pricing-section" className="py-12 sm:py-16">
+    <section id="pricing-section" className="py-12 sm:py-16 bg-card border-y">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-headline text-foreground mb-2">Our Plans</h2>
@@ -74,10 +74,9 @@ export function PricingTable() {
                 </div>
               </div>
               <div className="p-6 bg-card flex-grow flex flex-col">
-                <ul className="space-y-4 text-card-foreground/90 flex-grow">
+                <ul className="space-y-4 text-card-foreground/90 flex-grow text-center">
                   {tier.features.map((feature, i) => (
-                    <li key={i} className="flex items-start">
-                      <Check className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                    <li key={i}>
                       <span>{feature}</span>
                     </li>
                   ))}

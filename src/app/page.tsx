@@ -73,7 +73,7 @@ export default function HomePage() {
         </section>
 
         {/* About HonouredLives Section */}
-        <section id="about-section" className="bg-card py-20 sm:py-24 border-y">
+        <section id="about-section" className="bg-background py-20 sm:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-headline text-foreground mb-4">About HonouredLives</h2>
@@ -213,7 +213,7 @@ export default function HomePage() {
         <PricingTable />
 
         {/* Join Us Today Section */}
-        <section className="py-16 sm:py-20 text-center">
+        <section className="py-16 sm:py-20 text-center bg-background">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-headline text-primary mb-3">Join Us Today</h2>
             <p className="text-lg text-foreground/80 mb-8 max-w-xl mx-auto">
