@@ -48,7 +48,7 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="grid grid-cols-1 md:grid-cols-3 w-full">
           {/* Text Content Block */}
-          <div className="md:col-span-1 bg-card text-foreground flex items-center justify-center p-8 sm:p-12 lg:p-16 order-2 md:order-1">
+          <div className="md:col-span-1 bg-background text-foreground flex items-center justify-center p-8 sm:p-12 lg:p-16 order-2 md:order-1">
             <div className="max-w-md text-left">
               <h2 className="text-4xl font-headline text-primary mb-4">Our Goal</h2>
               <p className="text-lg text-card-foreground mb-4">
@@ -73,7 +73,7 @@ export default function HomePage() {
         </section>
 
         {/* About HonouredLives Section */}
-        <section id="about-section" className="bg-background py-20 sm:py-24">
+        <section id="about-section" className="bg-card py-20 sm:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-headline text-foreground mb-4">About HonouredLives</h2>
