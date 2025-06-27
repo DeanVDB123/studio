@@ -141,21 +141,21 @@ export default function HomePage() {
                   <Sparkles className="h-8 w-8 text-secondary-foreground" />
                 </div>
                 <h3 className="font-headline text-xl mb-2">Personalized Tributes</h3>
-                <p className="text-muted-foreground text-justify">Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
+                <p className="text-muted-foreground">Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
               </div>
               <div className="flex flex-col items-center text-center p-4">
                 <div className="bg-secondary/20 p-4 rounded-full mb-4">
                   <QrCode className="h-8 w-8 text-secondary-foreground" />
                 </div>
                 <h3 className="font-headline text-xl mb-2">Easy Sharing</h3>
-                <p className="text-muted-foreground text-justify">Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
+                <p className="text-muted-foreground">Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
               </div>
               <div className="flex flex-col items-center text-center p-4">
                 <div className="bg-secondary/20 p-4 rounded-full mb-4">
                   <Users className="h-8 w-8 text-secondary-foreground" />
                 </div>
                 <h3 className="font-headline text-xl mb-2">Community Support</h3>
-                <p className="text-muted-foreground text-justify">You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
+                <p className="text-muted-foreground">You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
               </div>
             </div>
           </div>
