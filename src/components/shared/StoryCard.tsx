@@ -24,12 +24,12 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
 
   return (
     <Card className={cn("flex flex-col overflow-hidden", className)}>
-      <div className="relative w-full aspect-square">
+      <div className="relative w-1/2 aspect-square mx-auto mt-6">
         <Image
           src={imageUrl}
           alt={imageAlt}
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
           data-ai-hint={imageHint}
         />
       </div>
