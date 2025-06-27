@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StoryCard } from '@/components/shared/StoryCard';
 import { PricingTable } from '@/components/shared/PricingTable';
+import { UserPlus, FilePenLine, Share2, Sparkles, QrCode, Users } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'HonouredLives',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-primary/20 to-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="bg-logo-background text-white py-5 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
@@ -45,7 +46,7 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="py-16 sm:py-24 text-center">
+        <section className="bg-background py-16 sm:py-24 text-center">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto mb-8">
               <Image
@@ -58,12 +59,12 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-xl border-4 border-primary">
-            <h2 className="text-3xl font-headline text-card-foreground mb-4">Our goal</h2>
+            <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-xl border border-primary/20">
+              <h2 className="text-4xl font-headline text-primary mb-4">Our Goal</h2>
               <p className="text-lg text-card-foreground mb-4">
                 Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.
               </p>
-              <p className="text-md text-card-foreground/90">
+              <p className="text-md text-muted-foreground">
                 Scan the QR code at your loved one’s resting place to revisit their story, reflect on cherished memories, and keep their legacy close—wherever you are. Share their tribute with others, spark conversations, and ensure that their memory continues to inspire generations to come.
               </p>
             </div>
@@ -71,46 +72,55 @@ export default function HomePage() {
         </section>
 
         {/* About HonouredLives Section */}
-        <section id="about-section" className="py-12 sm:py-16">
+        <section id="about-section" className="bg-card py-20 sm:py-24 border-y">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center bg-card p-8 rounded-lg shadow-md border-4 border-secondary">
-              <h2 className="text-3xl font-headline text-card-foreground mb-4">About HonouredLives</h2>
-              <p className="text-lg text-card-foreground/90">
-              HonouredLives is a compassionate digital platform devoted to helping people preserve cherished memories and celebrate the legacies of their loved ones. We believe every life deserves to be remembered with dignity and meaning. Through innovative memorial pages, multimedia storytelling, and user-friendly tools, we make it simple to create heartfelt tributes that endure. Whether you're sharing a life story, photos, messages, or milestones, HonouredLives ensures these precious memories are kept alive—easily accessible for generations to come. Our mission is to honour the past, support the present, and inspire remembrance for the future.
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl font-headline text-foreground mb-4">About HonouredLives</h2>
+              <p className="text-lg text-muted-foreground">
+                HonouredLives is a compassionate digital platform devoted to helping people preserve cherished memories and celebrate the legacies of their loved ones. We believe every life deserves to be remembered with dignity and meaning. Through innovative memorial pages, multimedia storytelling, and user-friendly tools, we make it simple to create heartfelt tributes that endure. Whether you're sharing a life story, photos, messages, or milestones, HonouredLives ensures these precious memories are kept alive—easily accessible for generations to come. Our mission is to honour the past, support the present, and inspire remembrance for the future.
               </p>
             </div>
           </div>
         </section>
 
         {/* Create a Memorial in 3 Simple Steps Section */}
-        <section id="steps-section" className="py-12 sm:py-16">
+        <section id="steps-section" className="py-16 sm:py-20 bg-background">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
+            <div className="text-center mb-12">
               <h2 className="text-3xl font-headline text-foreground mb-2">Create a Memorial in 3 Simple Steps</h2>
               <p className="text-lg text-muted-foreground">An easy way to honour and preserve a loved one.</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="flex flex-col border-4 border-primary">
-                <CardHeader>
-                  <CardTitle className="font-headline text-xl">Step 1</CardTitle>
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <Card className="flex flex-col items-center p-6 bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
+                 <CardHeader className="p-0 mb-4">
+                   <div className="bg-primary/10 p-4 rounded-full">
+                       <UserPlus className="h-8 w-8 text-primary" />
+                   </div>
                 </CardHeader>
-                <CardContent className="flex-grow">
+                <CardTitle className="font-headline text-xl mb-2">Step 1</CardTitle>
+                <CardContent className="p-0 flex-grow text-muted-foreground">
                   <p>Sign in and create a profile to begin.</p>
                 </CardContent>
               </Card>
-              <Card className="flex flex-col border-4 border-primary">
-                <CardHeader>
-                  <CardTitle className="font-headline text-xl">Step 2</CardTitle>
+              <Card className="flex flex-col items-center p-6 bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
+                 <CardHeader className="p-0 mb-4">
+                   <div className="bg-primary/10 p-4 rounded-full">
+                       <FilePenLine className="h-8 w-8 text-primary" />
+                   </div>
                 </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>Creat a new memorial, effortlessly enter their details, upload photos, memories, and meaningful stories.</p>
+                <CardTitle className="font-headline text-xl mb-2">Step 2</CardTitle>
+                <CardContent className="p-0 flex-grow text-muted-foreground">
+                  <p>Create a new memorial, enter details, and upload photos, memories, and meaningful stories.</p>
                 </CardContent>
               </Card>
-              <Card className="flex flex-col border-4 border-primary">
-                <CardHeader>
-                  <CardTitle className="font-headline text-xl">Step 3</CardTitle>
+              <Card className="flex flex-col items-center p-6 bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardHeader className="p-0 mb-4">
+                   <div className="bg-primary/10 p-4 rounded-full">
+                       <Share2 className="h-8 w-8 text-primary" />
+                   </div>
                 </CardHeader>
-                <CardContent className="flex-grow">
+                <CardTitle className="font-headline text-xl mb-2">Step 3</CardTitle>
+                <CardContent className="p-0 flex-grow text-muted-foreground">
                   <p>Share their memorial page and return anytime to reflect and remember.</p>
                 </CardContent>
               </Card>
@@ -119,38 +129,35 @@ export default function HomePage() {
         </section>
 
         {/* Why Choose HonouredLives Section */}
-        <section id="why-choose-section" className="py-12 sm:py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
+        <section id="why-choose-section" className="py-16 sm:py-20 bg-card border-y">
+           <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
               <h2 className="text-3xl font-headline text-foreground mb-2">Why Choose HonouredLives</h2>
               <p className="text-lg text-muted-foreground">Experience a meaningful way to celebrate and remember.</p>
             </div>
-          </div>
-          <div className="grid md:grid-cols-3 border-y-4 border-x-4 border-secondary divide-y-4 md:divide-y-0 md:divide-x-4 divide-secondary">
-            <Card className="flex flex-col rounded-none border-0 shadow-none">
-              <CardHeader>
-                <CardTitle className="font-headline text-xl">Personalized Tributes</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p>Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
-              </CardContent>
-            </Card>
-            <Card className="flex flex-col rounded-none border-0 shadow-none">
-              <CardHeader>
-                <CardTitle className="font-headline text-xl">Easy Sharing</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p>Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
-              </CardContent>
-            </Card>
-            <Card className="flex flex-col rounded-none border-0 shadow-none">
-              <CardHeader>
-                <CardTitle className="font-headline text-xl">Community Support</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p>You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
-              </CardContent>
-            </Card>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center text-center p-4">
+                <div className="bg-secondary/20 p-4 rounded-full mb-4">
+                  <Sparkles className="h-8 w-8 text-secondary-foreground" />
+                </div>
+                <h3 className="font-headline text-xl mb-2">Personalized Tributes</h3>
+                <p className="text-muted-foreground">Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
+              </div>
+              <div className="flex flex-col items-center text-center p-4">
+                <div className="bg-secondary/20 p-4 rounded-full mb-4">
+                  <QrCode className="h-8 w-8 text-secondary-foreground" />
+                </div>
+                <h3 className="font-headline text-xl mb-2">Easy Sharing</h3>
+                <p className="text-muted-foreground">Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
+              </div>
+              <div className="flex flex-col items-center text-center p-4">
+                <div className="bg-secondary/20 p-4 rounded-full mb-4">
+                  <Users className="h-8 w-8 text-secondary-foreground" />
+                </div>
+                <h3 className="font-headline text-xl mb-2">Community Support</h3>
+                <p className="text-muted-foreground">You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
+              </div>
+            </div>
           </div>
         </section>
 
