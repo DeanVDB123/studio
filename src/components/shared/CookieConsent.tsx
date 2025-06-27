@@ -28,6 +28,7 @@ export function CookieConsent() {
   const handleDecline = () => {
     localStorage.setItem('cookie_consent', 'declined');
     setShowConsent(false);
+    window.location.href = 'https://kitswys.com/';
   };
 
   if (!showConsent) {

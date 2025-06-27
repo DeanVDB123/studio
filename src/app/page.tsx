@@ -103,7 +103,7 @@ export default function HomePage() {
                   <CardTitle className="font-headline text-xl">Step 2</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p>Creat a new memorial, simply enter their details, upload photos, memories, and meaningful stories.</p>
+                  <p>Creat a new memorial, effortlessly enter their details, upload photos, memories, and meaningful stories.</p>
                 </CardContent>
               </Card>
               <Card className="flex flex-col border-4 border-primary">
