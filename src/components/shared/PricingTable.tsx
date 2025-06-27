@@ -67,9 +67,11 @@ export function PricingTable() {
                   <h3 className="text-2xl font-headline tracking-wider">{tier.name}</h3>
                 </div>
               </div>
-              <div className="bg-secondary text-secondary-foreground p-4 text-center">
-                <p className="text-2xl font-bold font-headline">{tier.price}</p>
-                {tier.priceDescription && <p className="text-xs uppercase tracking-widest">{tier.priceDescription}</p>}
+              <div className="bg-secondary text-secondary-foreground p-4 text-center flex flex-col justify-center h-20">
+                <div>
+                  <p className="text-2xl font-bold font-headline">{tier.price}</p>
+                  {tier.priceDescription && <p className="text-xs uppercase tracking-widest">{tier.priceDescription}</p>}
+                </div>
               </div>
               <div className="p-6 bg-card flex-grow flex flex-col">
                 <ul className="space-y-4 list-disc pl-5 text-card-foreground/90 flex-grow">
