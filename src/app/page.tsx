@@ -46,20 +46,10 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="bg-background py-16 sm:py-24 text-center">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto mb-8">
-              <Image
-                src="/handsholding.jpg"
-                alt="A serene and thoughtful image representing remembrance"
-                width={800}
-                height={300}
-                className="w-full h-auto object-cover rounded-lg shadow-lg"
-                data-ai-hint="serene landscape"
-                priority
-              />
-            </div>
-            <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-xl border border-primary/20">
+        <section className="grid grid-cols-1 md:grid-cols-3 w-full">
+          {/* Text Content Block */}
+          <div className="md:col-span-1 bg-card text-foreground flex items-center justify-center p-8 sm:p-12 lg:p-16 order-2 md:order-1">
+            <div className="max-w-md text-left">
               <h2 className="text-4xl font-headline text-primary mb-4">Our Goal</h2>
               <p className="text-lg text-card-foreground mb-4">
                 Commemorate the journey, preserve the legacy, and share the story of those who shaped your world.
@@ -68,6 +58,17 @@ export default function HomePage() {
                 Scan the QR code at your loved one’s resting place to revisit their story, reflect on cherished memories, and keep their legacy close—wherever you are. Share their tribute with others, spark conversations, and ensure that their memory continues to inspire generations to come.
               </p>
             </div>
+          </div>
+          {/* Image Block */}
+          <div className="md:col-span-2 relative h-96 md:h-auto order-1 md:order-2">
+            <Image
+              src="/handsholding.jpg"
+              alt="A serene and thoughtful image representing remembrance"
+              layout="fill"
+              className="object-cover"
+              data-ai-hint="serene landscape"
+              priority
+            />
           </div>
         </section>
 
