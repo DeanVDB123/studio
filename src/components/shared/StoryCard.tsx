@@ -25,7 +25,7 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
   return (
     <Card className={cn("flex flex-col overflow-hidden", className)}>
       <CardHeader className="text-center items-center bg-primary text-primary-foreground">
-        <div className="relative w-2/5 aspect-square mx-auto mb-4">
+        <div className="relative w-1/2 aspect-square mx-auto mb-4">
           <Image
             src={imageUrl}
             alt={imageAlt}
