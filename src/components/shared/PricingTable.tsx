@@ -1,6 +1,7 @@
 
 import { Leaf, Sprout, TreeDeciduous, Heart } from 'lucide-react';
 import React from 'react';
+import { Button } from '@/components/ui/button';
 
 const tiers = [
   {
@@ -59,14 +60,17 @@ export function PricingTable() {
                   <h3 className="text-2xl font-headline tracking-wider">{tier.name}</h3>
                 </div>
               </div>
-              <div className="p-6 bg-card flex-grow">
-                <ul className="space-y-4 list-disc pl-5 text-card-foreground/90">
+              <div className="p-6 bg-card flex-grow flex flex-col">
+                <ul className="space-y-4 list-disc pl-5 text-card-foreground/90 flex-grow">
                   {tier.features.map((feature, i) => (
                     <li key={i} className="pl-2">
                       {feature}
                     </li>
                   ))}
                 </ul>
+                <div className="mt-6 text-center">
+                  <Button variant="outline" className="w-full">Contact us</Button>
+                </div>
               </div>
             </div>
           ))}
