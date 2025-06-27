@@ -135,27 +135,33 @@ export default function HomePage() {
               <h2 className="text-3xl font-headline text-foreground mb-2">Why Choose HonouredLives</h2>
               <p className="text-lg text-muted-foreground">Experience a meaningful way to celebrate and remember.</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center p-4">
-                <div className="bg-secondary/20 p-4 rounded-full mb-4">
+            <div className="max-w-4xl mx-auto space-y-12">
+              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">
+                <div className="bg-secondary/20 p-4 rounded-full flex-shrink-0">
                   <Sparkles className="h-8 w-8 text-secondary-foreground" />
                 </div>
-                <h3 className="font-headline text-xl mb-2">Personalized Tributes</h3>
-                <p className="text-muted-foreground">Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
+                <div>
+                  <h3 className="font-headline text-xl mb-2">Personalized Tributes</h3>
+                  <p className="text-muted-foreground">Craft beautiful, custom memorial pages that truly reflect the personality, values, and legacy of your loved ones. From life stories and milestones to photos and personal messages—every tribute is as unique as the life it honours.</p>
+                </div>
               </div>
-              <div className="flex flex-col items-center text-center p-4">
-                <div className="bg-secondary/20 p-4 rounded-full mb-4">
+              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">
+                <div className="bg-secondary/20 p-4 rounded-full flex-shrink-0">
                   <QrCode className="h-8 w-8 text-secondary-foreground" />
                 </div>
-                <h3 className="font-headline text-xl mb-2">Easy Sharing</h3>
-                <p className="text-muted-foreground">Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
+                <div>
+                  <h3 className="font-headline text-xl mb-2">Easy Sharing</h3>
+                  <p className="text-muted-foreground">Our QR code technology bridges the past and present, allowing you to place codes at physical resting sites or share them digitally. Friends and family can instantly access memories, stories, and photos with just a scan—anytime, anywhere.</p>
+                </div>
               </div>
-              <div className="flex flex-col items-center text-center p-4">
-                <div className="bg-secondary/20 p-4 rounded-full mb-4">
+              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6">
+                <div className="bg-secondary/20 p-4 rounded-full flex-shrink-0">
                   <Users className="h-8 w-8 text-secondary-foreground" />
                 </div>
-                <h3 className="font-headline text-xl mb-2">Community Support</h3>
-                <p className="text-muted-foreground">You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
+                <div>
+                  <h3 className="font-headline text-xl mb-2">Community Support</h3>
+                  <p className="text-muted-foreground">You’re not alone in remembering. Join a caring network of families and individuals who share your desire to preserve stories and honour heritage. Through shared experiences and supportive tools, we help keep legacies alive—together.</p>
+                </div>
               </div>
             </div>
           </div>
