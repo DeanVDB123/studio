@@ -1,16 +1,29 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { AppLogo } from '@/components/shared/AppLogo';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6 lg:px-8">
-      <header className="absolute top-4 left-4">
-        <AppLogo />
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <header className="bg-logo-background text-white py-5 shadow-md">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+          <Link href="/">
+            <Image
+              src="/hl.png"
+              alt="HonouredLives Logo"
+              width={142}
+              height={80}
+              className="h-20 w-auto"
+              data-ai-hint="logo company"
+              priority
+            />
+          </Link>
+        </div>
       </header>
-      <main className="max-w-4xl mx-auto">
+
+      <main className="flex-grow max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 w-full">
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl font-headline text-center">Privacy Policy</CardTitle>
@@ -69,6 +82,12 @@ export default function PrivacyPolicyPage() {
           </CardContent>
         </Card>
       </main>
+
+      <footer className="bg-logo-background text-white/80 py-8 text-center">
+        <div className="container mx-auto px-4">
+          <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved. Crafted with care to preserve legacy.</p>
+        </div>
+      </footer>
     </div>
   );
 }
