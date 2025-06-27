@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="bg-logo-background text-white py-5 shadow-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-          <Link href="/">
+          <Link href="/signup">
             <Image
               src="/hl.png"
               alt="HonouredLives Logo"
