@@ -182,7 +182,7 @@ export default function AdminDashboardPage() {
                 </p>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
-                <p className="text-sm text-muted-foreground italic line-clamp-4">
+                <p className="text-sm text-muted-foreground italic">
                   {memorial.lifeSummary}
                 </p>
               </CardContent>
