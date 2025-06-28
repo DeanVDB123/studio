@@ -43,7 +43,7 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
         </Link>
       </div>
       <div className="container mx-auto px-4">
-        <h1 className="text-5xl md:text-6xl font-headline text-primary-foreground mb-3">{deceasedName}</h1>
+        <h1 className="text-4xl md:text-6xl font-headline text-primary-foreground mb-3">{deceasedName}</h1>
 
         {profilePhotoUrl && (
           <div className="my-6 flex justify-center">
