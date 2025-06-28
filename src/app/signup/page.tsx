@@ -14,6 +14,9 @@ import { auth } from '@/lib/firebase';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { TermsContent } from '@/components/auth/TermsContent';
+import { PrivacyContent } from '@/components/auth/PrivacyContent';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -161,13 +164,37 @@ export default function SignupPage() {
                   className="text-sm font-normal text-muted-foreground"
                 >
                   I agree to the{' '}
-                  <Link href="/terms" target="_blank" className="underline text-primary hover:text-primary/80">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" target="_blank" className="underline text-primary hover:text-primary/80">
-                    Privacy Policy
-                  </Link>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="p-0 h-auto underline text-primary hover:text-primary/80" type="button">
+                        Terms of Service
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-3xl font-headline">Terms of Service</DialogTitle>
+                      </DialogHeader>
+                      <div className="max-h-[70vh] overflow-y-auto pr-4">
+                        <TermsContent />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  {' '}and{' '}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="p-0 h-auto underline text-primary hover:text-primary/80" type="button">
+                        Privacy Policy
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-3xl font-headline">Privacy Policy</DialogTitle>
+                      </DialogHeader>
+                      <div className="max-h-[70vh] overflow-y-auto pr-4">
+                        <PrivacyContent />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   .
                 </label>
               </div>
