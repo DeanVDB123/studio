@@ -85,14 +85,16 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <Card className="w-full max-w-md shadow-2xl overflow-hidden">
         <CardHeader className="text-center flex flex-col items-center bg-primary text-primary-foreground">
-          <Image
-            src="/hlb.png"
-            alt="HonouredLives Logo"
-            width={120}
-            height={68}
-            className="mb-6"
-            data-ai-hint="logo company"
-          />
+          <Link href="/">
+            <Image
+              src="/hlb.png"
+              alt="HonouredLives Logo"
+              width={120}
+              height={68}
+              className="mb-6"
+              data-ai-hint="logo company"
+            />
+          </Link>
           <CardDescription className="text-primary-foreground/90">Log in to manage your memorial pages.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
