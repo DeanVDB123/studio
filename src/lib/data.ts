@@ -53,7 +53,7 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
   }
 }
 
-export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; profilePhotoUrl?: string }[]> {
+export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; lifeSummary: string; profilePhotoUrl?: string }[]> {
   console.log(`[Firestore] getAllMemorialsForUser called for user: ${userId}.`);
   const q = query(memorialsCollection, where("userId", "==", userId));
   const querySnapshot = await getDocs(q);
@@ -65,6 +65,7 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
       deceasedName: data.deceasedName,
       birthDate: data.birthDate,
       deathDate: data.deathDate,
+      lifeSummary: data.lifeSummary,
       profilePhotoUrl: data.photos && data.photos.length > 0 ? data.photos[0].url : undefined,
     };
   });

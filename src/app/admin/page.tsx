@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; 
-import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
 import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2 } from 'lucide-react'; 
 import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,6 +28,7 @@ type UserMemorial = {
   deceasedName: string;
   birthDate: string;
   deathDate: string;
+  lifeSummary: string;
   profilePhotoUrl?: string;
 };
 
@@ -181,8 +181,10 @@ export default function AdminDashboardPage() {
                   {formatDateRange(memorial.birthDate, memorial.deathDate)}
                 </p>
               </CardHeader>
-              <CardContent className="flex-grow flex flex-col items-center justify-center pt-2 pb-4 px-4">
-                <QRCodeDisplay url={`${pageBaseUrl}/memorial/${memorial.id}`} size={128} />
+              <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
+                <p className="text-sm text-muted-foreground italic line-clamp-4">
+                  {memorial.lifeSummary}
+                </p>
               </CardContent>
               <CardFooter className="flex justify-around items-center p-3 border-t"> 
                 <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
