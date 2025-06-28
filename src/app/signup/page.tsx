@@ -170,8 +170,8 @@ export default function SignupPage() {
                         Terms of Service
                       </Button>
                     </DialogTrigger>
-                     <DialogContent className="max-w-3xl p-0 flex flex-col h-[80vh] sm:h-[90vh] gap-0">
-                        <DialogHeader className="bg-primary text-primary-foreground p-4 flex flex-row items-center space-y-0 flex-shrink-0 rounded-t-lg">
+                     <DialogContent className="max-w-3xl p-0 flex flex-col h-[80vh] sm:h-[90vh] gap-0 bg-primary">
+                        <DialogHeader className="text-primary-foreground p-4 flex flex-row items-center space-y-0 flex-shrink-0">
                           <DialogTitle className="text-2xl font-headline text-primary-foreground">Terms of Service</DialogTitle>
                           <div className="flex-grow" />
                           <Image
@@ -186,7 +186,7 @@ export default function SignupPage() {
                         <div className="p-6 overflow-y-auto flex-grow bg-background">
                           <TermsContent />
                         </div>
-                        <div className="bg-primary p-2 flex-shrink-0 rounded-b-lg">
+                        <div className="p-2 flex-shrink-0">
                         </div>
                       </DialogContent>
                   </Dialog>
@@ -197,8 +197,8 @@ export default function SignupPage() {
                         Privacy Policy
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-3xl p-0 flex flex-col h-[80vh] sm:h-[90vh] gap-0">
-                        <DialogHeader className="bg-primary text-primary-foreground p-4 flex flex-row items-center space-y-0 flex-shrink-0 rounded-t-lg">
+                    <DialogContent className="max-w-3xl p-0 flex flex-col h-[80vh] sm:h-[90vh] gap-0 bg-primary">
+                        <DialogHeader className="text-primary-foreground p-4 flex flex-row items-center space-y-0 flex-shrink-0">
                           <DialogTitle className="text-2xl font-headline text-primary-foreground">Privacy Policy</DialogTitle>
                           <div className="flex-grow" />
                            <Image
@@ -213,7 +213,7 @@ export default function SignupPage() {
                         <div className="p-6 overflow-y-auto flex-grow bg-background">
                           <PrivacyContent />
                         </div>
-                        <div className="bg-primary p-2 flex-shrink-0 rounded-b-lg">
+                        <div className="p-2 flex-shrink-0">
                         </div>
                       </DialogContent>
                   </Dialog>
