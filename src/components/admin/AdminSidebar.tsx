@@ -52,7 +52,7 @@ export function AdminSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <div>
+        <div className="p-2">
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
