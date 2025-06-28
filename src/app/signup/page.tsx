@@ -170,14 +170,23 @@ export default function SignupPage() {
                         Terms of Service
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-3xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-3xl font-headline">Terms of Service</DialogTitle>
-                      </DialogHeader>
-                      <div className="max-h-[70vh] overflow-y-auto pr-4">
-                        <TermsContent />
-                      </div>
-                    </DialogContent>
+                     <DialogContent className="max-w-3xl p-0 flex flex-col h-[80vh] sm:h-[90vh]">
+                        <DialogHeader className="bg-primary text-primary-foreground p-4 flex flex-row items-center justify-between space-y-0 flex-shrink-0">
+                          <DialogTitle className="text-2xl font-headline text-primary-foreground">Terms of Service</DialogTitle>
+                          <Image
+                            src="/hlb.png"
+                            alt="HonouredLives Logo"
+                            width={80}
+                            height={45}
+                            data-ai-hint="logo company"
+                          />
+                        </DialogHeader>
+                        <div className="p-6 overflow-y-auto flex-grow bg-background">
+                          <TermsContent />
+                        </div>
+                        <div className="bg-primary p-2 flex-shrink-0">
+                        </div>
+                      </DialogContent>
                   </Dialog>
                   {' '}and{' '}
                   <Dialog>
@@ -186,14 +195,23 @@ export default function SignupPage() {
                         Privacy Policy
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-3xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-3xl font-headline">Privacy Policy</DialogTitle>
-                      </DialogHeader>
-                      <div className="max-h-[70vh] overflow-y-auto pr-4">
-                        <PrivacyContent />
-                      </div>
-                    </DialogContent>
+                    <DialogContent className="max-w-3xl p-0 flex flex-col h-[80vh] sm:h-[90vh]">
+                        <DialogHeader className="bg-primary text-primary-foreground p-4 flex flex-row items-center justify-between space-y-0 flex-shrink-0">
+                          <DialogTitle className="text-2xl font-headline text-primary-foreground">Privacy Policy</DialogTitle>
+                           <Image
+                            src="/hlb.png"
+                            alt="HonouredLives Logo"
+                            width={80}
+                            height={45}
+                            data-ai-hint="logo company"
+                          />
+                        </DialogHeader>
+                        <div className="p-6 overflow-y-auto flex-grow bg-background">
+                          <PrivacyContent />
+                        </div>
+                        <div className="bg-primary p-2 flex-shrink-0">
+                        </div>
+                      </DialogContent>
                   </Dialog>
                   .
                 </label>
