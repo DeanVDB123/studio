@@ -8,9 +8,10 @@ interface MemorialPageHeaderProps {
   deathDate: string;
   lifeSummary?: string;
   profilePhotoUrl?: string; // Added profile photo URL
+  backLinkHref: string;
 }
 
-export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSummary, profilePhotoUrl }: MemorialPageHeaderProps) {
+export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSummary, profilePhotoUrl, backLinkHref }: MemorialPageHeaderProps) {
   const formatDate = (dateString: string) => {
     try {
       // Ensure the date string is treated as UTC to avoid timezone issues
@@ -30,7 +31,7 @@ export function MemorialPageHeader({ deceasedName, birthDate, deathDate, lifeSum
   return (
     <header className="relative py-12 bg-primary text-center border-b border-border shadow-sm">
       <div className="absolute top-4 left-4 z-10">
-        <Link href="/admin">
+        <Link href={backLinkHref}>
           <Image
             src="/hlb.png"
             alt="HonouredLives Logo"
