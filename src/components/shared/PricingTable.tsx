@@ -70,7 +70,7 @@ export function PricingTable() {
                   ))}
                 </ul>
                 <div className="mt-6 text-center">
-                  {tier.name === 'FREE' ? (
+                  {tier.name === 'SPIRIT' ? (
                     <Button variant="outline" className="w-full" disabled>
                       Free
                     </Button>

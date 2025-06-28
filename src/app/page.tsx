@@ -37,7 +37,7 @@ export default function HomePage() {
               <li><Link href="#why-choose-section" className="hover:text-secondary transition-colors">Why Us</Link></li>
               <li><Link href="#stories-section" className="hover:text-secondary transition-colors">Stories</Link></li>
               <li><Link href="#pricing-section" className="hover:text-secondary transition-colors">Pricing</Link></li>
-              <li><Link href="/login" className="hover:text-secondary transition-colors">Try it</Link></li>
+              <li><Link href="/signup" className="hover:text-secondary transition-colors">Try it</Link></li>
             </ul>
           </nav>
         </div>
@@ -220,7 +220,7 @@ export default function HomePage() {
               Be part of a heartfelt movement to preserve memories. Create a lasting digital tribute.
             </p>
             <Button asChild size="lg" variant="default">
-              <Link href="/login">Get Started</Link>
+              <Link href="/signup">Get Started</Link>
             </Button>
           </div>
         </section>
