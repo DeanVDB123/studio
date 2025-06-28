@@ -1,3 +1,4 @@
+
 "use client"; // Make it a client component to use useAuth
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
