@@ -17,6 +17,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 
 export function AdminHeader() {
@@ -50,7 +51,10 @@ export function AdminHeader() {
                  {userStatus && (
                   <Badge
                     variant={userStatus.toUpperCase() === 'PAID' ? 'outline' : 'secondary'}
-                    className="hidden sm:inline-flex"
+                    className={cn(
+                      "hidden sm:inline-flex",
+                      userStatus.toUpperCase() === 'PAID' && "border-primary-foreground/50 text-primary-foreground bg-transparent"
+                    )}
                   >
                     {userStatus.toUpperCase()}
                   </Badge>
