@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 const tiers = [
   {
-    name: 'FREE',
+    name: 'SPIRIT',
     icon: <><Leaf className="h-6 w-6 text-green-400" /></>,
     features: [
       'Unlimited memorials.',
@@ -17,8 +17,8 @@ const tiers = [
     icon: <Sprout className="h-6 w-6 text-green-400" />,
     features: [
       'Unlimited memorials.',
-      'Memorials are hosted and shareable for 5 years.',
-      'Custom QR code plaque to place at a physical resting place.',
+      'Memorials are hosted and shareable for the first 5 years.',
+      'Personalized QR code plaque to place at a physical resting place.',
     ],
   },
   {
@@ -26,7 +26,7 @@ const tiers = [
     icon: <TreeDeciduous className="h-6 w-6 text-green-400" />,
     features: [
       'All features from ESSENCE plan.',
-      'Memorials are hosted and shareable for 10 years.',
+      'Memorials are hosted and shareable for the first 10 years.',
       'Priority support.',
       'Optional custom design template.',
     ],

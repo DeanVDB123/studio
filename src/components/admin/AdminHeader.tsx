@@ -36,20 +36,20 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-primary-foreground/20 bg-primary px-4 text-primary-foreground sm:px-6">
       <div className="flex items-center gap-2 md:hidden">
-         <SidebarTrigger />
+         <SidebarTrigger className="text-primary-foreground hover:bg-primary-foreground/10" />
       </div>
       <nav className="flex-1 flex items-center justify-end gap-4">
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-auto px-2 flex items-center gap-2 rounded-full">
+              <Button variant="ghost" className="relative h-auto flex items-center gap-2 rounded-full px-2 hover:bg-primary-foreground/10">
                 <UserCircle className="h-6 w-6" />
                 <span className="text-sm hidden sm:inline">{user.email}</span>
                  {userStatus && (
                   <Badge
-                    variant={userStatus.toUpperCase() === 'PAID' ? 'default' : 'secondary'}
+                    variant={userStatus.toUpperCase() === 'PAID' ? 'outline' : 'secondary'}
                     className="hidden sm:inline-flex"
                   >
                     {userStatus.toUpperCase()}
@@ -66,7 +66,7 @@ export function AdminHeader() {
                   </p>
                   {userStatus && (
                      <div className="flex items-center pt-2">
-                       <Badge variant={userStatus.toUpperCase() === 'PAID' ? 'default' : 'secondary'}>
+                       <Badge variant={userStatus.toUpperCase() === 'PAID' ? 'outline' : 'secondary'}>
                          {userStatus.toUpperCase()}
                        </Badge>
                     </div>
