@@ -44,7 +44,7 @@ export function AdminHeader() {
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-auto flex items-center gap-2 rounded-full px-2 hover:bg-primary-foreground/10">
+              <Button variant="ghost" className="relative h-auto flex items-center gap-2 rounded-full px-2 hover:bg-secondary hover:text-secondary-foreground">
                 <UserCircle className="h-6 w-6" />
                 <span className="text-sm hidden sm:inline">{user.email}</span>
                  {userStatus && (
