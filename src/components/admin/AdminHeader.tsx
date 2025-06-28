@@ -1,4 +1,3 @@
-
 "use client"; // Make it a client component to use useAuth
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -37,7 +36,7 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-primary-foreground/20 bg-primary px-4 text-primary-foreground sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-primary bg-primary px-4 text-primary-foreground sm:px-6">
       <div className="flex items-center gap-2 md:hidden">
          <SidebarTrigger className="text-primary-foreground hover:bg-primary-foreground/10" />
       </div>
