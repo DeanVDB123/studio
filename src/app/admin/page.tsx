@@ -163,13 +163,12 @@ export default function AdminDashboardPage() {
             <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
                 {memorial.profilePhotoUrl && (
-                  <div className="w-20 h-24 mb-3 rounded-full overflow-hidden shadow-md border border-primary-foreground/50">
+                  <div className="relative w-1/2 aspect-square mx-auto mb-4">
                     <Image
                       src={memorial.profilePhotoUrl}
                       alt={`Profile photo of ${memorial.deceasedName}`}
-                      width={80}
-                      height={96}
-                      className="object-cover w-full h-full filter grayscale"
+                      fill
+                      className="object-cover rounded-lg filter grayscale"
                       data-ai-hint="profile person"
                     />
                   </div>
