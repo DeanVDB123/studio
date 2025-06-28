@@ -34,7 +34,11 @@ const memorialFormSchema = z.object({
   deceasedName: z.string().min(1, "Deceased's name is required."),
   birthDate: z.string().min(1, "Birth date is required."),
   deathDate: z.string().min(1, "Death date is required."),
-  lifeSummary: z.string().min(1, "Life summary is required."),
+  lifeSummary: z.string()
+    .min(1, "Life summary is required.")
+    .refine((summary) => summary.trim().split(/\s+/).length <= 20, {
+      message: "Life summary must be 20 words or less.",
+    }),
   biography: z.string().min(1, "Biography is required."),
   photos: z.array(photoSchema).min(0, "At least one photo is recommended."),
   tributes: z.array(z.string()).min(0, "At least one tribute is recommended."),
@@ -149,7 +153,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         router.push('/admin');
         router.refresh(); 
       } catch (error: any) {
-        console.error(`[MemorialForm] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
+        console.error(`[Action] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
         toast({ title: "Error saving memorial", description: error.message || "An unexpected error occurred.", variant: "destructive" });
       }
     });
