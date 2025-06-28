@@ -53,7 +53,7 @@ export function AdminHeader() {
                     variant={userStatus.toUpperCase() === 'PAID' ? 'outline' : 'secondary'}
                     className={cn(
                       "hidden sm:inline-flex",
-                      userStatus.toUpperCase() === 'PAID' && "border-primary-foreground/50 text-primary-foreground bg-transparent"
+                      userStatus.toUpperCase() === 'PAID' && "bg-primary-foreground text-primary hover:bg-primary-foreground"
                     )}
                   >
                     {userStatus.toUpperCase()}
