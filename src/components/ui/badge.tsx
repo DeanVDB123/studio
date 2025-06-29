@@ -16,7 +16,13 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        admin: "border-transparent bg-admin text-admin-foreground hover:bg-admin/80",
+        admin: [
+          "relative overflow-hidden border-transparent bg-admin text-admin-foreground",
+          "before:content-[''] before:absolute before:inset-0",
+          "before:bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.6)_50%,transparent_80%)]",
+          "before:bg-[length:200%_100%]",
+          "before:animate-shine",
+        ],
       },
     },
     defaultVariants: {
