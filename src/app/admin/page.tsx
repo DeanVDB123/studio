@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Loading Dashboard...</p>
+        <p className="ml-4 text-lg">Loading Memorials...</p>
       </div>
     );
   }

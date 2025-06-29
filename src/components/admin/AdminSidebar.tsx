@@ -21,9 +21,9 @@ import { useToast } from '@/hooks/use-toast';
 
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin', label: 'Memorials', icon: LayoutDashboard },
   { href: '/admin/create', label: 'New Memorial', icon: PlusCircle },
-  { href: '/admin/scans', label: 'My Scans', icon: QrCode },
+  { href: '/admin/scans', label: 'Visits', icon: QrCode },
 ];
 
 export function AdminSidebar() {

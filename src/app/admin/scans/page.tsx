@@ -154,12 +154,9 @@ export default function MyScansPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-         <h1 className="text-3xl font-headline">My Scans</h1>
-      </div>
       <Card>
         <CardHeader>
-          <CardTitle>Memorial Performance</CardTitle>
+          <CardTitle>Memorial visits</CardTitle>
           <CardDescription>
             Track visits to your memorial pages. Click a row to see weekly view statistics.
           </CardDescription>
@@ -182,7 +179,7 @@ export default function MyScansPage() {
                 <TableRow>
                   <TableHead className="w-[40%]">
                     <Button variant="ghost" onClick={() => handleSort('deceasedName')} className="w-full justify-start px-2">
-                      Deceased Name
+                      Memorial Name
                       <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
