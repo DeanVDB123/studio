@@ -50,10 +50,10 @@ export function AdminHeader() {
                 <span className="text-sm hidden sm:inline">{user.email}</span>
                  {userStatus && (
                   <Badge
-                    variant={userStatus.toUpperCase() === 'PAID' ? 'outline' : 'secondary'}
+                    variant={(userStatus.toUpperCase() === 'PAID' || userStatus.toUpperCase() === 'ADMIN') ? 'outline' : 'secondary'}
                     className={cn(
                       "hidden sm:inline-flex",
-                      userStatus.toUpperCase() === 'PAID' && "bg-primary-foreground text-primary hover:bg-primary-foreground"
+                      (userStatus.toUpperCase() === 'PAID' || userStatus.toUpperCase() === 'ADMIN') && "bg-primary-foreground text-primary hover:bg-primary-foreground"
                     )}
                   >
                     {userStatus.toUpperCase()}
@@ -70,7 +70,7 @@ export function AdminHeader() {
                   </p>
                   {userStatus && (
                      <div className="flex items-center pt-2">
-                       <Badge variant={userStatus.toUpperCase() === 'PAID' ? 'outline' : 'secondary'}>
+                       <Badge variant={(userStatus.toUpperCase() === 'PAID' || userStatus.toUpperCase() === 'ADMIN') ? 'outline' : 'secondary'}>
                          {userStatus.toUpperCase()}
                        </Badge>
                     </div>

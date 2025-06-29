@@ -24,7 +24,7 @@ interface MemorialClientPageProps {
 }
 
 export default function MemorialClientPage({ memorialId }: MemorialClientPageProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, userStatus, loading: authLoading } = useAuth();
   const [memorialData, setMemorialData] = useState<MemorialData | null | undefined>(undefined); // undefined: loading, null: not found/error
   const [isLoading, setIsLoading] = useState(true);
 
@@ -82,8 +82,9 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
   // Access Control Logic
   const isFreeTier = memorialData.ownerStatus === 'FREE';
   const isOwner = user && user.uid === memorialData.userId;
+  const isAdmin = userStatus === 'ADMIN';
 
-  if (isFreeTier && !isOwner) {
+  if (isFreeTier && !isOwner && !isAdmin) {
     return (
      <div className="container mx-auto py-12 px-4 text-center">
        <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
