@@ -94,17 +94,18 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
                     caption_label: "font-headline text-base",
                     head_cell: "text-xs w-8",
                     day: "h-8 w-8 rounded-sm text-xs",
+                    day_today: "bg-background ring-1 ring-primary",
                 }}
                 showOutsideDays
                 fixedWeeks
             />
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+            <div className="flex items-center gap-2 text-xs text-primary/80 mt-2">
                 <span>Less</span>
                 <div className="flex gap-1">
-                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.2)' }} />
-                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.4)' }} />
-                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.6)' }} />
-                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.8)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.2)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.4)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.6)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.8)' }} />
                 </div>
                 <span>More</span>
             </div>
