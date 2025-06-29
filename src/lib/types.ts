@@ -20,6 +20,7 @@ export interface MemorialData {
   ownerStatus?: string; // Status of the memorial owner
   viewCount?: number;
   lastVisited?: string;
+  viewTimestamps?: string[]; // Array of ISO date strings for each view
 }
 
 export interface OrganizedContent {

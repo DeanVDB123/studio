@@ -3,7 +3,7 @@
 'use server';
 
 import { firestore } from '@/lib/firebase';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion } from 'firebase/firestore';
 import type { MemorialData, SignupEvent } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
@@ -53,7 +53,7 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
   }
 }
 
-export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; lifeSummary: string; profilePhotoUrl?: string; viewCount?: number; lastVisited?: string; }[]> {
+export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; lifeSummary: string; profilePhotoUrl?: string; viewCount?: number; lastVisited?: string; viewTimestamps?: string[]; }[]> {
   console.log(`[Firestore] getAllMemorialsForUser called for user: ${userId}.`);
   const q = query(memorialsCollection, where("userId", "==", userId));
   const querySnapshot = await getDocs(q);
@@ -69,6 +69,7 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
       profilePhotoUrl: data.photos && data.photos.length > 0 ? data.photos[0].url : undefined,
       viewCount: data.viewCount || 0,
       lastVisited: data.lastVisited,
+      viewTimestamps: data.viewTimestamps || [],
     };
   });
   
@@ -142,11 +143,11 @@ export async function incrementMemorialViewCount(memorialId: string): Promise<vo
   console.log(`[Firestore] incrementMemorialViewCount called for ID: ${memorialId}`);
   const docRef = doc(memorialsCollection, memorialId);
   try {
-    // Atomically increment the viewCount field and update lastVisited.
-    // If fields don't exist, they're created.
+    // Atomically increment the viewCount, update lastVisited, and add a timestamp to the history.
     await updateDoc(docRef, {
       viewCount: increment(1),
-      lastVisited: new Date().toISOString()
+      lastVisited: new Date().toISOString(),
+      viewTimestamps: arrayUnion(new Date().toISOString()),
     });
     console.log(`[Firestore] View count incremented for memorial: ${memorialId}`);
   } catch (error) {
