@@ -7,24 +7,10 @@ import { getAllMemorialsForUser } from '@/lib/data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowUpDown, Loader2, Search, BarChart as BarChartIcon } from 'lucide-react';
-import { formatDistanceToNow, parseISO, startOfWeek, format } from 'date-fns';
+import { ArrowUpDown, Loader2, Search, CalendarDays } from 'lucide-react';
+import { formatDistanceToNow, parseISO, format, startOfMonth } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid
-} from 'recharts';
-import type { ChartConfig } from '@/components/ui/chart';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
+import { Calendar } from '@/components/ui/calendar';
 
 type MemorialScanData = {
   id: string;
@@ -37,41 +23,98 @@ type MemorialScanData = {
 type SortKey = 'deceasedName' | 'viewCount' | 'lastVisited';
 type SortDirection = 'asc' | 'desc';
 
-const chartConfig = {
-  views: {
-    label: 'Views',
-    color: 'hsl(var(--primary))',
-  },
-} satisfies ChartConfig;
 
-const processViewDataForChart = (timestamps: string[]) => {
-  if (!timestamps || timestamps.length === 0) {
-    return [];
-  }
-
-  const weeklyData = timestamps.reduce<Record<string, number>>((acc, timestamp) => {
-    try {
-      const date = parseISO(timestamp);
-      const weekStartDate = startOfWeek(date, { weekStartsOn: 1 });
-      const weekKey = format(weekStartDate, 'yyyy-MM-dd');
-      acc[weekKey] = (acc[weekKey] || 0) + 1;
-    } catch (e) {
-      console.warn(`Could not parse timestamp: ${timestamp}`, e);
+const processViewDataForCalendar = (timestamps: string[]): Record<string, number> => {
+    if (!timestamps || timestamps.length === 0) {
+        return {};
     }
-    return acc;
-  }, {});
-
-  const sortedChartData = Object.entries(weeklyData)
-    .map(([weekKey, views]) => ({
-      name: format(parseISO(weekKey), 'MMM dd'),
-      views: views,
-      date: parseISO(weekKey),
-    }))
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .slice(-12);
-
-  return sortedChartData;
+    return timestamps.reduce<Record<string, number>>((acc, timestamp) => {
+        try {
+            const dateKey = format(parseISO(timestamp), 'yyyy-MM-dd');
+            acc[dateKey] = (acc[dateKey] || 0) + 1;
+        } catch (e) {
+            // Silently ignore invalid date formats
+        }
+        return acc;
+    }, {});
 };
+
+
+const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
+    const today = new Date();
+    const sixMonthsAgo = startOfMonth(new Date(new Date().setMonth(today.getMonth() - 5)));
+
+    const dailyData = useMemo(() => processViewDataForCalendar(timestamps), [timestamps]);
+
+    const datesWithData = Object.keys(dailyData);
+    const maxViews = Math.max(1, ...Object.values(dailyData));
+
+    const modifiers = useMemo(() => {
+        return datesWithData.reduce((acc, dateStr) => {
+            acc[dateStr] = parseISO(dateStr);
+            return acc;
+        }, {} as Record<string, Date>);
+    }, [datesWithData]);
+
+    const modifiersStyles = useMemo(() => {
+        return datesWithData.reduce((acc, dateStr) => {
+            const count = dailyData[dateStr];
+            // Opacity scales from 0.15 (for 1 view) to 1.0 (for max views)
+            const opacity = count > 0 ? 0.15 + (count / maxViews) * 0.85 : 0;
+            acc[dateStr] = {
+                backgroundColor: `hsla(var(--primary), ${opacity})`,
+                color: opacity > 0.6 ? 'hsl(var(--primary-foreground))' : 'inherit',
+            };
+            return acc;
+        }, {} as Record<string, React.CSSProperties>);
+    }, [datesWithData, dailyData, maxViews]);
+
+
+    if (timestamps.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+                <CalendarDays className="h-8 w-8 mb-2" />
+                <p>No view data available to display a heatmap.</p>
+            </div>
+        );
+    }
+    
+    return (
+        <div className="flex flex-col items-center gap-4">
+            <Calendar
+                mode="multiple"
+                selected={Object.values(modifiers)}
+                onSelect={() => {}} // This is a display-only calendar
+                numberOfMonths={6}
+                fromMonth={sixMonthsAgo}
+                toMonth={today}
+                modifiers={modifiers}
+                modifiersStyles={modifiersStyles}
+                className="p-0"
+                classNames={{
+                    months: "flex flex-wrap justify-center gap-4",
+                    month: "border p-3 rounded-lg shadow-sm bg-card",
+                    caption_label: "font-headline text-base",
+                    head_cell: "text-xs w-8",
+                    day: "h-8 w-8 rounded-sm text-xs",
+                }}
+                showOutsideDays
+                fixedWeeks
+            />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+                <span>Less</span>
+                <div className="flex gap-1">
+                    <div className="h-4 w-4 rounded-sm bg-primary/20 border border-border" />
+                    <div className="h-4 w-4 rounded-sm bg-primary/40 border border-border" />
+                    <div className="h-4 w-4 rounded-sm bg-primary/60 border border-border" />
+                    <div className="h-4 w-4 rounded-sm bg-primary/80 border border-border" />
+                </div>
+                <span>More</span>
+            </div>
+        </div>
+    );
+};
+
 
 export default function MyScansPage() {
   const { user, loading: authLoading } = useAuth();
@@ -158,7 +201,7 @@ export default function MyScansPage() {
         <CardHeader>
           <CardTitle>Memorial visits</CardTitle>
           <CardDescription>
-            Track visits to your memorial pages. Click a row to see weekly view statistics.
+            Track visits to your memorial pages. Click a row to see a heatmap of daily views.
           </CardDescription>
           <div className="flex items-center justify-between gap-4 pt-4">
             <div className="relative flex-1">
@@ -215,34 +258,9 @@ export default function MyScansPage() {
                       </TableRow>
                       {expandedMemorialId === memorial.id && (
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
-                          <TableCell colSpan={3} className="p-4">
-                             <h4 className="text-md font-headline mb-2 text-center text-foreground">Weekly Views (Last 12 Weeks)</h4>
-                            {memorial.viewTimestamps.length > 0 ? (
-                              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                                <BarChart data={processViewDataForChart(memorial.viewTimestamps)} accessibilityLayer>
-                                  <CartesianGrid vertical={false} />
-                                  <XAxis
-                                    dataKey="name"
-                                    tickLine={false}
-                                    tickMargin={10}
-                                    axisLine={false}
-                                    stroke="hsl(var(--muted-foreground))"
-                                    fontSize={12}
-                                  />
-                                  <YAxis allowDecimals={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                                  <ChartTooltip
-                                    cursor={false}
-                                    content={<ChartTooltipContent indicator="dot" />}
-                                  />
-                                  <Bar dataKey="views" fill="var(--color-views)" radius={4} />
-                                </BarChart>
-                              </ChartContainer>
-                            ) : (
-                               <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
-                                <BarChartIcon className="h-8 w-8 mb-2" />
-                                <p>No view data available to display a chart.</p>
-                               </div>
-                            )}
+                          <TableCell colSpan={3} className="p-4 transition-all duration-300">
+                             <h4 className="text-md font-headline mb-4 text-center text-foreground">Daily Views Heatmap (Last 6 Months)</h4>
+                             <MemorialHeatmapCalendar timestamps={memorial.viewTimestamps} />
                           </TableCell>
                         </TableRow>
                       )}
