@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpDown, Loader2, Search, CalendarDays } from 'lucide-react';
-import { formatDistanceToNow, parseISO, format, startOfMonth } from 'date-fns';
+import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 
@@ -42,7 +42,6 @@ const processViewDataForCalendar = (timestamps: string[]): Record<string, number
 
 const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
     const today = new Date();
-    const sixMonthsAgo = startOfMonth(new Date(new Date().setMonth(today.getMonth() - 5)));
 
     const dailyData = useMemo(() => processViewDataForCalendar(timestamps), [timestamps]);
 
@@ -85,14 +84,11 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
                 mode="multiple"
                 selected={Object.values(modifiers)}
                 onSelect={() => {}} // This is a display-only calendar
-                numberOfMonths={6}
-                fromMonth={sixMonthsAgo}
-                toMonth={today}
+                month={today}
                 modifiers={modifiers}
                 modifiersStyles={modifiersStyles}
                 className="p-0"
                 classNames={{
-                    months: "flex flex-wrap justify-center gap-4",
                     month: "border p-3 rounded-lg shadow-sm bg-card",
                     caption_label: "font-headline text-base",
                     head_cell: "text-xs w-8",
@@ -259,7 +255,7 @@ export default function MyScansPage() {
                       {expandedMemorialId === memorial.id && (
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
                           <TableCell colSpan={3} className="p-4 transition-all duration-300">
-                             <h4 className="text-md font-headline mb-4 text-center text-foreground">Daily Views Heatmap (Last 6 Months)</h4>
+                             <h4 className="text-md font-headline mb-4 text-center text-foreground">Daily Views Heatmap (Current Month)</h4>
                              <MemorialHeatmapCalendar timestamps={memorial.viewTimestamps} />
                           </TableCell>
                         </TableRow>
@@ -281,3 +277,5 @@ export default function MyScansPage() {
     </div>
   );
 }
+
+    
