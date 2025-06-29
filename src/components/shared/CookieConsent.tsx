@@ -9,24 +9,30 @@ export function CookieConsent() {
   const [showConsent, setShowConsent] = useState(false);
 
   useEffect(() => {
-    // Check localStorage only on the client side
-    const consent = localStorage.getItem('cookie_consent');
-    if (consent !== 'given') {
-       // Use a short delay to prevent layout shifts and ensure the main content loads first.
-      const timer = setTimeout(() => {
+    try {
+      const consent = localStorage.getItem('cookie_consent');
+      // Only show the banner if consent has not been explicitly given.
+      if (consent !== 'given') {
         setShowConsent(true);
-      }, 500);
-      return () => clearTimeout(timer);
+      }
+    } catch (error) {
+      console.error("Could not access localStorage:", error);
+      // Fallback: Show consent banner if localStorage is not available.
+      setShowConsent(true);
     }
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('cookie_consent', 'given');
+    try {
+      localStorage.setItem('cookie_consent', 'given');
+    } catch (error) {
+      console.error("Could not save cookie consent choice:", error);
+    }
     setShowConsent(false);
   };
   
   const handleDecline = () => {
-    localStorage.setItem('cookie_consent', 'declined');
+    // We don't store the 'declined' state, so it will reappear next time.
     setShowConsent(false);
     window.location.href = 'https://kitswys.com/';
   };
