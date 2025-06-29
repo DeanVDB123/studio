@@ -16,6 +16,7 @@ import { StoriesSection } from '@/components/memorial/StoriesSection';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Feather, Lock, Loader2 } from 'lucide-react';
+import { logMemorialViewAction } from '@/lib/actions';
 
 
 interface MemorialClientPageProps {
@@ -43,6 +44,13 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     }
     fetchMemorial();
   }, [memorialId]);
+
+  useEffect(() => {
+    // Log a view when the page has finished loading and has a valid memorialId
+    if (memorialId && !isLoading) {
+      logMemorialViewAction(memorialId);
+    }
+  }, [memorialId, isLoading]);
 
 
   if (isLoading || authLoading) {

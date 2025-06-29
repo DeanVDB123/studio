@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; 
-import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2 } from 'lucide-react'; 
+import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2, QrCode } from 'lucide-react'; 
 import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -30,6 +30,7 @@ type UserMemorial = {
   deathDate: string;
   lifeSummary: string;
   profilePhotoUrl?: string;
+  viewCount?: number;
 };
 
 export const dynamic = 'force-dynamic';
@@ -179,6 +180,10 @@ export default function AdminDashboardPage() {
                 <p className="text-xs text-primary-foreground/80 font-body">
                   {formatDateRange(memorial.birthDate, memorial.deathDate)}
                 </p>
+                <div className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/80 font-body mt-2">
+                  <QrCode className="h-4 w-4" />
+                  <span>{memorial.viewCount || 0} views</span>
+                </div>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
                 <p className="text-sm text-muted-foreground italic">

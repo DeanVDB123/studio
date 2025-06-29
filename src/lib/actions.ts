@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, saveMemorial as dbSaveMemorial } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, saveMemorial as dbSaveMemorial, incrementMemorialViewCount } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadImage } from './storage';
@@ -76,6 +76,11 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     userId: userId.trim(),
     id: dataId,
   };
+  
+  if (!isUpdate) {
+    dataToSave.viewCount = 0; // Initialize view count for new memorials
+  }
+  
   console.log(`[Action] Data prepared for DB operation (dataToSave):`, JSON.stringify(dataToSave, null, 2));
 
   try {
@@ -107,5 +112,21 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     }
     // Pass the more specific error from the data layer up to the UI
     throw new Error(`Failed to ${isUpdate ? 'update' : 'create'} memorial page. ${error.message || 'Please try again.'}`);
+  }
+}
+
+export async function logMemorialViewAction(memorialId: string): Promise<void> {
+  console.log(`[Action] logMemorialViewAction called for memorial ID: ${memorialId}`);
+  if (!memorialId) {
+    console.warn('[Action] logMemorialViewAction called without memorialId.');
+    return;
+  }
+  try {
+    await incrementMemorialViewCount(memorialId);
+    // Revalidate the admin dashboard to show the updated count.
+    revalidatePath('/admin', 'page');
+  } catch (error) {
+    console.error(`[Action] Error in logMemorialViewAction for ID ${memorialId}:`, error);
+    // Do not re-throw, this is a background task.
   }
 }
