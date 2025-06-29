@@ -89,7 +89,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
         </Alert>
         <div className="mt-6 flex justify-center">
             <Button asChild>
-                <Link href="/admin">Return to Memorials</Link>
+                <Link href="/memorials">Return to Memorials</Link>
             </Button>
         </div>
       </>

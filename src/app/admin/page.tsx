@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-headline">Your Memorials</h1>
         <Button asChild>
-          <Link href="/admin/create">
+          <Link href="/create">
             <PlusCircle className="mr-2 h-5 w-5" /> Create New Memorial
           </Link>
         </Button>
@@ -153,7 +153,7 @@ export default function AdminDashboardPage() {
           </CardContent>
           <div className="flex justify-center pt-4"> 
              <Button asChild className="mt-4">
-              <Link href="/admin/create">
+              <Link href="/create">
                 <PlusCircle className="mr-2 h-5 w-5" /> Create Memorial
               </Link>
             </Button>
@@ -193,7 +193,7 @@ export default function AdminDashboardPage() {
               </CardContent>
               <CardFooter className="flex justify-around items-center p-3 border-t"> 
                 <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
-                  <Link href={`/admin/edit/${memorial.id}`}>
+                  <Link href={`/edit/${memorial.id}`}>
                     <Edit3 className="h-5 w-5" />
                     <span className="sr-only">Edit</span>
                   </Link>

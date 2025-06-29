@@ -29,7 +29,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.push('/admin');
+      router.push('/memorials');
     }
   }, [user, authLoading, router]);
 
@@ -57,7 +57,7 @@ export default function SignupPage() {
     
     try {
       await signUp(auth, email, password);
-      router.push('/admin');
+      router.push('/memorials');
     } catch (err: any) {
       if (err.code) {
         switch (err.code) {
@@ -90,7 +90,7 @@ export default function SignupPage() {
     try {
       await signInWithGoogle();
       // User state change will trigger useEffect to redirect
-      router.push('/admin');
+      router.push('/memorials');
     } catch (err: any) {
       if (err.code === 'auth/popup-closed-by-user') {
         setFormError('Sign-up process was cancelled.');

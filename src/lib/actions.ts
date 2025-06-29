@@ -98,9 +98,9 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     }
     console.log(`[Action] Memorial ${isUpdate ? 'updated' : 'created'} successfully. ID: ${savedMemorial.id}, User: ${savedMemorial.userId}`);
     
-    revalidatePath('/admin', 'page');
+    revalidatePath('/memorials', 'page');
     if (savedMemorial.id) {
-      revalidatePath(`/admin/edit/${savedMemorial.id}`);
+      revalidatePath(`/edit/${savedMemorial.id}`);
       revalidatePath(`/memorial/${savedMemorial.id}`);
     }
     
@@ -123,8 +123,9 @@ export async function logMemorialViewAction(memorialId: string): Promise<void> {
   }
   try {
     await incrementMemorialViewCount(memorialId);
-    // Revalidate the admin dashboard to show the updated count.
-    revalidatePath('/admin', 'page');
+    // Revalidate the pages that show the view count.
+    revalidatePath('/memorials', 'page');
+    revalidatePath('/visits', 'page');
   } catch (error) {
     console.error(`[Action] Error in logMemorialViewAction for ID ${memorialId}:`, error);
     // Do not re-throw, this is a background task.

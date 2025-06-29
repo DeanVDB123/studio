@@ -16,6 +16,7 @@ import {
 } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
 import { logSignupEvent, getUserStatus } from '@/lib/data';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AuthError | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {

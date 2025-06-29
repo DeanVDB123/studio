@@ -95,7 +95,7 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
          </AlertDescription>
        </Alert>
        <Button asChild className="mt-8">
-         <Link href={user ? "/admin" : "/login"}>{user ? "Go to Your Dashboard" : "Log In"}</Link>
+         <Link href={user ? "/memorials" : "/login"}>{user ? "Go to Your Dashboard" : "Log In"}</Link>
        </Button>
      </div>
    );
@@ -104,7 +104,7 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
 
   // If access is granted, render the page
   const profilePhotoUrl = memorialData.photos && memorialData.photos.length > 0 ? memorialData.photos[0].url : undefined;
-  const backLinkHref = isOwner ? '/admin' : '/';
+  const backLinkHref = isOwner ? '/memorials' : '/';
 
   return (
     <div className="bg-background min-h-screen font-body">

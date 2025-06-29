@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.push('/admin');
+      router.push('/memorials');
     }
   }, [user, authLoading, router]);
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
     setFormError(null);
     try {
       await logIn(auth, email, password);
-      router.push('/admin');
+      router.push('/memorials');
     } catch (err: any) {
       if (err.code) {
         switch (err.code) {
@@ -68,7 +68,7 @@ export default function LoginPage() {
     try {
       await signInWithGoogle();
       // User state change will trigger useEffect to redirect
-      router.push('/admin');
+      router.push('/memorials');
     } catch (err: any) {
        if (err.code === 'auth/popup-closed-by-user') {
         setFormError('Sign-in process was cancelled.');

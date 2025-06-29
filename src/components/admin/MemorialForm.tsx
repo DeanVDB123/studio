@@ -98,7 +98,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   useEffect(() => {
     if (initialData && initialData.userId && user && initialData.userId !== user.uid) {
       toast({ title: "Unauthorized", description: "You can only edit your own memorials.", variant: "destructive" });
-      router.push('/admin');
+      router.push('/memorials');
     }
   }, [initialData, user, router, toast]);
 
@@ -150,7 +150,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${isUpdating ? 'updated' : 'created'}.` });
         
         // Navigate to the admin dashboard and refresh the page to show the new data
-        router.push('/admin');
+        router.push('/memorials');
         router.refresh(); 
       } catch (error: any) {
         console.error(`[Action] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);

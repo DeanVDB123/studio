@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -23,6 +24,26 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/memorials',
+        destination: '/admin',
+      },
+      {
+        source: '/create',
+        destination: '/admin/create',
+      },
+      {
+        source: '/visits',
+        destination: '/admin/scans',
+      },
+      {
+        source: '/edit/:memorialId',
+        destination: '/admin/edit/:memorialId',
+      },
+    ];
   },
 };
 

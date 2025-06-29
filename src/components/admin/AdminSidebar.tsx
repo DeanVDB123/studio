@@ -21,9 +21,9 @@ import { useToast } from '@/hooks/use-toast';
 
 
 const navItems = [
-  { href: '/admin', label: 'Memorials', icon: LayoutDashboard },
-  { href: '/admin/create', label: 'New Memorial', icon: PlusCircle },
-  { href: '/admin/scans', label: 'Visits', icon: QrCode },
+  { href: '/memorials', label: 'Memorials', icon: LayoutDashboard },
+  { href: '/create', label: 'New Memorial', icon: PlusCircle },
+  { href: '/visits', label: 'Visits', icon: QrCode },
 ];
 
 export function AdminSidebar() {
@@ -41,6 +41,15 @@ export function AdminSidebar() {
       toast({ title: "Logout Failed", description: "Could not log out. Please try again.", variant: "destructive" });
       console.error("Logout error:", error);
     }
+  };
+  
+  const isActive = (href: string) => {
+    if (href === '/memorials') {
+      // Make "Memorials" active for the main list and the edit page.
+      return pathname === href || pathname.startsWith('/edit/');
+    }
+    // For other items, an exact match is fine.
+    return pathname === href;
   };
 
   return (
@@ -60,7 +69,7 @@ export function AdminSidebar() {
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href} passHref legacyBehavior>
                   <SidebarMenuButton
-                    isActive={pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))}
+                    isActive={isActive(item.href)}
                     tooltip={{children: item.label, side: 'right', align: 'center'}}
                     className="w-full justify-start"
                   >
