@@ -11,7 +11,7 @@ export function CookieConsent() {
   useEffect(() => {
     // Check localStorage only on the client side
     const consent = localStorage.getItem('cookie_consent');
-    if (consent === null) {
+    if (consent !== 'given') {
        // Use a short delay to prevent layout shifts and ensure the main content loads first.
       const timer = setTimeout(() => {
         setShowConsent(true);
