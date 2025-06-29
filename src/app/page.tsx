@@ -94,8 +94,8 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <Card className="flex flex-col items-center p-6 bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
                  <CardHeader className="p-0 mb-4">
-                   <div className="bg-primary/10 p-4 rounded-full">
-                       <UserPlus className="h-8 w-8 text-primary" />
+                   <div className="bg-secondary/20 p-4 rounded-full">
+                       <UserPlus className="h-8 w-8 text-secondary-foreground" />
                    </div>
                 </CardHeader>
                 <CardTitle className="font-headline text-xl mb-2">Step 1</CardTitle>
@@ -105,8 +105,8 @@ export default function HomePage() {
               </Card>
               <Card className="flex flex-col items-center p-6 bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
                  <CardHeader className="p-0 mb-4">
-                   <div className="bg-primary/10 p-4 rounded-full">
-                       <FilePenLine className="h-8 w-8 text-primary" />
+                   <div className="bg-secondary/20 p-4 rounded-full">
+                       <FilePenLine className="h-8 w-8 text-secondary-foreground" />
                    </div>
                 </CardHeader>
                 <CardTitle className="font-headline text-xl mb-2">Step 2</CardTitle>
@@ -116,8 +116,8 @@ export default function HomePage() {
               </Card>
               <Card className="flex flex-col items-center p-6 bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <CardHeader className="p-0 mb-4">
-                   <div className="bg-primary/10 p-4 rounded-full">
-                       <Share2 className="h-8 w-8 text-primary" />
+                   <div className="bg-secondary/20 p-4 rounded-full">
+                       <Share2 className="h-8 w-8 text-secondary-foreground" />
                    </div>
                 </CardHeader>
                 <CardTitle className="font-headline text-xl mb-2">Step 3</CardTitle>
