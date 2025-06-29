@@ -61,7 +61,8 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
             // Opacity scales from 0.15 (for 1 view) to 1.0 (for max views)
             const opacity = count > 0 ? 0.15 + (count / maxViews) * 0.85 : 0;
             acc[dateStr] = {
-                backgroundColor: `hsla(var(--primary), ${opacity})`,
+                // Using explicit HSL values for the primary color to ensure correct rendering
+                backgroundColor: `hsla(225, 23%, 22%, ${opacity})`,
                 color: opacity > 0.6 ? 'hsl(var(--primary-foreground))' : 'inherit',
             };
             return acc;
@@ -100,10 +101,10 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
                 <span>Less</span>
                 <div className="flex gap-1">
-                    <div className="h-4 w-4 rounded-sm bg-primary/20 border border-border" />
-                    <div className="h-4 w-4 rounded-sm bg-primary/40 border border-border" />
-                    <div className="h-4 w-4 rounded-sm bg-primary/60 border border-border" />
-                    <div className="h-4 w-4 rounded-sm bg-primary/80 border border-border" />
+                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.2)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.4)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.6)' }} />
+                    <div className="h-4 w-4 rounded-sm border border-border" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.8)' }} />
                 </div>
                 <span>More</span>
             </div>
