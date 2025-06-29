@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -14,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, PlusCircle, LogOut, Loader2 } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, LogOut, Loader2, QrCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/create', label: 'New Memorial', icon: PlusCircle },
+  { href: '/admin/scans', label: 'My Scans', icon: QrCode },
 ];
 
 export function AdminSidebar() {

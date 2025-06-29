@@ -31,6 +31,7 @@ type UserMemorial = {
   lifeSummary: string;
   profilePhotoUrl?: string;
   viewCount?: number;
+  lastVisited?: string;
 };
 
 export const dynamic = 'force-dynamic';

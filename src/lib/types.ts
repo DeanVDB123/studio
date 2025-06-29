@@ -19,6 +19,7 @@ export interface MemorialData {
   stories: string[]; // Array of stories
   ownerStatus?: string; // Status of the memorial owner
   viewCount?: number;
+  lastVisited?: string;
 }
 
 export interface OrganizedContent {
