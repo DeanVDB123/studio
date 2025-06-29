@@ -35,6 +35,9 @@
     
     --radius: 0.5rem;
 
+    --admin: 45 100% 51%; /* Gold #FFD700 */
+    --admin-foreground: 0 0% 10%; /* Black */
+
     /* Sidebar specific colors, can be adjusted if sidebar has a different theme */
     --sidebar-background: 225 23% 22%; /* Match logo background */
     --sidebar-foreground: 0 0% 95%; /* Light text for dark background */
@@ -76,6 +79,9 @@
     --input: 0 0% 30%;
     --ring: 225 23% 60%;
     
+    --admin: 45 100% 40%; /* Darker Gold for dark mode */
+    --admin-foreground: 0 0% 98%; /* White text for dark mode */
+
     /* Sidebar specific colors for dark mode */
     --sidebar-background: 225 23% 22%; /* Match logo background */
     --sidebar-foreground: 0 0% 90%;

@@ -36,6 +36,17 @@ export function AdminHeader() {
     }
   };
 
+  const getBadgeVariant = (status: string | null) => {
+    switch (status?.toUpperCase()) {
+      case 'ADMIN':
+        return 'admin' as const;
+      case 'PAID':
+        return 'outline' as const;
+      default:
+        return 'secondary' as const;
+    }
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-primary bg-primary px-4 text-primary-foreground sm:px-6">
       <div className="flex items-center gap-2 md:hidden">
@@ -50,10 +61,10 @@ export function AdminHeader() {
                 <span className="text-sm hidden sm:inline">{user.email}</span>
                  {userStatus && (
                   <Badge
-                    variant={(userStatus.toUpperCase() === 'PAID' || userStatus.toUpperCase() === 'ADMIN') ? 'outline' : 'secondary'}
+                    variant={getBadgeVariant(userStatus)}
                     className={cn(
                       "hidden sm:inline-flex",
-                      (userStatus.toUpperCase() === 'PAID' || userStatus.toUpperCase() === 'ADMIN') && "bg-primary-foreground text-primary hover:bg-primary-foreground"
+                      userStatus.toUpperCase() === 'PAID' && "bg-primary-foreground text-primary hover:bg-primary-foreground"
                     )}
                   >
                     {userStatus.toUpperCase()}
@@ -70,7 +81,7 @@ export function AdminHeader() {
                   </p>
                   {userStatus && (
                      <div className="flex items-center pt-2">
-                       <Badge variant={(userStatus.toUpperCase() === 'PAID' || userStatus.toUpperCase() === 'ADMIN') ? 'outline' : 'secondary'}>
+                       <Badge variant={getBadgeVariant(userStatus)}>
                          {userStatus.toUpperCase()}
                        </Badge>
                     </div>
