@@ -43,6 +43,10 @@ const nextConfig: NextConfig = {
         source: '/edit/:memorialId',
         destination: '/admin/edit/:memorialId',
       },
+      {
+        source: '/:memorialId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})',
+        destination: '/memorial/:memorialId',
+      },
     ];
   },
 };

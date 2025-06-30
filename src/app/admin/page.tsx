@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
                   </Link>
                 </Button>
                 <Button variant="ghost" size="icon" asChild title={`View ${memorial.deceasedName}`}>
-                  <Link href={`/memorial/${memorial.id}`} target="_blank">
+                  <Link href={`/${memorial.id}`} target="_blank">
                     <ExternalLink className="h-5 w-5" /> 
                     <span className="sr-only">View</span>
                   </Link>

@@ -101,7 +101,7 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     revalidatePath('/memorials', 'page');
     if (savedMemorial.id) {
       revalidatePath(`/edit/${savedMemorial.id}`);
-      revalidatePath(`/memorial/${savedMemorial.id}`);
+      revalidatePath(`/${savedMemorial.id}`);
     }
     
     return savedMemorial;

@@ -96,7 +96,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
     );
   }
   
-  const permalink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:9002'}/memorial/${memorialId}`;
+  const permalink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:9002'}/${memorialId}`;
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
