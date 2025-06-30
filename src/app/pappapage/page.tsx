@@ -44,6 +44,7 @@ export default function PappaPage() {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
   const { toast } = useToast();
   const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -81,6 +82,7 @@ export default function PappaPage() {
       toast({ title: "Update Failed", description: error.message, variant: "destructive" });
     } finally {
       setUpdatingStatusFor(null);
+      setOpenPopoverId(null); // Close the popover
     }
   };
 
@@ -198,7 +200,7 @@ export default function PappaPage() {
                         ADMIN
                       </Badge>
                     ) : (
-                      <Popover>
+                      <Popover open={openPopoverId === u.userId} onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? u.userId : null)}>
                         <PopoverTrigger asChild>
                           <Button variant="ghost" className="p-0 h-auto" disabled={updatingStatusFor === u.userId}>
                             {updatingStatusFor === u.userId ? (
