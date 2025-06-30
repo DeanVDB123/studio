@@ -1,3 +1,4 @@
+
 // src/lib/data.ts
 'use server';
 
@@ -43,6 +44,10 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
       console.log(`[Firestore] Found memorial owner UID: ${memorialData.userId}. Fetching status.`);
       memorialData.ownerStatus = await fetchUserStatus(memorialData.userId);
       console.log(`[Firestore] Found owner status: ${memorialData.ownerStatus}`);
+    } else {
+      // This is a demo/sample memorial without an owner. Treat it as public.
+      console.log(`[Firestore] Memorial with ID ${id} has no owner. Treating as public demo.`);
+      memorialData.ownerStatus = 'PAID'; // Assign a status that bypasses the 'FREE' tier check
     }
 
     return memorialData;
