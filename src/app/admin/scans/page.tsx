@@ -46,7 +46,15 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
     const dailyData = useMemo(() => processViewDataForCalendar(timestamps), [timestamps]);
 
     const datesWithData = Object.keys(dailyData);
-    const maxViews = Math.max(1, ...Object.values(dailyData));
+
+    const getOpacityForCount = (count: number): number => {
+        if (count >= 50) return 1.0;
+        if (count >= 30) return 0.8;
+        if (count >= 20) return 0.6;
+        if (count >= 10) return 0.4;
+        if (count > 0) return 0.2;
+        return 0;
+    };
 
     const modifiers = useMemo(() => {
         return datesWithData.reduce((acc, dateStr) => {
@@ -57,17 +65,15 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
 
     const modifiersStyles = useMemo(() => {
         return datesWithData.reduce((acc, dateStr) => {
-            const count = dailyData[dateStr];
-            // Opacity scales from 0.15 (for 1 view) to 1.0 (for max views)
-            const opacity = count > 0 ? 0.15 + (count / maxViews) * 0.85 : 0;
+            const count = dailyData[dateStr] || 0;
+            const opacity = getOpacityForCount(count);
             acc[dateStr] = {
-                // Using explicit HSL values for the primary color to ensure correct rendering
                 backgroundColor: `hsla(225, 23%, 22%, ${opacity})`,
-                color: opacity > 0.6 ? 'hsl(var(--primary-foreground))' : 'inherit',
+                color: opacity > 0.5 ? 'hsl(var(--primary-foreground))' : 'inherit',
             };
             return acc;
         }, {} as Record<string, React.CSSProperties>);
-    }, [datesWithData, dailyData, maxViews]);
+    }, [datesWithData, dailyData]);
 
 
     if (timestamps.length === 0) {
@@ -102,10 +108,11 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
             <div className="flex items-center gap-2 text-xs text-primary/80 mt-2">
                 <span>Less</span>
                 <div className="flex gap-1">
-                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.2)' }} />
-                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.4)' }} />
-                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.6)' }} />
-                    <div className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.8)' }} />
+                    <div title="1-9 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.2)' }} />
+                    <div title="10-19 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.4)' }} />
+                    <div title="20-29 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.6)' }} />
+                    <div title="30-49 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.8)' }} />
+                    <div title="50+ visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 1.0)' }} />
                 </div>
                 <span>More</span>
             </div>
