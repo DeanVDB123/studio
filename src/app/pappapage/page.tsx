@@ -3,8 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAllUsersWithMemorialCount, updateUserStatusAction } from '@/lib/data';
-import type { UserForAdmin } from '@/lib/types';
+import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback } from '@/lib/data';
+import type { UserForAdmin, Feedback } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2, ArrowUpDown, Search, ChevronDown } from 'lucide-react';
@@ -53,6 +53,10 @@ export default function PappaPage() {
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedView, setSelectedView] = useState('User Management');
+  const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
+  const [isLoadingFeedback, setIsLoadingFeedback] = useState(true);
+  const [expandedFeedbackId, setExpandedFeedbackId] = useState<string | null>(null);
+
 
   useEffect(() => {
     async function fetchUsers() {
@@ -76,6 +80,24 @@ export default function PappaPage() {
       }
     }
   }, [userStatus, authLoading, toast]);
+  
+  useEffect(() => {
+    async function fetchFeedback() {
+      if (userStatus === 'ADMIN' && selectedView === 'Feedback') {
+        setIsLoadingFeedback(true);
+        try {
+          const allFeedback = await getAllFeedback();
+          setFeedbackList(allFeedback);
+        } catch (error) {
+          console.error("[PappaPage] Failed to fetch feedback:", error);
+          toast({ title: "Error", description: "Could not load feedback data.", variant: "destructive" });
+        } finally {
+          setIsLoadingFeedback(false);
+        }
+      }
+    }
+    fetchFeedback();
+  }, [userStatus, selectedView, toast]);
 
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
@@ -320,9 +342,60 @@ export default function PappaPage() {
           )}
 
           {selectedView === 'Feedback' && (
-            <div className="flex items-center justify-center h-64 text-center">
-              <h2 className="text-2xl font-headline text-muted-foreground">Feedback View Coming Soon</h2>
-            </div>
+             <>
+              {isLoadingFeedback ? (
+                  <div className="flex items-center justify-center h-64 text-center">
+                      <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+                  </div>
+              ) : (
+                  <div className="rounded-md border">
+                      <Table>
+                          <TableHeader>
+                              <TableRow>
+                                  <TableHead className="w-[250px]">User Email</TableHead>
+                                  <TableHead>Feedback Message</TableHead>
+                                  <TableHead className="w-[180px] text-right">Date</TableHead>
+                              </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                              {feedbackList.length > 0 ? (
+                                  feedbackList.map((item) => (
+                                      <TableRow key={item.id}>
+                                          <TableCell className="font-medium align-top">{item.email}</TableCell>
+                                          <TableCell className="align-top max-w-[600px]">
+                                              {expandedFeedbackId === item.id || item.feedback.length <= 150 ? (
+                                                  <>
+                                                      <p className="whitespace-pre-wrap">{item.feedback}</p>
+                                                      {item.feedback.length > 150 && (
+                                                          <Button variant="link" className="p-0 h-auto text-xs" onClick={() => setExpandedFeedbackId(null)}>
+                                                              Read less
+                                                          </Button>
+                                                      )}
+                                                  </>
+                                              ) : (
+                                                  <>
+                                                      <p>{`${item.feedback.substring(0, 150)}...`}</p>
+                                                      <Button variant="link" className="p-0 h-auto text-xs" onClick={() => setExpandedFeedbackId(item.id!)}>
+                                                          Read more
+                                                      </Button>
+                                                  </>
+                                              )}
+                                          </TableCell>
+                                          <TableCell className="text-right align-top">{safeFormatDateTime(item.createdAt)}</TableCell>
+                                      </TableRow>
+                                  ))
+                              ) : (
+                                  <TableRow>
+                                      <TableCell colSpan={3} className="h-24 text-center">
+                                          No feedback submitted yet.
+                                      </TableCell>
+                                  </TableRow>
+                              )}
+                          </TableBody>
+                      </Table>
+                  </div>
+              )}
+            </>
           )}
           {selectedView === 'Errors' && (
             <div className="flex items-center justify-center h-64 text-center">

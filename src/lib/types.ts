@@ -49,6 +49,7 @@ export interface UserForAdmin {
 }
 
 export interface Feedback {
+  id?: string;
   userId: string;
   email: string;
   feedback: string;

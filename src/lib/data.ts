@@ -4,7 +4,7 @@
 'use server';
 
 import { firestore } from '@/lib/firebase';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion, orderBy } from 'firebase/firestore';
 import type { MemorialData, SignupEvent, UserForAdmin, Feedback } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
@@ -175,6 +175,25 @@ export async function saveFeedback(feedbackData: Omit<Feedback, 'createdAt'>): P
     console.error('[Firestore] Failed to save feedback:', error);
     throw new Error('Could not save feedback to the database.');
   }
+}
+
+export async function getAllFeedback(): Promise<Feedback[]> {
+  console.log(`[Firestore] getAllFeedback called.`);
+  const q = query(feedbackCollection, orderBy("createdAt", "desc"));
+  const feedbackSnapshot = await getDocs(q);
+
+  const feedbackList: Feedback[] = feedbackSnapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      userId: data.userId,
+      email: data.email,
+      feedback: data.feedback,
+      createdAt: data.createdAt,
+    };
+  });
+  console.log(`[Firestore] Found ${feedbackList.length} feedback entries.`);
+  return feedbackList;
 }
 
 // Admin-specific functions
