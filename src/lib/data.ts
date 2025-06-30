@@ -4,7 +4,7 @@
 
 import { firestore } from '@/lib/firebase';
 import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion } from 'firebase/firestore';
-import type { MemorialData, SignupEvent } from '@/lib/types';
+import type { MemorialData, SignupEvent, UserForAdmin } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
 const signupsCollection = collection(firestore, 'signups');
@@ -154,4 +154,54 @@ export async function incrementMemorialViewCount(memorialId: string): Promise<vo
     console.error(`[Firestore] Failed to increment view count for ${memorialId}. This could be because the document does not exist or due to a permissions issue.`, error);
     // We don't re-throw because this is a non-critical background task.
   }
+}
+
+// Admin-specific functions
+export async function getAllUsersWithMemorialCount(): Promise<UserForAdmin[]> {
+  console.log(`[Firestore] getAllUsersWithMemorialCount called.`);
+  const signupsSnapshot = await getDocs(signupsCollection);
+  const memorialsSnapshot = await getDocs(memorialsCollection);
+
+  const memorialCounts: Record<string, number> = {};
+  memorialsSnapshot.forEach(doc => {
+    const data = doc.data() as MemorialData;
+    if (data.userId) {
+      memorialCounts[data.userId] = (memorialCounts[data.userId] || 0) + 1;
+    }
+  });
+
+  const users: UserForAdmin[] = signupsSnapshot.docs.map(doc => {
+    const signupData = doc.data() as SignupEvent;
+    return {
+      userId: signupData.userId,
+      email: signupData.email,
+      signupDate: signupData.signupDate,
+      status: signupData.status,
+      dateSwitched: signupData.dateSwitched,
+      memorialCount: memorialCounts[signupData.userId] || 0,
+    };
+  });
+
+  console.log(`[Firestore] Found ${users.length} total users.`);
+  return users;
+}
+
+export async function updateUserStatusAction(userId: string, newStatus: string): Promise<void> {
+    console.log(`[Firestore] updateUserStatusAction called for user ${userId} to set status ${newStatus}.`);
+    const q = query(signupsCollection, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    const userDocRef = querySnapshot.docs[0].ref;
+    const updatePayload: { status: string, dateSwitched?: string } = { status: newStatus };
+
+    if (newStatus !== 'FREE') {
+      updatePayload.dateSwitched = new Date().toISOString();
+    }
+
+    await updateDoc(userDocRef, updatePayload);
+    console.log(`[Firestore] Successfully updated status for user ${userId}.`);
 }

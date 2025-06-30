@@ -1,4 +1,5 @@
 
+
 export interface Photo {
   id: string;
   url: string; // Data URI or a remote URL if stored
@@ -35,4 +36,14 @@ export interface SignupEvent {
   email: string;
   signupDate: string; // ISO 8601 format
   status: string; // e.g., 'FREE', 'PAID'
+  dateSwitched?: string; // ISO 8601 format for when status changed
+}
+
+export interface UserForAdmin {
+    userId: string;
+    email: string;
+    signupDate: string;
+    status: string;
+    dateSwitched?: string;
+    memorialCount: number;
 }
