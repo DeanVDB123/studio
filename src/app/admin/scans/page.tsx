@@ -68,8 +68,8 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
             const count = dailyData[dateStr] || 0;
             const opacity = getOpacityForCount(count);
             acc[dateStr] = {
-                backgroundColor: `hsla(225, 23%, 22%, ${opacity})`,
-                color: opacity > 0.5 ? 'hsl(var(--primary-foreground))' : 'inherit',
+                backgroundColor: `hsla(42, 73%, 79%, ${opacity})`,
+                color: opacity > 0.5 ? 'hsl(var(--secondary-foreground))' : 'inherit',
             };
             return acc;
         }, {} as Record<string, React.CSSProperties>);
@@ -100,18 +100,19 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
                     head_cell: "text-xs w-8",
                     day: "h-8 w-8 rounded-sm text-xs",
                     day_today: "bg-background ring-1 ring-primary",
+                    day_selected: "bg-transparent hover:bg-accent/50 focus:bg-accent/50" // Prevent yellow selection color
                 }}
                 showOutsideDays
                 fixedWeeks
             />
-            <div className="flex items-center gap-2 text-xs text-primary/80 mt-2">
+            <div className="flex items-center gap-2 text-xs text-secondary-foreground mt-2">
                 <span>Less</span>
                 <div className="flex gap-1">
-                    <div title="1-9 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.2)' }} />
-                    <div title="10-19 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.4)' }} />
-                    <div title="20-29 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.6)' }} />
-                    <div title="30-49 visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 0.8)' }} />
-                    <div title="50+ visits" className="h-4 w-4 rounded-sm border border-primary/50" style={{ backgroundColor: 'hsla(225, 23%, 22%, 1.0)' }} />
+                    <div title="1-9 visits" className="h-4 w-4 rounded-sm border border-accent/50" style={{ backgroundColor: 'hsla(42, 73%, 79%, 0.2)' }} />
+                    <div title="10-19 visits" className="h-4 w-4 rounded-sm border border-accent/50" style={{ backgroundColor: 'hsla(42, 73%, 79%, 0.4)' }} />
+                    <div title="20-29 visits" className="h-4 w-4 rounded-sm border border-accent/50" style={{ backgroundColor: 'hsla(42, 73%, 79%, 0.6)' }} />
+                    <div title="30-49 visits" className="h-4 w-4 rounded-sm border border-accent/50" style={{ backgroundColor: 'hsla(42, 73%, 79%, 0.8)' }} />
+                    <div title="50+ visits" className="h-4 w-4 rounded-sm border border-accent/50" style={{ backgroundColor: 'hsla(42, 73%, 79%, 1.0)' }} />
                 </div>
                 <span>More</span>
             </div>
