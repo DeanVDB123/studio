@@ -169,7 +169,7 @@ export default function PappaPage() {
                 <TableRow key={u.userId}>
                   <TableCell className="font-medium">{u.email}</TableCell>
                   <TableCell className="text-center">{u.memorialCount}</TableCell>
-                  <TableCell>{format(new Date(u.signupDate), 'dd MMM yyyy')}</TableCell>
+                  <TableCell>{u.signupDate ? format(new Date(u.signupDate), 'dd MMM yyyy') : 'N/A'}</TableCell>
                   <TableCell>
                     {u.dateSwitched ? format(new Date(u.dateSwitched), 'dd MMM yyyy, p') : 'N/A'}
                   </TableCell>
