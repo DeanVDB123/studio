@@ -7,19 +7,17 @@ import { getAllUsersWithMemorialCount, updateUserStatusAction } from '@/lib/data
 import type { UserForAdmin } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 type SortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type SortDirection = 'asc' | 'desc';
@@ -45,6 +43,7 @@ export default function PappaPage() {
   const { toast } = useToast();
   const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     async function fetchUsers() {
@@ -113,8 +112,17 @@ export default function PappaPage() {
   };
 
 
-  const sortedUsers = React.useMemo(() => {
+  const filteredAndSortedUsers = React.useMemo(() => {
     let sortableUsers = [...users];
+
+    if (searchTerm) {
+      const lowercasedFilter = searchTerm.toLowerCase();
+      sortableUsers = sortableUsers.filter(u =>
+        u.email.toLowerCase().includes(lowercasedFilter) ||
+        u.status.toLowerCase().includes(lowercasedFilter)
+      );
+    }
+    
     sortableUsers.sort((a, b) => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
@@ -132,7 +140,7 @@ export default function PappaPage() {
       return sortConfig.direction === 'desc' ? comparison * -1 : comparison;
     });
     return sortableUsers;
-  }, [users, sortConfig]);
+  }, [users, sortConfig, searchTerm]);
 
   if (authLoading) {
     // Return null to avoid flashing a "Verifying..." message to non-admins.
@@ -146,7 +154,18 @@ export default function PappaPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-headline mb-8">User Management</h1>
+      <h1 className="text-3xl font-headline mb-4">User Management</h1>
+      <div className="flex items-center py-4">
+        <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by email or status..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-80"
+            />
+        </div>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -185,8 +204,8 @@ export default function PappaPage() {
                   <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                 </TableCell>
               </TableRow>
-            ) : sortedUsers.length > 0 ? (
-              sortedUsers.map((u) => (
+            ) : filteredAndSortedUsers.length > 0 ? (
+              filteredAndSortedUsers.map((u) => (
                 <TableRow key={u.userId}>
                   <TableCell className="font-medium">{u.email}</TableCell>
                   <TableCell className="text-center">{u.memorialCount}</TableCell>
