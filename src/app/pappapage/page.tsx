@@ -7,13 +7,19 @@ import { getAllUsersWithMemorialCount, updateUserStatusAction } from '@/lib/data
 import type { UserForAdmin } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from '@/hooks/use-toast';
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +52,7 @@ export default function PappaPage() {
   const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedView, setSelectedView] = useState('User Management');
 
   useEffect(() => {
     async function fetchUsers() {
@@ -96,7 +103,7 @@ export default function PappaPage() {
   };
   
   const safeFormatDate = (dateString: string | undefined | null) => {
-    if (!dateString || new Date(dateString) > new Date()) return 'N/A';
+    if (!dateString) return 'N/A';
     try {
       return format(new Date(dateString), 'dd MMM yyyy');
     } catch (e) {
@@ -105,7 +112,7 @@ export default function PappaPage() {
   };
 
    const safeFormatDateTime = (dateString: string | undefined | null) => {
-    if (!dateString || new Date(dateString) > new Date()) return 'N/A';
+    if (!dateString) return 'N/A';
     try {
       return format(new Date(dateString), 'dd MMM yyyy, p');
     } catch (e) {
@@ -172,117 +179,157 @@ export default function PappaPage() {
       </header>
       
       <main className="flex-grow">
-        <div className="container mx-auto py-10">
-          <h1 className="text-3xl font-headline mb-4">User Management</h1>
-          <div className="flex items-center py-4">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by email or status..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-80"
-                />
-            </div>
+        <div className="container mx-auto py-10 px-4">
+          <div className="mb-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center text-3xl font-headline p-0 h-auto hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                >
+                  {selectedView}
+                  <ChevronDown className="ml-2 h-8 w-8" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onSelect={() => setSelectedView('User Management')}>
+                  User Management
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setSelectedView('Feedback')}>
+                  Feedback
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setSelectedView('Errors')}>
+                  Errors
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('email')}>
-                      User Email <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-center">
-                    <Button variant="ghost" onClick={() => handleSort('memorialCount')}>
-                      Memorials <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('signupDate')}>
-                      Date Joined <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('dateSwitched')}>
-                      Date Switched <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('status')}>
-                      Status <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                    </TableCell>
-                  </TableRow>
-                ) : filteredAndSortedUsers.length > 0 ? (
-                  filteredAndSortedUsers.map((u) => (
-                    <TableRow key={u.userId}>
-                      <TableCell className="font-medium">{u.email}</TableCell>
-                      <TableCell className="text-center">{u.memorialCount}</TableCell>
-                      <TableCell>{safeFormatDate(u.signupDate)}</TableCell>
-                      <TableCell>
-                        {safeFormatDateTime(u.dateSwitched)}
-                      </TableCell>
-                      <TableCell>
-                        {u.status === 'ADMIN' ? (
-                          <Badge variant="admin" className="cursor-not-allowed">
-                            ADMIN
-                          </Badge>
-                        ) : (
-                          <Popover open={openPopoverId === u.userId} onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? u.userId : null)}>
-                            <PopoverTrigger asChild>
-                              <Button variant="ghost" className="p-0 h-auto" disabled={updatingStatusFor === u.userId}>
-                                {updatingStatusFor === u.userId ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Badge variant={getBadgeVariant(u.status)} className="cursor-pointer hover:opacity-80 transition-opacity">
-                                    {u.status}
-                                  </Badge>
-                                )}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-40 p-0">
-                              <div className="flex flex-col">
-                                <Button
-                                    variant="ghost"
-                                    className="justify-start rounded-b-none"
-                                    onClick={() => handleStatusChange(u.userId, 'FREE')}
-                                  >
-                                    FREE
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    className="justify-start rounded-t-none"
-                                    onClick={() => handleStatusChange(u.userId, 'PAID')}
-                                  >
-                                    PAID
-                                  </Button>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                      </TableCell>
+
+          {selectedView === 'User Management' && (
+             <>
+              <div className="flex items-center py-4">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by email or status..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-80"
+                    />
+                </div>
+              </div>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleSort('email')}>
+                          User Email <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead className="text-center">
+                        <Button variant="ghost" onClick={() => handleSort('memorialCount')}>
+                          Memorials <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleSort('signupDate')}>
+                          Date Joined <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleSort('dateSwitched')}>
+                          Date Switched <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleSort('status')}>
+                          Status <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      No users found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+                        </TableCell>
+                      </TableRow>
+                    ) : filteredAndSortedUsers.length > 0 ? (
+                      filteredAndSortedUsers.map((u) => (
+                        <TableRow key={u.userId}>
+                          <TableCell className="font-medium">{u.email}</TableCell>
+                          <TableCell className="text-center">{u.memorialCount}</TableCell>
+                          <TableCell>{safeFormatDate(u.signupDate)}</TableCell>
+                          <TableCell>
+                            {safeFormatDateTime(u.dateSwitched)}
+                          </TableCell>
+                          <TableCell>
+                            {u.status === 'ADMIN' ? (
+                              <Badge variant="admin" className="cursor-not-allowed">
+                                ADMIN
+                              </Badge>
+                            ) : (
+                              <Popover open={openPopoverId === u.userId} onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? u.userId : null)}>
+                                <PopoverTrigger asChild>
+                                  <Button variant="ghost" className="p-0 h-auto" disabled={updatingStatusFor === u.userId}>
+                                    {updatingStatusFor === u.userId ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <Badge variant={getBadgeVariant(u.status)} className="cursor-pointer hover:opacity-80 transition-opacity">
+                                        {u.status}
+                                      </Badge>
+                                    )}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-40 p-0">
+                                  <div className="flex flex-col">
+                                    <Button
+                                        variant="ghost"
+                                        className="justify-start rounded-b-none"
+                                        onClick={() => handleStatusChange(u.userId, 'FREE')}
+                                      >
+                                        FREE
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        className="justify-start rounded-t-none"
+                                        onClick={() => handleStatusChange(u.userId, 'PAID')}
+                                      >
+                                        PAID
+                                      </Button>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          No users found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
+
+          {selectedView === 'Feedback' && (
+            <div className="flex items-center justify-center h-64 text-center">
+              <h2 className="text-2xl font-headline text-muted-foreground">Feedback View Coming Soon</h2>
+            </div>
+          )}
+          {selectedView === 'Errors' && (
+            <div className="flex items-center justify-center h-64 text-center">
+              <h2 className="text-2xl font-headline text-muted-foreground">Error Log View Coming Soon</h2>
+            </div>
+          )}
+
         </div>
       </main>
 
