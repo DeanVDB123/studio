@@ -365,7 +365,7 @@ export default function PappaPage() {
                                           <TableCell className="align-top max-w-[600px]">
                                               {expandedFeedbackId === item.id || item.feedback.length <= 150 ? (
                                                   <>
-                                                      <p className="whitespace-pre-wrap">{item.feedback}</p>
+                                                      <p className="whitespace-pre-wrap break-words">{item.feedback}</p>
                                                       {item.feedback.length > 150 && (
                                                           <Button variant="link" className="p-0 h-auto text-xs" onClick={() => setExpandedFeedbackId(null)}>
                                                               Read less
@@ -374,7 +374,7 @@ export default function PappaPage() {
                                                   </>
                                               ) : (
                                                   <>
-                                                      <p>{`${item.feedback.substring(0, 150)}...`}</p>
+                                                      <p className="break-words">{`${item.feedback.substring(0, 150)}...`}</p>
                                                       <Button variant="link" className="p-0 h-auto text-xs" onClick={() => setExpandedFeedbackId(item.id!)}>
                                                           Read more
                                                       </Button>
