@@ -1,13 +1,13 @@
 
 "use client";
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllUsersWithMemorialCount, updateUserStatusAction } from '@/lib/data';
 import type { UserForAdmin } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ShieldAlert, ArrowUpDown } from 'lucide-react';
+import { Loader2, ArrowUpDown } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Select,
@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 type SortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type SortDirection = 'asc' | 'desc';
@@ -28,16 +28,9 @@ export default function PappaPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
   const { toast } = useToast();
-  const router = useRouter();
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
   useEffect(() => {
-    // Redirect non-admins immediately if auth is loaded
-    if (!authLoading && userStatus !== 'ADMIN') {
-      router.replace('/memorials');
-      return;
-    }
-
     async function fetchUsers() {
       if (userStatus === 'ADMIN') {
         setIsLoading(true);
@@ -53,11 +46,10 @@ export default function PappaPage() {
       }
     }
 
-    // Only fetch data if user is confirmed to be an admin
-    if (userStatus === 'ADMIN') {
+    if (!authLoading && userStatus === 'ADMIN') {
       fetchUsers();
     }
-  }, [userStatus, authLoading, router, toast]);
+  }, [userStatus, authLoading, toast]);
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     setIsUpdating(userId);
@@ -114,7 +106,7 @@ export default function PappaPage() {
     return sortableUsers;
   }, [users, sortConfig]);
 
-  if (authLoading || (!user && !userStatus)) {
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -124,14 +116,7 @@ export default function PappaPage() {
   }
 
   if (userStatus !== 'ADMIN') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen text-center">
-        <ShieldAlert className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-headline">Access Denied</h1>
-        <p className="text-muted-foreground">You do not have permission to view this page.</p>
-        <Button onClick={() => router.push('/memorials')} className="mt-4">Return to Dashboard</Button>
-      </div>
-    );
+    notFound();
   }
 
   return (
