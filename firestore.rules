@@ -1,20 +1,53 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Memorials: Publicly readable, but only the owner can create, update, or delete.
+
+    // Helper function to check for admin privileges by checking for a doc in the 'admins' collection
+    function isAdmin(userId) {
+      return exists(/databases/$(database)/documents/admins/$(userId));
+    }
+
+    // Rules for the 'signups' collection
+    match /signups/{docId} {
+      // Allow a logged-in user to create their own signup record
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // Allow a user to read their own signup record
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+
+      // ONLY an admin can update the 'status' and 'dateSwitched' fields for ANY user.
+      // This is the key rule for the admin page functionality.
+      allow update: if request.auth != null && isAdmin(request.auth.uid)
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'dateSwitched']);
+                      
+      // Deleting signup records is not allowed.
+      allow delete: if false;
+    }
+
+    // Rules for the 'memorials' collection
     match /memorials/{memorialId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // A logged-in user can create a memorial for themselves
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // The user who owns the memorial can update it, OR an admin can update it.
+      allow update: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin(request.auth.uid));
+
+      // Anyone can read a memorial if the owner has a 'PAID' or 'ADMIN' status.
+      // The owner or an admin can always read it, regardless of status.
+      allow read: if resource.data.ownerStatus == 'PAID' || resource.data.ownerStatus == 'ADMIN' ||
+                     (request.auth != null && (resource.data.userId == request.auth.uid || isAdmin(request.auth.uid)));
+
+      // Only the owner or an admin can delete a memorial.
+      allow delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin(request.auth.uid));
     }
     
-    // Signups: Can be created by the user upon signup. Only the user can read their own signup record.
-    // The 'status' can be updated (e.g. by an admin or payment flow later).
-    match /signups/{signupId} {
-      allow read, update: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    // Rules for the 'admins' collection
+    // This collection is manually managed in the Firebase Console.
+    // The rules below are restrictive, assuming only console access is needed.
+    // For extra security, you could lock this down completely from client requests.
+    match /admins/{userId} {
+      allow read, write: if false; // Prevent any client-side read/write to the admins list.
     }
   }
 }
