@@ -18,6 +18,8 @@ import {
 import { LayoutDashboard, PlusCircle, LogOut, Loader2, QrCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '../ui/separator';
+import { FeedbackDialog } from './FeedbackDialog';
 
 
 const navItems = [
@@ -92,7 +94,11 @@ export function AdminSidebar() {
             />
         </div>
       </SidebarContent>
-      <SidebarFooter className="mt-auto p-2 group-data-[collapsible=icon]:p-0">
+      <SidebarFooter className="mt-auto p-2 group-data-[collapsible=icon]:p-0 flex flex-col gap-1">
+         <div className="group-data-[collapsible=icon]:hidden">
+            <Separator className="my-2 bg-sidebar-border" />
+        </div>
+        <FeedbackDialog />
          <SidebarMenuButton
             tooltip={{children: 'Log Out', side: 'right', align: 'center'}}
             className="w-full justify-start"

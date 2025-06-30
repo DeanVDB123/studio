@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, saveMemorial as dbSaveMemorial, incrementMemorialViewCount } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadImage } from './storage';
@@ -129,5 +129,26 @@ export async function logMemorialViewAction(memorialId: string): Promise<void> {
   } catch (error) {
     console.error(`[Action] Error in logMemorialViewAction for ID ${memorialId}:`, error);
     // Do not re-throw, this is a background task.
+  }
+}
+
+export async function saveFeedbackAction(feedbackData: {
+  userId: string;
+  email: string;
+  feedback: string;
+}): Promise<void> {
+  console.log(`[Action] saveFeedbackAction called for user: ${feedbackData.userId}`);
+  if (!feedbackData.userId) {
+    throw new Error('You must be logged in to submit feedback.');
+  }
+  if (!feedbackData.feedback || !feedbackData.feedback.trim()) {
+    throw new Error('Feedback cannot be empty.');
+  }
+
+  try {
+    await dbSaveFeedback(feedbackData);
+  } catch (error: any) {
+    console.error('[Action] Error in saveFeedbackAction:', error);
+    throw new Error(error.message || 'An unexpected error occurred while saving feedback.');
   }
 }

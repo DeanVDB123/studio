@@ -47,3 +47,10 @@ export interface UserForAdmin {
     dateSwitched?: string;
     memorialCount: number;
 }
+
+export interface Feedback {
+  userId: string;
+  email: string;
+  feedback: string;
+  createdAt: string; // ISO 8601 format
+}

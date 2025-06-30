@@ -1,13 +1,15 @@
 
+
 // src/lib/data.ts
 'use server';
 
 import { firestore } from '@/lib/firebase';
 import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion } from 'firebase/firestore';
-import type { MemorialData, SignupEvent, UserForAdmin } from '@/lib/types';
+import type { MemorialData, SignupEvent, UserForAdmin, Feedback } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
 const signupsCollection = collection(firestore, 'signups');
+const feedbackCollection = collection(firestore, 'feedback');
 
 // Helper function to get status for a user
 async function fetchUserStatus(userId: string): Promise<string> {
@@ -157,6 +159,21 @@ export async function incrementMemorialViewCount(memorialId: string): Promise<vo
   } catch (error) {
     console.error(`[Firestore] Failed to increment view count for ${memorialId}. This could be because the document does not exist or due to a permissions issue.`, error);
     // We don't re-throw because this is a non-critical background task.
+  }
+}
+
+export async function saveFeedback(feedbackData: Omit<Feedback, 'createdAt'>): Promise<void> {
+  console.log(`[Firestore] saveFeedback called for user: ${feedbackData.userId}`);
+  try {
+    const dataToSave = {
+      ...feedbackData,
+      createdAt: new Date().toISOString(),
+    };
+    await addDoc(feedbackCollection, dataToSave);
+    console.log(`[Firestore] Feedback saved successfully for user ${feedbackData.userId}.`);
+  } catch (error) {
+    console.error('[Firestore] Failed to save feedback:', error);
+    throw new Error('Could not save feedback to the database.');
   }
 }
 
