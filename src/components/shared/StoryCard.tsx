@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,13 +14,22 @@ interface StoryCardProps {
   imageHint: string;
   name: string;
   timeline: string;
-  qrCodeUrl:string;
+  memorialId: string;
   story: string;
   className?: string;
 }
 
-export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCodeUrl, story, className }: StoryCardProps) {
+export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, memorialId, story, className }: StoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+
+  useEffect(() => {
+    // This code runs only on the client-side
+    if (typeof window !== 'undefined') {
+      setQrCodeUrl(`${window.location.origin}/${memorialId}`);
+    }
+  }, [memorialId]);
+
 
   return (
     <Card className={cn("flex flex-col overflow-hidden bg-primary", className)}>
@@ -38,8 +47,8 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, qrCod
         <p className="text-sm text-primary-foreground/80">{timeline}</p>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col pt-4 px-4 pb-4 bg-card">
-        <div className="flex justify-center pb-4">
-          <QRCodeDisplay url={qrCodeUrl} size={100} />
+        <div className="flex justify-center pb-4 h-[124px] items-center">
+          {qrCodeUrl ? <QRCodeDisplay url={qrCodeUrl} size={100} /> : null}
         </div>
         <div className={cn("relative", !isExpanded ? "h-24 overflow-hidden" : "h-auto")}>
           <p className={cn("text-foreground/90 transition-all duration-300")}>

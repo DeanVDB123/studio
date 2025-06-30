@@ -30,6 +30,15 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const [permalink, setPermalink] = useState('');
+
+
+  useEffect(() => {
+    // This code runs only on the client-side, ensuring window.location.origin is available.
+    if (typeof window !== 'undefined') {
+        setPermalink(`${window.location.origin}/${memorialId}`);
+    }
+  }, [memorialId]);
 
 
   useEffect(() => {
@@ -96,8 +105,6 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
     );
   }
   
-  const permalink = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:9002'}/${memorialId}`;
-
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2">
@@ -112,7 +119,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
              <CardDescription>Share this QR code for easy access.</CardDescription>
           </CardHeader>
           <CardContent>
-            <QRCodeDisplay url={permalink} />
+            {permalink && <QRCodeDisplay url={permalink} />}
           </CardContent>
         </Card>
       </div>
