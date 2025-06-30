@@ -89,7 +89,6 @@ const MemorialHeatmapCalendar = ({ timestamps }: { timestamps: string[] }) => {
         <div className="flex flex-col items-center gap-4">
             <Calendar
                 mode="multiple"
-                selected={Object.values(modifiers)}
                 onSelect={() => {}} // This is a display-only calendar
                 month={today}
                 modifiers={modifiers}
