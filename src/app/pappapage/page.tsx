@@ -18,9 +18,24 @@ import {
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { notFound } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type SortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type SortDirection = 'asc' | 'desc';
+
+const getBadgeVariant = (status: string | null) => {
+  switch (status?.toUpperCase()) {
+    case 'ADMIN':
+      return 'admin' as const;
+    case 'PAID':
+      return 'default' as const;
+    case 'FREE':
+    default:
+      return 'secondary' as const;
+  }
+};
+
 
 export default function PappaPage() {
   const { user, userStatus, loading: authLoading } = useAuth();
@@ -28,7 +43,7 @@ export default function PappaPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
   const { toast } = useToast();
-  const [isUpdating, setIsUpdating] = useState<string | null>(null);
+  const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -46,13 +61,16 @@ export default function PappaPage() {
       }
     }
 
-    if (!authLoading && userStatus === 'ADMIN') {
-      fetchUsers();
+    if (!authLoading) {
+      if (userStatus === 'ADMIN') {
+        fetchUsers();
+      }
     }
   }, [userStatus, authLoading, toast]);
 
+
   const handleStatusChange = async (userId: string, newStatus: string) => {
-    setIsUpdating(userId);
+    setUpdatingStatusFor(userId);
     try {
       await updateUserStatusAction(userId, newStatus);
       setUsers(prevUsers =>
@@ -62,7 +80,7 @@ export default function PappaPage() {
     } catch (error: any) {
       toast({ title: "Update Failed", description: error.message, variant: "destructive" });
     } finally {
-      setIsUpdating(null);
+      setUpdatingStatusFor(null);
     }
   };
 
@@ -74,13 +92,21 @@ export default function PappaPage() {
     setSortConfig({ key, direction });
   };
   
-  const safeFormatDate = (dateString: string | undefined | null, formatStr: string) => {
-    if (!dateString) return 'N/A';
+  const safeFormatDate = (dateString: string | undefined | null) => {
+    if (!dateString || new Date(dateString) > new Date()) return 'N/A';
     try {
-      // The `format` function from date-fns will throw an error for invalid dates.
-      return format(new Date(dateString), formatStr);
+      return format(new Date(dateString), 'dd MMM yyyy');
     } catch (e) {
-      return 'N/A'; // Return 'N/A' if the date is invalid.
+      return 'N/A';
+    }
+  };
+
+   const safeFormatDateTime = (dateString: string | undefined | null) => {
+    if (!dateString || new Date(dateString) > new Date()) return 'N/A';
+    try {
+      return format(new Date(dateString), 'dd MMM yyyy, p');
+    } catch (e) {
+      return 'N/A';
     }
   };
 
@@ -107,12 +133,9 @@ export default function PappaPage() {
   }, [users, sortConfig]);
 
   if (authLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Verifying Admin Access...</p>
-      </div>
-    );
+    // Return null to avoid flashing a "Verifying..." message to non-admins.
+    // The user sees a blank page for a moment, then the 404 page if not an admin.
+    return null;
   }
 
   if (userStatus !== 'ADMIN') {
@@ -165,25 +188,48 @@ export default function PappaPage() {
                 <TableRow key={u.userId}>
                   <TableCell className="font-medium">{u.email}</TableCell>
                   <TableCell className="text-center">{u.memorialCount}</TableCell>
-                  <TableCell>{safeFormatDate(u.signupDate, 'dd MMM yyyy')}</TableCell>
+                  <TableCell>{safeFormatDate(u.signupDate)}</TableCell>
                   <TableCell>
-                    {safeFormatDate(u.dateSwitched, 'dd MMM yyyy, p')}
+                    {safeFormatDateTime(u.dateSwitched)}
                   </TableCell>
                   <TableCell>
-                    <Select
-                      value={u.status}
-                      onValueChange={(newStatus) => handleStatusChange(u.userId, newStatus)}
-                      disabled={isUpdating === u.userId}
-                    >
-                      <SelectTrigger className="w-[120px]">
-                        {isUpdating === u.userId ? <Loader2 className="h-4 w-4 animate-spin" /> : <SelectValue />}
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="FREE">FREE</SelectItem>
-                        <SelectItem value="PAID">PAID</SelectItem>
-                        <SelectItem value="ADMIN">ADMIN</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {u.status === 'ADMIN' ? (
+                      <Badge variant="admin" className="cursor-not-allowed">
+                        ADMIN
+                      </Badge>
+                    ) : (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" className="p-0 h-auto" disabled={updatingStatusFor === u.userId}>
+                            {updatingStatusFor === u.userId ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Badge variant={getBadgeVariant(u.status)} className="cursor-pointer hover:opacity-80 transition-opacity">
+                                {u.status}
+                              </Badge>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-40 p-0">
+                           <div className="flex flex-col">
+                             <Button
+                                variant="ghost"
+                                className="justify-start rounded-b-none"
+                                onClick={() => handleStatusChange(u.userId, 'FREE')}
+                              >
+                                FREE
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                className="justify-start rounded-t-none"
+                                onClick={() => handleStatusChange(u.userId, 'PAID')}
+                              >
+                                PAID
+                              </Button>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
