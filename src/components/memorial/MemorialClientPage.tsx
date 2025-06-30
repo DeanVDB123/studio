@@ -104,7 +104,7 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
 
   // If access is granted, render the page
   const profilePhotoUrl = memorialData.photos && memorialData.photos.length > 0 ? memorialData.photos[0].url : undefined;
-  const backLinkHref = isOwner ? '/memorials' : '/';
+  const backLinkHref = isOwner || isAdmin ? '/memorials' : '/';
 
   return (
     <div className="bg-background min-h-screen font-body">
