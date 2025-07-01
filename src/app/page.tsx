@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { StoryCard } from '@/components/shared/StoryCard';
 import { PricingTable } from '@/components/shared/PricingTable';
 import { UserPlus, FilePenLine, Share2, Sparkles, QrCode, Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export const metadata: Metadata = {
   title: 'HonouredLives',
@@ -31,13 +32,18 @@ export default function HomePage() {
             />
           </div>
           <nav>
-            <ul className="flex space-x-4 sm:space-x-6 text-sm">
+            <ul className="flex items-center space-x-4 sm:space-x-6 text-sm">
               <li><Link href="#about-section" className="hover:text-secondary transition-colors">About</Link></li>
               <li><Link href="#steps-section" className="hover:text-secondary transition-colors">How It Works</Link></li>
               <li><Link href="#why-choose-section" className="hover:text-secondary transition-colors">Why Us</Link></li>
               <li><Link href="#stories-section" className="hover:text-secondary transition-colors">Stories</Link></li>
               <li><Link href="#pricing-section" className="hover:text-secondary transition-colors">Pricing</Link></li>
-              <li><Link href="/signup" className="hover:text-secondary transition-colors">Try it</Link></li>
+              <li>
+                <Link href="/signup" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                  <span>Try it</span>
+                  <Badge variant="admin">FREE</Badge>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
@@ -203,7 +209,7 @@ export default function HomePage() {
                 imageHint="storyteller elder"
                 name="Nokuthula Maseko – Resilient Storyteller"
                 timeline="04 Oct 1971 – 18 Feb 2024"
-                memorialId="4f38044b-495b-4e80-a8e3-b894c7516382"
+                memorialId="4f38044b-4e80-a8e3-b894c7516382"
                 story="A mother, storyteller, and beacon of resilience, Nokuthula Maseko carried the soul of her people in every word she spoke. Born and raised in a small village, she grew into a woman who faced hardship with quiet strength and unwavering dignity. Her gift for storytelling was not just an art—it was a lifeline, a way to preserve culture, pass on wisdom, and bring comfort during times of struggle. Whether seated by a fire under the stars or gathered with children in the shade of an acacia tree, Nokuthula wove tales that nurtured, healed, and empowered. Her stories live on in the hearts of those she touched, and her voice echoes in every lesson she left behind."
               />
             </div>
