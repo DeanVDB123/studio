@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, PlusCircle, LogOut, Loader2, QrCode } from 'lucide-react';
+import { BookUser, BarChart, PlusCircle, LogOut, Loader2, QrCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
@@ -23,8 +23,8 @@ import { FeedbackDialog } from './FeedbackDialog';
 
 
 const navItems = [
-  { href: '/memorials', label: 'Memorials', icon: LayoutDashboard },
-  { href: '/visits', label: 'Visits', icon: QrCode },
+  { href: '/memorials', label: 'Memorials', icon: BookUser },
+  { href: '/visits', label: 'Visits', icon: BarChart },
   { href: '/qrcodes', label: 'QR Codes', icon: QrCode },
 ];
 
