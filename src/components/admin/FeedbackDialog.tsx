@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -66,32 +65,32 @@ export function FeedbackDialog() {
           <span className="group-data-[collapsible=icon]:hidden">Feedback</span>
         </SidebarMenuButton>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[425px] p-0 gap-0">
+        <DialogHeader className="bg-primary text-primary-foreground p-6">
           <DialogTitle>Submit Feedback</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-primary-foreground/90">
             We'd love to hear your thoughts! What's working well? What could be improved?
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid w-full gap-1.5">
-            <Label htmlFor="feedback-input">Your Feedback</Label>
-            <Textarea
-              id="feedback-input"
-              placeholder="Type your message here..."
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              rows={6}
-            />
-          </div>
+        <div className="p-6 space-y-6">
+            <div className="grid w-full gap-1.5">
+                <Label htmlFor="feedback-input">Your Feedback</Label>
+                <Textarea
+                id="feedback-input"
+                placeholder="Type your message here..."
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                rows={6}
+                />
+            </div>
+            <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+                <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Submit
+                </Button>
+            </DialogFooter>
         </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Submit
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
