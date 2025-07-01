@@ -179,12 +179,12 @@ export default function HomePage() {
               <StoryCard
                 className="border-4 border-primary"
                 imageUrl="/techer.png"
-                imageAlt="Illustrative image for Emily Grace Taylor's story"
+                imageAlt="Illustrative image for Isabella Rossi's story"
                 imageHint="teacher classroom"
-                name="Emily Grace Taylor – Beloved Teacher"
+                name="Isabella Rossi – Beloved Teacher"
                 timeline="12 Mar 1992 – 19 Nov 2024"
                 memorialId="3670b18f-b965-4d3f-a13e-50a3299f6da5"
-                story="A beloved teacher whose passion for learning lit up every classroom, Emily Grace Taylor was a beacon of light and knowledge to all who knew her. From her earliest days, Emily was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Emily believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations."
+                story="A beloved teacher whose passion for learning lit up every classroom, Isabella Rossi was a beacon of light and knowledge to all who knew her. From her earliest days, Isabella was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Isabella believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations."
               />
               <StoryCard
                 className="border-4 border-primary"
