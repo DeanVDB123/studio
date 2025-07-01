@@ -177,7 +177,7 @@ export default function AdminDashboardPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {memorials.map((memorial) => (
-              <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-b-none">
                 <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
                   {memorial.profilePhotoUrl && (
                     <div className="relative w-1/2 aspect-square mx-auto mb-4">
