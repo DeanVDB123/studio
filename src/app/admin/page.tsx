@@ -177,7 +177,7 @@ export default function AdminDashboardPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {memorials.map((memorial) => (
-              <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-b-none">
+              <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-none">
                 <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
                   {memorial.profilePhotoUrl && (
                     <div className="relative w-1/2 aspect-square mx-auto mb-4">
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
                         src={memorial.profilePhotoUrl}
                         alt={`Profile photo of ${memorial.deceasedName}`}
                         fill
-                        className="object-cover rounded-lg filter grayscale"
+                        className="object-cover filter grayscale"
                         data-ai-hint="profile person"
                       />
                     </div>
