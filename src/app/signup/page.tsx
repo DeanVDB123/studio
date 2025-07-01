@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, type FormEvent, useEffect } from 'react';
@@ -240,7 +239,7 @@ export default function SignupPage() {
               </span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={authLoading || !agreedToTerms}>
+          <Button variant="outline" className="w-full border-primary" onClick={handleGoogleSignUp} disabled={authLoading || !agreedToTerms}>
             {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
             Sign up with Google
           </Button>
