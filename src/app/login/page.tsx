@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, type FormEvent, useEffect } from 'react';
+import { useState, type FormEvent, useEffect, type SVGProps } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -8,10 +9,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
-import { Loader2, Chrome } from 'lucide-react'; // Added Chrome for Google icon
+import { Loader2 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
+
+const GoogleIcon = (props: SVGProps<SVGSVGElement>) => (
+    <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <g fill="none" fillRule="evenodd">
+        <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4818h4.8436c-.2086 1.125-.844 2.0782-1.7772 2.7218v2.2582h2.9087c1.7018-1.5668 2.6836-3.8745 2.6836-6.621z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1818l-2.9087-2.2582c-.806.5409-1.8368.8618-3.0477.8618-2.345 0-4.3282-1.5818-5.0359-3.7118H.957v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+        <path d="M3.9641 10.71c-.1818-.5409-.2864-1.1164-.2864-1.71s.1045-1.1691.2864-1.71V4.9582H.957C.3477 6.1732 0 7.5477 0 9c0 1.4523.3477 2.8268.957 4.0418L3.9641 10.71z" fill="#FBBC05"/>
+        <path d="M9 3.5782c1.3227 0 2.5182.4545 3.4409 1.3455l2.5818-2.5818C13.4636.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.957 4.9582L3.9641 7.29C4.6718 5.159 6.655 3.5782 9 3.5782z" fill="#EA4335"/>
+      </g>
+    </svg>
+  );
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -138,7 +150,7 @@ export default function LoginPage() {
             </div>
           </div>
           <Button variant="outline" className="w-full border-primary" onClick={handleGoogleSignIn} disabled={authLoading}>
-            {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
+            {authLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />}
             Sign in with Google
           </Button>
         </CardContent>
