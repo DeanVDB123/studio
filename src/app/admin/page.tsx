@@ -283,7 +283,7 @@ export default function AdminDashboardPage() {
         )}
       </div>
       <DialogContent className="max-w-6xl p-0 bg-card">
-        <DialogHeader className="p-6 pb-4 border-b">
+        <DialogHeader className="p-6 pb-4 border-b bg-primary text-primary-foreground">
           <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
         </DialogHeader>
         <div className="p-6">
