@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
               <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-none">
                 <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
                   {memorial.profilePhotoUrl && (
-                    <div className="relative w-1/2 aspect-square mx-auto mb-4">
+                    <div className="relative w-1/2 aspect-square mx-auto mb-4 rounded-md overflow-hidden">
                       <Image
                         src={memorial.profilePhotoUrl}
                         alt={`Profile photo of ${memorial.deceasedName}`}
