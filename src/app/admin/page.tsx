@@ -218,10 +218,23 @@ export default function AdminDashboardPage() {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-2">
-                    <div className="flex flex-col items-center gap-2 text-center">
-                        <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
-                        <p className="text-sm font-medium text-foreground">Try it out!</p>
-                    </div>
+                    {userStatus === 'FREE' ? (
+                      <div className="relative flex flex-col items-center text-center">
+                        <div className="filter blur-sm pointer-events-none">
+                          <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
+                          <Button asChild size="sm">
+                            <Link href="/#pricing-section">Upgrade Now</Link>
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-center">
+                          <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                          <p className="text-sm font-medium text-foreground">Try it out!</p>
+                      </div>
+                    )}
                   </PopoverContent>
                 </Popover>
                 <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
