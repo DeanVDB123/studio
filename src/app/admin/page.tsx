@@ -22,6 +22,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
 
 type UserMemorial = {
   id: string;
@@ -204,6 +210,20 @@ export default function AdminDashboardPage() {
                     <span className="sr-only">View</span>
                   </Link>
                 </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon" title={`Show QR Code for ${memorial.deceasedName}`}>
+                      <QrCode className="h-5 w-5" />
+                      <span className="sr-only">Show QR Code</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-2">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                        <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                        <p className="text-sm font-medium text-foreground">Try it out!</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
                   <Trash2 className="h-5 w-5 text-destructive" />
                   <span className="sr-only">Delete</span>
