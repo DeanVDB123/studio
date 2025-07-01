@@ -39,10 +39,9 @@ export default function HomePage() {
               <li><Link href="#stories-section" className="hover:text-secondary transition-colors">Stories</Link></li>
               <li><Link href="#pricing-section" className="hover:text-secondary transition-colors">Pricing</Link></li>
               <li>
-                <Link href="/signup" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                  <span>Try it</span>
-                  <Badge variant="admin">FREE</Badge>
-                </Link>
+                <Button asChild size="sm" variant="admin">
+                  <Link href="/signup">Try it</Link>
+                </Button>
               </li>
             </ul>
           </nav>

@@ -18,6 +18,13 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        admin: [
+          "relative overflow-hidden border-transparent bg-admin text-admin-foreground hover:bg-admin/90",
+          "before:content-[''] before:absolute before:inset-0",
+          "before:bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.6)_50%,transparent_80%)]",
+          "before:bg-[length:200%_100%]",
+          "before:animate-shine",
+        ],
       },
       size: {
         default: "h-10 px-4 py-2",
