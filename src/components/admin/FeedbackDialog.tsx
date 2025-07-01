@@ -72,7 +72,7 @@ export function FeedbackDialog() {
             We'd love to hear your thoughts! What's working well? What could be improved?
           </DialogDescription>
         </DialogHeader>
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 bg-background">
             <div className="grid w-full gap-1.5">
                 <Label htmlFor="feedback-input">Your Feedback</Label>
                 <Textarea
