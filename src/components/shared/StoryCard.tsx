@@ -48,18 +48,25 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, memor
         <p className="text-sm text-primary-foreground/80">{timeline}</p>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col pt-4 px-4 pb-4 bg-card">
-        <div className="flex justify-center pb-4 h-[124px] items-center">
+        <div className="flex flex-col items-center pb-4 text-center">
           {qrCodeUrl ? (
-            <Link
-              href={`/${memorialId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`View memorial for ${name}`}
-              className="transition-transform duration-200 hover:scale-105"
-            >
-              <QRCodeDisplay url={qrCodeUrl} size={100} />
-            </Link>
-          ) : null}
+            <>
+              <Link
+                href={`/${memorialId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`View memorial for ${name}`}
+                className="transition-transform duration-200 hover:scale-105"
+              >
+                <QRCodeDisplay url={qrCodeUrl} size={100} />
+              </Link>
+              <p className="text-xs text-muted-foreground mt-2">
+                Try it out! Scan or click the QR code
+              </p>
+            </>
+          ) : (
+            <div className="h-[124px] w-[100px]" /> // Placeholder to prevent layout shift
+          )}
         </div>
         <div className={cn("relative", !isExpanded ? "h-24 overflow-hidden" : "h-auto")}>
           <p className={cn("text-foreground/90 transition-all duration-300")}>
