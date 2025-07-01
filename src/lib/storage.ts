@@ -3,7 +3,7 @@
 
 import { storage } from '@/lib/firebase';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 /**
  * Uploads an image from a data URI to Firebase Storage.
@@ -17,7 +17,7 @@ export async function uploadImage(dataUri: string, memorialId: string): Promise<
   }
   
   const fileType = dataUri.split(';')[0].split('/')[1];
-  const imageId = uuidv4();
+  const imageId = nanoid();
   const storagePath = `memorials/${memorialId}/${imageId}.${fileType}`;
   const storageRef = ref(storage, storagePath);
 

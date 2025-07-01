@@ -1,6 +1,8 @@
 
 import type {NextConfig} from 'next';
 
+const memorialIdRegex = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{10}';
+
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
@@ -44,11 +46,11 @@ const nextConfig: NextConfig = {
         destination: '/admin/qrcodes',
       },
       {
-        source: '/edit/:memorialId',
+        source: `/edit/:memorialId(${memorialIdRegex})`,
         destination: '/admin/edit/:memorialId',
       },
       {
-        source: '/:memorialId([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})',
+        source: `/:memorialId(${memorialIdRegex})`,
         destination: '/memorial/:memorialId',
       },
     ];

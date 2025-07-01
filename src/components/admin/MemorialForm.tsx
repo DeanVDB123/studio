@@ -22,7 +22,7 @@ import type { MemorialData, Photo } from '@/lib/types';
 import { saveMemorialAction } from '@/lib/actions';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 const photoSchema = z.object({
   id: z.string().optional(),
@@ -80,7 +80,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       deathDate: initialData?.deathDate || '',
       lifeSummary: initialData?.lifeSummary || '',
       biography: initialData?.biography || '',
-      photos: initialData?.photos?.map(p => ({ ...p, id: p.id || uuidv4() })) || [],
+      photos: initialData?.photos?.map(p => ({ ...p, id: p.id || nanoid(10) })) || [],
       tributes: initialData?.tributes || [],
       stories: initialData?.stories || [],
     },
@@ -130,14 +130,14 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         const payload: MemorialData = {
           ...data, 
           userId: currentUserId, 
-          photos: data.photos.map(p => ({ ...p, id: p.id || uuidv4() })), 
+          photos: data.photos.map(p => ({ ...p, id: p.id || nanoid(10) })), 
         };
         
         if (isUpdating) {
           payload.id = memorialId; 
           console.log(`[MemorialForm] Preparing to UPDATE existing memorial. ID: ${memorialId}. User ID: ${currentUserId}`);
         } else {
-          payload.id = uuidv4(); 
+          payload.id = nanoid(10); 
           console.log(`[MemorialForm] Preparing to CREATE new memorial. Generated ID: ${payload.id}. User ID: ${currentUserId}`);
         }
         
@@ -326,7 +326,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
               </Button>
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={() => appendPhoto({ id: uuidv4(), url: '', caption: '' })} disabled={isSubmitting || isPending}>
+          <Button type="button" variant="outline" onClick={() => appendPhoto({ id: nanoid(10), url: '', caption: '' })} disabled={isSubmitting || isPending}>
             <PlusCircle className="mr-2 h-4 w-4" /> Add Photo
           </Button>
         </CardContent>

@@ -6,7 +6,7 @@ import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/o
 import type { MemorialData, OrganizedContent } from '@/lib/types';
 import { createMemorial as dbCreateMemorial, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
 
 export async function handleGenerateBiography(input: GenerateBiographyDraftInput): Promise<string> {
@@ -41,8 +41,11 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     throw new Error('User authentication is required to save a memorial.');
   }
 
-  const dataId = memorialData.id || uuidv4();
-  console.log(`[Action] Determined dataId (memorialData.id || uuidv4()): ${dataId}`);
+  const dataId = memorialData.id;
+  if (!dataId) {
+    console.error('[Action] CRITICAL: memorialData.id is missing in saveMemorialAction.');
+    throw new Error('Memorial ID is required to save a memorial.');
+  }
   
   // Handle image uploads before saving to Firestore
   try {
