@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
@@ -48,7 +49,17 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, memor
       </CardHeader>
       <CardContent className="flex-grow flex flex-col pt-4 px-4 pb-4 bg-card">
         <div className="flex justify-center pb-4 h-[124px] items-center">
-          {qrCodeUrl ? <QRCodeDisplay url={qrCodeUrl} size={100} /> : null}
+          {qrCodeUrl ? (
+            <Link
+              href={`/${memorialId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`View memorial for ${name}`}
+              className="transition-transform duration-200 hover:scale-105"
+            >
+              <QRCodeDisplay url={qrCodeUrl} size={100} />
+            </Link>
+          ) : null}
         </div>
         <div className={cn("relative", !isExpanded ? "h-24 overflow-hidden" : "h-auto")}>
           <p className={cn("text-foreground/90 transition-all duration-300")}>
