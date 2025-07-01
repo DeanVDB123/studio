@@ -84,7 +84,7 @@ export function FeedbackDialog() {
                 />
             </div>
             <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-muted-foreground/60">Cancel</Button>
                 <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Submit
