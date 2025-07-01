@@ -24,9 +24,11 @@ import { FeedbackDialog } from './FeedbackDialog';
 
 const navItems = [
   { href: '/memorials', label: 'Memorials', icon: LayoutDashboard },
-  { href: '/create', label: 'New Memorial', icon: PlusCircle },
   { href: '/visits', label: 'Visits', icon: QrCode },
 ];
+
+const createNavItem = { href: '/create', label: 'New Memorial', icon: PlusCircle };
+
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -81,6 +83,19 @@ export function AdminSidebar() {
                 </Link>
               </SidebarMenuItem>
             ))}
+            {/* Separately render the create button to ensure it's always last in this section */}
+            <SidebarMenuItem key={createNavItem.href}>
+              <Link href={createNavItem.href} passHref legacyBehavior>
+                <SidebarMenuButton
+                  isActive={isActive(createNavItem.href)}
+                  tooltip={{children: createNavItem.label, side: 'right', align: 'center'}}
+                  className="w-full justify-start"
+                >
+                  <createNavItem.icon className="h-5 w-5" />
+                  <span className="group-data-[collapsible=icon]:hidden">{createNavItem.label}</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
           </SidebarMenu>
         </div>
         <div className="flex-grow flex items-center justify-center group-data-[collapsible=icon]:hidden">
