@@ -210,7 +210,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <PricingTable />
+        <section id="pricing-section" className="py-12 sm:py-16 bg-card border-y">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-headline text-foreground mb-2">Our Plans</h2>
+              <p className="text-lg text-muted-foreground">A plan for every need, ensuring memories are preserved and cherished.</p>
+            </div>
+            <PricingTable />
+          </div>
+        </section>
+
 
         {/* Join Us Today Section */}
         <section className="py-16 sm:py-20 text-center bg-background">

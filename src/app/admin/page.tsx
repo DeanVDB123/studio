@@ -28,6 +28,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PricingTable } from '@/components/shared/PricingTable';
 
 type UserMemorial = {
   id: string;
@@ -136,142 +144,152 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-headline">Your Memorials</h1>
-        <Button asChild>
-          <Link href="/create">
-            <PlusCircle className="mr-2 h-5 w-5" /> Create New Memorial
-          </Link>
-        </Button>
-      </div>
-
-      {console.log("[AdminDashboardPage] Rendering. Number of memorials in state:", memorials.length)}
-      {memorials.length === 0 && !isLoadingData ? (
-        <Card className="text-center py-12">
-          <CardHeader>
-            <CardTitle className="text-2xl">No Memorials Yet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg text-muted-foreground">
-              Start by creating a new memorial page for a loved one.
-            </p>
-          </CardContent>
-          <div className="flex justify-center pt-4"> 
-             <Button asChild className="mt-4">
-              <Link href="/create">
-                <PlusCircle className="mr-2 h-5 w-5" /> Create Memorial
-              </Link>
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {memorials.map((memorial) => (
-            <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
-                {memorial.profilePhotoUrl && (
-                  <div className="relative w-1/2 aspect-square mx-auto mb-4">
-                    <Image
-                      src={memorial.profilePhotoUrl}
-                      alt={`Profile photo of ${memorial.deceasedName}`}
-                      fill
-                      className="object-cover rounded-lg filter grayscale"
-                      data-ai-hint="profile person"
-                    />
-                  </div>
-                )}
-                <CardTitle className="font-headline text-xl leading-tight truncate w-full">
-                  {memorial.deceasedName}
-                </CardTitle>
-                <p className="text-xs text-primary-foreground/80 font-body">
-                  {formatDateRange(memorial.birthDate, memorial.deathDate)}
-                </p>
-                <div className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/80 font-body mt-2">
-                  <QrCode className="h-4 w-4" />
-                  <span>{memorial.viewCount || 0} views</span>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
-                <p className="text-sm text-muted-foreground italic">
-                  {memorial.lifeSummary}
-                </p>
-              </CardContent>
-              <CardFooter className="flex justify-around items-center p-3 border-t"> 
-                <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
-                  <Link href={`/edit/${memorial.id}`}>
-                    <Edit3 className="h-5 w-5" />
-                    <span className="sr-only">Edit</span>
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild title={`View ${memorial.deceasedName}`}>
-                  <Link href={`/${memorial.id}`} target="_blank">
-                    <ExternalLink className="h-5 w-5" /> 
-                    <span className="sr-only">View</span>
-                  </Link>
-                </Button>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" title={`Show QR Code for ${memorial.deceasedName}`}>
-                      <QrCode className="h-5 w-5" />
-                      <span className="sr-only">Show QR Code</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-2">
-                    {userStatus === 'FREE' ? (
-                      <div className="relative flex flex-col items-center text-center">
-                        <div className="filter blur-sm pointer-events-none">
-                          <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
-                        </div>
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                          <Button asChild size="sm">
-                            <Link href="/#pricing-section">Upgrade Now</Link>
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 text-center">
-                          <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
-                          <p className="text-sm font-medium text-foreground">Try it out!</p>
-                      </div>
-                    )}
-                  </PopoverContent>
-                </Popover>
-                <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
-                  <Trash2 className="h-5 w-5 text-destructive" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
-       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the memorial for {memorialToDelete?.deceasedName}.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {userStatus === 'FREE' && (
-        <div className="flex justify-center pt-6 mt-6 border-t">
-          <Button asChild size="lg">
-              <Link href="/#pricing-section">
-                  Upgrade Now to Share!
-              </Link>
+    <Dialog>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-headline">Your Memorials</h1>
+          <Button asChild>
+            <Link href="/create">
+              <PlusCircle className="mr-2 h-5 w-5" /> Create New Memorial
+            </Link>
           </Button>
         </div>
-      )}
-    </div>
+
+        {console.log("[AdminDashboardPage] Rendering. Number of memorials in state:", memorials.length)}
+        {memorials.length === 0 && !isLoadingData ? (
+          <Card className="text-center py-12">
+            <CardHeader>
+              <CardTitle className="text-2xl">No Memorials Yet</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg text-muted-foreground">
+                Start by creating a new memorial page for a loved one.
+              </p>
+            </CardContent>
+            <div className="flex justify-center pt-4"> 
+               <Button asChild className="mt-4">
+                <Link href="/create">
+                  <PlusCircle className="mr-2 h-5 w-5" /> Create Memorial
+                </Link>
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {memorials.map((memorial) => (
+              <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
+                  {memorial.profilePhotoUrl && (
+                    <div className="relative w-1/2 aspect-square mx-auto mb-4">
+                      <Image
+                        src={memorial.profilePhotoUrl}
+                        alt={`Profile photo of ${memorial.deceasedName}`}
+                        fill
+                        className="object-cover rounded-lg filter grayscale"
+                        data-ai-hint="profile person"
+                      />
+                    </div>
+                  )}
+                  <CardTitle className="font-headline text-xl leading-tight truncate w-full">
+                    {memorial.deceasedName}
+                  </CardTitle>
+                  <p className="text-xs text-primary-foreground/80 font-body">
+                    {formatDateRange(memorial.birthDate, memorial.deathDate)}
+                  </p>
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/80 font-body mt-2">
+                    <QrCode className="h-4 w-4" />
+                    <span>{memorial.viewCount || 0} views</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
+                  <p className="text-sm text-muted-foreground italic">
+                    {memorial.lifeSummary}
+                  </p>
+                </CardContent>
+                <CardFooter className="flex justify-around items-center p-3 border-t"> 
+                  <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
+                    <Link href={`/edit/${memorial.id}`}>
+                      <Edit3 className="h-5 w-5" />
+                      <span className="sr-only">Edit</span>
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" asChild title={`View ${memorial.deceasedName}`}>
+                    <Link href={`/${memorial.id}`} target="_blank">
+                      <ExternalLink className="h-5 w-5" /> 
+                      <span className="sr-only">View</span>
+                    </Link>
+                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" title={`Show QR Code for ${memorial.deceasedName}`}>
+                        <QrCode className="h-5 w-5" />
+                        <span className="sr-only">Show QR Code</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-2">
+                      {userStatus === 'FREE' ? (
+                        <div className="relative flex flex-col items-center text-center">
+                          <div className="filter blur-sm pointer-events-none">
+                            <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                          </div>
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
+                            <DialogTrigger asChild>
+                              <Button size="sm">Upgrade Now</Button>
+                            </DialogTrigger>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-center">
+                            <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                            <p className="text-sm font-medium text-foreground">Try it out!</p>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
+                  <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
+                    <Trash2 className="h-5 w-5 text-destructive" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the memorial for {memorialToDelete?.deceasedName}.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {userStatus === 'FREE' && (
+          <div className="flex justify-center pt-6 mt-6 border-t">
+            <DialogTrigger asChild>
+              <Button size="lg">
+                  Upgrade Now to Share!
+              </Button>
+            </DialogTrigger>
+          </div>
+        )}
+      </div>
+      <DialogContent className="max-w-6xl p-0 bg-card">
+        <DialogHeader className="p-6 pb-4 border-b">
+          <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
+        </DialogHeader>
+        <div className="p-6">
+          <PricingTable />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
