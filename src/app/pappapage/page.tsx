@@ -28,6 +28,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type SortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
+type QrSortKey = 'email' | 'totalQrCodes';
 type SortDirection = 'asc' | 'desc';
 
 const getBadgeVariant = (status: string | null) => {
@@ -48,6 +49,7 @@ export default function PappaPage() {
   const [users, setUsers] = useState<UserForAdmin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
+  const [qrSortConfig, setQrSortConfig] = useState<{ key: QrSortKey; direction: SortDirection }>({ key: 'email', direction: 'asc' });
   const { toast } = useToast();
   const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
@@ -123,6 +125,14 @@ export default function PappaPage() {
     }
     setSortConfig({ key, direction });
   };
+
+  const handleQrSort = (key: QrSortKey) => {
+    let direction: SortDirection = 'asc';
+    if (qrSortConfig.key === key && qrSortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setQrSortConfig({ key, direction });
+  };
   
   const safeFormatDate = (dateString: string | undefined | null) => {
     if (!dateString) return 'N/A';
@@ -173,6 +183,32 @@ export default function PappaPage() {
     return sortableUsers;
   }, [users, sortConfig, searchTerm]);
 
+  const filteredAndSortedQrData = React.useMemo(() => {
+    let sortableUsers = [...users];
+
+    if (searchTerm) {
+      const lowercasedFilter = searchTerm.toLowerCase();
+      sortableUsers = sortableUsers.filter(u =>
+        u.email.toLowerCase().includes(lowercasedFilter)
+      );
+    }
+    
+    sortableUsers.sort((a, b) => {
+      const aValue = a[qrSortConfig.key];
+      const bValue = b[qrSortConfig.key];
+      
+      let comparison = 0;
+      if (aValue > bValue) {
+        comparison = 1;
+      } else if (aValue < bValue) {
+        comparison = -1;
+      }
+      
+      return qrSortConfig.direction === 'desc' ? comparison * -1 : comparison;
+    });
+    return sortableUsers;
+  }, [users, qrSortConfig, searchTerm]);
+
   if (authLoading) {
     return null;
   }
@@ -219,6 +255,9 @@ export default function PappaPage() {
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setSelectedView('Feedback')}>
                   Feedback
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setSelectedView('QR Codes')}>
+                  QR Codes
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setSelectedView('Errors')}>
                   Errors
@@ -397,6 +436,63 @@ export default function PappaPage() {
               )}
             </>
           )}
+          
+          {selectedView === 'QR Codes' && (
+             <>
+              <div className="flex items-center py-4">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by email..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-80"
+                    />
+                </div>
+              </div>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleQrSort('email')}>
+                          User Email <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead className="text-center">
+                        <Button variant="ghost" onClick={() => handleQrSort('totalQrCodes')}>
+                          Total QR Codes Purchased <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={2} className="h-24 text-center">
+                          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+                        </TableCell>
+                      </TableRow>
+                    ) : filteredAndSortedQrData.length > 0 ? (
+                      filteredAndSortedQrData.map((u) => (
+                        <TableRow key={u.userId}>
+                          <TableCell className="font-medium">{u.email}</TableCell>
+                          <TableCell className="text-center">{u.totalQrCodes}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={2} className="h-24 text-center">
+                          No users found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
+
           {selectedView === 'Errors' && (
             <div className="flex items-center justify-center h-64 text-center">
               <h2 className="text-2xl font-headline text-muted-foreground">Error Log View Coming Soon</h2>

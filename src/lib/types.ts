@@ -46,6 +46,7 @@ export interface UserForAdmin {
     status: string;
     dateSwitched?: string;
     memorialCount: number;
+    totalQrCodes: number;
 }
 
 export interface Feedback {

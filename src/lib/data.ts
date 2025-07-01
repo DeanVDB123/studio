@@ -219,6 +219,7 @@ export async function getAllUsersWithMemorialCount(): Promise<UserForAdmin[]> {
       status: signupData.status,
       dateSwitched: signupData.dateSwitched,
       memorialCount: memorialCounts[signupData.userId] || 0,
+      totalQrCodes: 0,
     };
   });
 
