@@ -40,6 +40,10 @@ const nextConfig: NextConfig = {
         destination: '/admin/scans',
       },
       {
+        source: '/qrcodes',
+        destination: '/admin/qrcodes',
+      },
+      {
         source: '/edit/:memorialId',
         destination: '/admin/edit/:memorialId',
       },
