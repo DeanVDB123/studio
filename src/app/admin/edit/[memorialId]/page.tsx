@@ -1,4 +1,3 @@
-
 "use client"; // Needs to be client component for auth checks and data fetching
 
 import { MemorialForm } from '@/components/admin/MemorialForm';
@@ -133,15 +132,10 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
             <CardContent>
               {permalink && (
                 userStatus === 'FREE' ? (
-                  <div className="relative flex flex-col items-center text-center">
-                    <div className="filter blur-sm pointer-events-none">
-                      <QRCodeDisplay url={permalink} />
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md p-4">
-                      <DialogTrigger asChild>
-                        <Button>Upgrade to Share</Button>
-                      </DialogTrigger>
-                    </div>
+                  <div className="flex flex-col items-center justify-center text-center p-4">
+                    <DialogTrigger asChild>
+                      <Button>Upgrade to Share</Button>
+                    </DialogTrigger>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4">

@@ -1,4 +1,3 @@
-
 "use client"; 
 
 import Link from 'next/link';
@@ -226,17 +225,13 @@ export default function AdminDashboardPage() {
                         <span className="sr-only">Show QR Code</span>
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-2">
+                    <PopoverContent className="w-auto p-4">
                       {userStatus === 'FREE' ? (
-                        <div className="relative flex flex-col items-center text-center">
-                          <div className="filter blur-sm pointer-events-none">
-                            <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
-                          </div>
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                            <DialogTrigger asChild>
-                              <Button size="sm">Upgrade Now</Button>
-                            </DialogTrigger>
-                          </div>
+                        <div className="flex flex-col items-center text-center gap-2">
+                          <p className="text-sm text-muted-foreground">Upgrade to share this QR code.</p>
+                          <DialogTrigger asChild>
+                            <Button size="sm">Upgrade Now</Button>
+                          </DialogTrigger>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-center">
