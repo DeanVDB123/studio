@@ -1,4 +1,3 @@
-
 "use client"; // Make it a client component to use useAuth
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -42,6 +41,8 @@ export function AdminHeader() {
         return 'admin' as const;
       case 'PAID':
         return 'outline' as const;
+      case 'SUSPENDED':
+        return 'suspended' as const;
       default:
         return 'secondary' as const;
     }
