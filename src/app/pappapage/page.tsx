@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllUsersWithMemorialCount, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
+import { updateUserStatusAction, toggleMemorialVisibilityAction } from '@/lib/actions';
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -26,7 +27,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
-import { toggleMemorialVisibilityAction, updateUserStatusAction } from '@/lib/actions';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
@@ -40,6 +40,8 @@ const getBadgeVariant = (status: string | null) => {
       return 'admin' as const;
     case 'PAID':
       return 'default' as const;
+    case 'SUSPENDED':
+      return 'suspended' as const;
     case 'FREE':
     default:
       return 'secondary' as const;
@@ -453,19 +455,26 @@ export default function PappaPage() {
                                 <PopoverContent className="w-40 p-0">
                                   <div className="flex flex-col">
                                     <Button
-                                        variant="ghost"
-                                        className="justify-start rounded-b-none"
-                                        onClick={() => handleStatusChange(u.userId, 'FREE')}
-                                      >
-                                        FREE
-                                      </Button>
-                                      <Button
-                                        variant="ghost"
-                                        className="justify-start rounded-t-none"
-                                        onClick={() => handleStatusChange(u.userId, 'PAID')}
-                                      >
-                                        PAID
-                                      </Button>
+                                      variant="ghost"
+                                      className="justify-start rounded-b-none"
+                                      onClick={() => handleStatusChange(u.userId, 'FREE')}
+                                    >
+                                      FREE
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      className="justify-start rounded-none"
+                                      onClick={() => handleStatusChange(u.userId, 'PAID')}
+                                    >
+                                      PAID
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      className="justify-start rounded-t-none text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                      onClick={() => handleStatusChange(u.userId, 'SUSPENDED')}
+                                    >
+                                      SUSPENDED
+                                    </Button>
                                   </div>
                                 </PopoverContent>
                               </Popover>
@@ -538,11 +547,11 @@ export default function PappaPage() {
                           <TableCell className="text-center">{m.viewCount}</TableCell>
                           <TableCell>
                             <Button
-                                variant={m.visibility === 'shown' ? 'destructive' : 'secondary'}
+                                variant={m.visibility === 'shown' ? 'destructive' : 'admin'}
                                 size="sm"
                                 onClick={() => handleToggleVisibility(m.id)}
                                 disabled={updatingVisibilityId === m.id}
-                                className="w-28"
+                                className="w-32"
                                 title={`Click to ${m.visibility === 'shown' ? 'deactivate' : 'activate'} this memorial`}
                             >
                                 {updatingVisibilityId === m.id ? (

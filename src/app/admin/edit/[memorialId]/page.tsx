@@ -1,3 +1,4 @@
+
 "use client"; // Needs to be client component for auth checks and data fetching
 
 import { MemorialForm } from '@/components/admin/MemorialForm';
@@ -112,6 +113,8 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
     );
   }
   
+  const isFreeOrSuspended = userStatus === 'FREE' || userStatus === 'SUSPENDED';
+
   return (
     <Dialog>
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -124,14 +127,14 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
             <CardHeader>
               <CardTitle className="font-headline text-xl">QR Code</CardTitle>
               <CardDescription>
-                {userStatus === 'FREE' 
+                {isFreeOrSuspended
                   ? 'Upgrade to activate and share your QR code.' 
                   : 'Share this QR code for easy access.'}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {permalink && (
-                userStatus === 'FREE' ? (
+                isFreeOrSuspended ? (
                   <div className="flex flex-col items-center justify-center text-center p-4">
                     <DialogTrigger asChild>
                       <Button>Upgrade to Share</Button>

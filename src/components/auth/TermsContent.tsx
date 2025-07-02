@@ -29,6 +29,7 @@ export function TermsContent() {
               <li>publicly performing and/or showing any Website material;</li>
               <li>using this Website in any way that is or may be damaging to this Website;</li>
               <li>using this Website contrary to applicable laws and regulations, or in any way may cause harm to the Website, or to any person or business entity;</li>
+              <li>in the event that our admin team or community decides that your content is innapropriote, grotesque or generally offensive; We will disable your mememorials and suspend your account. In which case you will have to contact us at honouredlives@gmail.com, to reinstate/activate your memorials and account.</li>            
           </ul>
       </div>
 

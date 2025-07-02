@@ -1,3 +1,4 @@
+
 "use client"; 
 
 import Link from 'next/link';
@@ -141,6 +142,8 @@ export default function AdminDashboardPage() {
       </div>
     );
   }
+  
+  const isFreeOrSuspended = userStatus === 'FREE' || userStatus === 'SUSPENDED';
 
   return (
     <Dialog>
@@ -226,7 +229,7 @@ export default function AdminDashboardPage() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-4">
-                      {userStatus === 'FREE' ? (
+                      {isFreeOrSuspended ? (
                         <div className="flex flex-col items-center text-center gap-2">
                           <p className="text-sm text-muted-foreground">Upgrade to share this QR code.</p>
                           <DialogTrigger asChild>
@@ -271,7 +274,7 @@ export default function AdminDashboardPage() {
           </AlertDialogContent>
         </AlertDialog>
 
-        {userStatus === 'FREE' && (
+        {isFreeOrSuspended && (
           <div className="flex justify-center pt-6 mt-6 border-t">
             <DialogTrigger asChild>
               <Button size="lg">

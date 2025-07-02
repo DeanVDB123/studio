@@ -103,16 +103,23 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
       );
     }
 
-    // Check 2: Is it a private (free tier) memorial and the viewer is not the owner?
+    // Check 2: Is it a private (free/suspended tier) memorial and the viewer is not the owner?
     const isFreeTier = memorialData.ownerStatus === 'FREE';
-    if (isFreeTier && !viewerIsOwner) {
+    const isSuspended = memorialData.ownerStatus === 'SUSPENDED';
+    
+    if ((isFreeTier || isSuspended) && !viewerIsOwner) {
       return (
         <div className="container mx-auto py-12 px-4 text-center">
           <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
             <Lock className="h-5 w-5" />
-            <AlertTitle className="font-headline text-yellow-900">This Memorial is Private</AlertTitle>
+            <AlertTitle className="font-headline text-yellow-900">
+               {isSuspended ? "This Memorial is Inactive" : "This Memorial is Private"}
+            </AlertTitle>
             <AlertDescription>
-              Memorials on the free plan are only visible to the owner. Please log in as the owner to view this page, or ask them to upgrade their plan to make it public.
+              {isSuspended 
+                  ? "This memorial is currently suspended and not publicly visible. Please contact support for more information."
+                  : "Memorials on the free plan are only visible to the owner. Please log in as the owner to view this page, or ask them to upgrade their plan to make it public."
+              }
             </AlertDescription>
           </Alert>
           <Button asChild className="mt-8">
