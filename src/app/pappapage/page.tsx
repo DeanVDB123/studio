@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, g
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Edit3, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -29,7 +30,7 @@ import { toggleMemorialVisibilityAction } from '@/lib/actions';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
-type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'createdAt' | 'viewCount' | 'ownerStatus' | 'visibility';
+type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'viewCount' | 'ownerStatus' | 'visibility';
 type SortDirection = 'asc' | 'desc';
 
 const getBadgeVariant = (status: string | null) => {
@@ -52,7 +53,7 @@ export default function PappaPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: UserSortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
   const [qrSortConfig, setQrSortConfig] = useState<{ key: QrSortKey; direction: SortDirection }>({ key: 'email', direction: 'asc' });
-  const [memorialsSortConfig, setMemorialsSortConfig] = useState<{ key: MemorialSortKey; direction: SortDirection }>({ key: 'createdAt', direction: 'desc' });
+  const [memorialsSortConfig, setMemorialsSortConfig] = useState<{ key: MemorialSortKey; direction: SortDirection }>({ key: 'deceasedName', direction: 'asc' });
   const { toast } = useToast();
   const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
@@ -506,11 +507,6 @@ export default function PappaPage() {
                           Status <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
                       </TableHead>
-                      <TableHead>
-                        <Button variant="ghost" onClick={() => handleMemorialsSort('createdAt')}>
-                          Created On <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </TableHead>
                       <TableHead className="text-center">
                         <Button variant="ghost" onClick={() => handleMemorialsSort('viewCount')}>
                           Views <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -527,7 +523,7 @@ export default function PappaPage() {
                   <TableBody>
                     {isLoadingMemorials ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="h-24 text-center">
+                        <TableCell colSpan={6} className="h-24 text-center">
                           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                         </TableCell>
                       </TableRow>
@@ -539,7 +535,6 @@ export default function PappaPage() {
                           <TableCell>
                             <Badge variant={getBadgeVariant(m.ownerStatus)}>{m.ownerStatus}</Badge>
                           </TableCell>
-                          <TableCell>{safeFormatDate(m.createdAt)}</TableCell>
                           <TableCell className="text-center">{m.viewCount}</TableCell>
                           <TableCell>
                             <Button
@@ -571,7 +566,7 @@ export default function PappaPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={7} className="h-24 text-center">
+                        <TableCell colSpan={6} className="h-24 text-center">
                           No memorials found.
                         </TableCell>
                       </TableRow>
