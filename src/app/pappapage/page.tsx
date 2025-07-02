@@ -316,13 +316,9 @@ export default function PappaPage() {
     return sortableUsers;
   }, [users, qrSortConfig, searchTerm]);
 
-  if (authLoading) {
-    return null;
-  }
-
-  if (userStatus !== 'ADMIN') {
-    notFound();
-  }
+  const visibleFeedback = React.useMemo(() => {
+      return feedbackList.filter(item => showReadFeedback || item.status === 'unread');
+  }, [feedbackList, showReadFeedback]);
   
   const searchPlaceholder = () => {
     switch (selectedView) {
@@ -335,12 +331,15 @@ export default function PappaPage() {
       default:
         return "Search...";
     }
+  };
+
+  if (authLoading) {
+    return null;
   }
 
-  const visibleFeedback = React.useMemo(() => {
-      return feedbackList.filter(item => showReadFeedback || item.status === 'unread');
-  }, [feedbackList, showReadFeedback]);
-
+  if (userStatus !== 'ADMIN') {
+    notFound();
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
