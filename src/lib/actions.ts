@@ -82,6 +82,7 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
   
   if (!isUpdate) {
     dataToSave.viewCount = 0; // Initialize view count for new memorials
+    dataToSave.createdAt = new Date().toISOString();
   }
   
   console.log(`[Action] Data prepared for DB operation (dataToSave):`, JSON.stringify(dataToSave, null, 2));
@@ -102,6 +103,7 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     console.log(`[Action] Memorial ${isUpdate ? 'updated' : 'created'} successfully. ID: ${savedMemorial.id}, User: ${savedMemorial.userId}`);
     
     revalidatePath('/memorials', 'page');
+    revalidatePath('/pappapage', 'page');
     if (savedMemorial.id) {
       revalidatePath(`/edit/${savedMemorial.id}`);
       revalidatePath(`/${savedMemorial.id}`);

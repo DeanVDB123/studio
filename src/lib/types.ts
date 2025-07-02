@@ -22,6 +22,7 @@ export interface MemorialData {
   viewCount?: number;
   lastVisited?: string;
   viewTimestamps?: string[]; // Array of ISO date strings for each view
+  createdAt?: string;
 }
 
 export interface OrganizedContent {
@@ -55,4 +56,14 @@ export interface Feedback {
   email: string;
   feedback: string;
   createdAt: string; // ISO 8601 format
+}
+
+export interface AdminMemorialView {
+  id: string;
+  deceasedName: string;
+  ownerId?: string;
+  ownerEmail: string;
+  ownerStatus: string;
+  createdAt: string;
+  viewCount: number;
 }

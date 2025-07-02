@@ -1,11 +1,10 @@
 
-
 // src/lib/data.ts
 'use server';
 
 import { firestore } from '@/lib/firebase';
 import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion, orderBy } from 'firebase/firestore';
-import type { MemorialData, SignupEvent, UserForAdmin, Feedback } from '@/lib/types';
+import type { MemorialData, SignupEvent, UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
 const signupsCollection = collection(firestore, 'signups');
@@ -225,6 +224,37 @@ export async function getAllUsersWithMemorialCount(): Promise<UserForAdmin[]> {
 
   console.log(`[Firestore] Found ${users.length} total users.`);
   return users;
+}
+
+export async function getAllMemorialsForAdmin(): Promise<AdminMemorialView[]> {
+    console.log(`[Firestore] getAllMemorialsForAdmin called.`);
+    const memorialsSnapshot = await getDocs(collection(firestore, 'memorials'));
+    const signupsSnapshot = await getDocs(collection(firestore, 'signups'));
+
+    const usersMap: Record<string, { email: string, status: string }> = {};
+    signupsSnapshot.forEach(doc => {
+        const data = doc.data() as SignupEvent;
+        if (data.userId) {
+            usersMap[data.userId] = { email: data.email, status: data.status };
+        }
+    });
+
+    const allMemorials: AdminMemorialView[] = memorialsSnapshot.docs.map(doc => {
+        const data = doc.data() as MemorialData;
+        const ownerInfo = data.userId ? usersMap[data.userId] : undefined;
+        return {
+            id: doc.id,
+            deceasedName: data.deceasedName,
+            ownerId: data.userId,
+            ownerEmail: ownerInfo?.email || 'N/A (Demo)',
+            ownerStatus: ownerInfo?.status || 'N/A',
+            createdAt: data.createdAt || 'N/A',
+            viewCount: data.viewCount || 0,
+        };
+    });
+
+    console.log(`[Firestore] Found ${allMemorials.length} total memorials for admin view.`);
+    return allMemorials;
 }
 
 export async function updateUserStatusAction(userId: string, newStatus: string): Promise<void> {

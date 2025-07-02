@@ -3,11 +3,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback } from '@/lib/data';
-import type { UserForAdmin, Feedback } from '@/lib/types';
+import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
+import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Edit3 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -27,12 +27,14 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
 
-type SortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
+type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
+type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'createdAt' | 'viewCount' | 'ownerStatus';
 type SortDirection = 'asc' | 'desc';
 
 const getBadgeVariant = (status: string | null) => {
-  switch (status?.toUpperCase()) {
+  if (!status) return 'secondary';
+  switch (status.toUpperCase()) {
     case 'ADMIN':
       return 'admin' as const;
     case 'PAID':
@@ -48,8 +50,9 @@ export default function PappaPage() {
   const { user, userStatus, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<UserForAdmin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<{ key: UserSortKey; direction: SortDirection }>({ key: 'signupDate', direction: 'desc' });
   const [qrSortConfig, setQrSortConfig] = useState<{ key: QrSortKey; direction: SortDirection }>({ key: 'email', direction: 'asc' });
+  const [memorialsSortConfig, setMemorialsSortConfig] = useState<{ key: MemorialSortKey; direction: SortDirection }>({ key: 'createdAt', direction: 'desc' });
   const { toast } = useToast();
   const [updatingStatusFor, setUpdatingStatusFor] = useState<string | null>(null);
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
@@ -58,7 +61,8 @@ export default function PappaPage() {
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(true);
   const [expandedFeedbackId, setExpandedFeedbackId] = useState<string | null>(null);
-
+  const [allMemorials, setAllMemorials] = useState<AdminMemorialView[]>([]);
+  const [isLoadingMemorials, setIsLoadingMemorials] = useState(true);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -100,7 +104,24 @@ export default function PappaPage() {
     }
     fetchFeedback();
   }, [userStatus, selectedView, toast]);
-
+  
+  useEffect(() => {
+    async function fetchAllMemorials() {
+      if (userStatus === 'ADMIN' && selectedView === 'All Memorials') {
+        setIsLoadingMemorials(true);
+        try {
+          const memorials = await getAllMemorialsForAdmin();
+          setAllMemorials(memorials);
+        } catch (error) {
+          console.error("[PappaPage] Failed to fetch all memorials:", error);
+          toast({ title: "Error", description: "Could not load memorial data.", variant: "destructive" });
+        } finally {
+          setIsLoadingMemorials(false);
+        }
+      }
+    }
+    fetchAllMemorials();
+  }, [userStatus, selectedView, toast]);
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     setUpdatingStatusFor(userId);
@@ -118,7 +139,7 @@ export default function PappaPage() {
     }
   };
 
-  const handleSort = (key: SortKey) => {
+  const handleSort = (key: UserSortKey) => {
     let direction: SortDirection = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -134,6 +155,14 @@ export default function PappaPage() {
     setQrSortConfig({ key, direction });
   };
   
+  const handleMemorialsSort = (key: MemorialSortKey) => {
+    let direction: SortDirection = 'asc';
+    if (memorialsSortConfig.key === key && memorialsSortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setMemorialsSortConfig({ key, direction });
+  };
+
   const safeFormatDate = (dateString: string | undefined | null) => {
     if (!dateString) return 'N/A';
     try {
@@ -182,6 +211,36 @@ export default function PappaPage() {
     });
     return sortableUsers;
   }, [users, sortConfig, searchTerm]);
+  
+  const filteredAndSortedMemorials = React.useMemo(() => {
+    let sortableMemorials = [...allMemorials];
+
+    if (searchTerm) {
+        const lowercasedFilter = searchTerm.toLowerCase();
+        sortableMemorials = sortableMemorials.filter(m =>
+            m.deceasedName.toLowerCase().includes(lowercasedFilter) ||
+            (m.ownerEmail && m.ownerEmail.toLowerCase().includes(lowercasedFilter))
+        );
+    }
+    
+    sortableMemorials.sort((a, b) => {
+        const aValue = a[memorialsSortConfig.key];
+        const bValue = b[memorialsSortConfig.key];
+        
+        if (aValue === undefined || aValue === null) return 1;
+        if (bValue === undefined || bValue === null) return -1;
+        
+        let comparison = 0;
+        if (aValue > bValue) {
+            comparison = 1;
+        } else if (aValue < bValue) {
+            comparison = -1;
+        }
+        
+        return memorialsSortConfig.direction === 'desc' ? comparison * -1 : comparison;
+    });
+    return sortableMemorials;
+  }, [allMemorials, memorialsSortConfig, searchTerm]);
 
   const filteredAndSortedQrData = React.useMemo(() => {
     let sortableUsers = [...users];
@@ -215,6 +274,19 @@ export default function PappaPage() {
 
   if (userStatus !== 'ADMIN') {
     notFound();
+  }
+  
+  const searchPlaceholder = () => {
+    switch (selectedView) {
+      case 'User Management':
+        return "Search by email or status...";
+      case 'All Memorials':
+        return "Search by name or owner email...";
+      case 'QR Codes':
+        return "Search by email...";
+      default:
+        return "Search...";
+    }
   }
 
   return (
@@ -253,6 +325,9 @@ export default function PappaPage() {
                 <DropdownMenuItem onSelect={() => setSelectedView('User Management')}>
                   User Management
                 </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setSelectedView('All Memorials')}>
+                  All Memorials
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setSelectedView('Feedback')}>
                   Feedback
                 </DropdownMenuItem>
@@ -266,19 +341,22 @@ export default function PappaPage() {
             </DropdownMenu>
           </div>
 
+          {selectedView !== 'Feedback' && selectedView !== 'Errors' && (
+            <div className="flex items-center py-4">
+              <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={searchPlaceholder()}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-80"
+                  />
+              </div>
+            </div>
+          )}
+
           {selectedView === 'User Management' && (
              <>
-              <div className="flex items-center py-4">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search by email or status..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-80"
-                    />
-                </div>
-              </div>
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
@@ -342,7 +420,7 @@ export default function PappaPage() {
                                         <Badge variant={getBadgeVariant(u.status)}>
                                           {u.status}
                                         </Badge>
-                                        <Pencil className="h-3 w-3 text-muted-foreground" />
+                                        <Pencil className="ml-1 h-3 w-3 text-muted-foreground" />
                                       </>
                                     )}
                                   </Button>
@@ -374,6 +452,84 @@ export default function PappaPage() {
                       <TableRow>
                         <TableCell colSpan={5} className="h-24 text-center">
                           No users found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
+
+          {selectedView === 'All Memorials' && (
+             <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('deceasedName')}>
+                          Deceased Name <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('ownerEmail')}>
+                          Owner <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                       <TableHead>
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('ownerStatus')}>
+                          Status <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('createdAt')}>
+                          Created On <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead className="text-center">
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('viewCount')}>
+                          Views <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingMemorials ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="h-24 text-center">
+                          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+                        </TableCell>
+                      </TableRow>
+                    ) : filteredAndSortedMemorials.length > 0 ? (
+                      filteredAndSortedMemorials.map((m) => (
+                        <TableRow key={m.id}>
+                          <TableCell className="font-medium">{m.deceasedName}</TableCell>
+                          <TableCell>{m.ownerEmail}</TableCell>
+                          <TableCell>
+                            <Badge variant={getBadgeVariant(m.ownerStatus)}>{m.ownerStatus}</Badge>
+                          </TableCell>
+                          <TableCell>{safeFormatDate(m.createdAt)}</TableCell>
+                          <TableCell className="text-center">{m.viewCount}</TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" asChild>
+                              <Link href={`/edit/${m.id}`} title={`Edit ${m.deceasedName}`}>
+                                <Edit3 className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                            <Button variant="ghost" size="icon" asChild>
+                              <Link href={`/${m.id}`} target="_blank" title={`View ${m.deceasedName}`}>
+                                <ExternalLink className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} className="h-24 text-center">
+                          No memorials found.
                         </TableCell>
                       </TableRow>
                     )}
@@ -442,17 +598,6 @@ export default function PappaPage() {
           
           {selectedView === 'QR Codes' && (
              <>
-              <div className="flex items-center py-4">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search by email..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-80"
-                    />
-                </div>
-              </div>
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
