@@ -543,24 +543,25 @@ export default function PappaPage() {
                           <TableCell>{safeFormatDate(m.createdAt)}</TableCell>
                           <TableCell className="text-center">{m.viewCount}</TableCell>
                           <TableCell>
-                            <Badge variant={m.visibility === 'shown' ? 'secondary' : 'destructive'}>{m.visibility}</Badge>
+                            <Button
+                                variant={m.visibility === 'shown' ? 'secondary' : 'destructive'}
+                                size="sm"
+                                onClick={() => handleToggleVisibility(m.id)}
+                                disabled={updatingVisibilityId === m.id}
+                                className="w-28"
+                                title={`Click to toggle visibility. Current: ${m.visibility}`}
+                            >
+                                {updatingVisibilityId === m.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        {m.visibility === 'shown' ? <Eye className="mr-2 h-4 w-4" /> : <EyeOff className="mr-2 h-4 w-4" />}
+                                        <span className="capitalize">{m.visibility}</span>
+                                    </>
+                                )}
+                            </Button>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button
-                               variant="ghost"
-                               size="icon"
-                               onClick={() => handleToggleVisibility(m.id)}
-                               disabled={updatingVisibilityId === m.id}
-                               title={m.visibility === 'shown' ? 'Hide Memorial' : 'Show Memorial'}
-                             >
-                               {updatingVisibilityId === m.id ? (
-                                 <Loader2 className="h-4 w-4 animate-spin" />
-                               ) : m.visibility === 'shown' ? (
-                                 <EyeOff className="h-4 w-4" />
-                               ) : (
-                                 <Eye className="h-4 w-4" />
-                               )}
-                             </Button>
                             <Button variant="ghost" size="icon" asChild>
                               <Link href={`/edit/${m.id}`} title={`Edit ${m.deceasedName}`}>
                                 <Edit3 className="h-4 w-4" />
