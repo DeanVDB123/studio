@@ -7,7 +7,7 @@ import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback } 
 import type { UserForAdmin, Feedback } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -338,9 +338,12 @@ export default function PappaPage() {
                                     {updatingStatusFor === u.userId ? (
                                       <Loader2 className="h-4 w-4 animate-spin" />
                                     ) : (
-                                      <Badge variant={getBadgeVariant(u.status)} className="cursor-pointer hover:opacity-80 transition-opacity">
-                                        {u.status}
-                                      </Badge>
+                                      <>
+                                        <Badge variant={getBadgeVariant(u.status)}>
+                                          {u.status}
+                                        </Badge>
+                                        <Pencil className="h-3 w-3 text-muted-foreground" />
+                                      </>
                                     )}
                                   </Button>
                                 </PopoverTrigger>

@@ -208,7 +208,7 @@ export default function HomePage() {
                 imageHint="storyteller elder"
                 name="Nokuthula Maseko – Resilient Storyteller"
                 timeline="04 Oct 1971 – 18 Feb 2024"
-                memorialId="4f38044b-4e80-a8e3-b894c7516382"
+                memorialId="4f38044b-495b-4e80-a8e3-b894c7516382"
                 story="A mother, storyteller, and beacon of resilience, Nokuthula Maseko carried the soul of her people in every word she spoke. Born and raised in a small village, she grew into a woman who faced hardship with quiet strength and unwavering dignity. Her gift for storytelling was not just an art—it was a lifeline, a way to preserve culture, pass on wisdom, and bring comfort during times of struggle. Whether seated by a fire under the stars or gathered with children in the shade of an acacia tree, Nokuthula wove tales that nurtured, healed, and empowered. Her stories live on in the hearts of those she touched, and her voice echoes in every lesson she left behind."
               />
             </div>
