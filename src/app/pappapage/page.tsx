@@ -156,7 +156,7 @@ export default function PappaPage() {
         setAllMemorials(prev =>
             prev.map(m => (m.id === memorialId ? { ...m, visibility: newVisibility } : m))
         );
-        toast({ title: "Success", description: `Memorial is now ${newVisibility}.` });
+        toast({ title: "Success", description: `Memorial visibility updated.` });
     } catch (error: any) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -538,19 +538,24 @@ export default function PappaPage() {
                           <TableCell className="text-center">{m.viewCount}</TableCell>
                           <TableCell>
                             <Button
-                                variant={m.visibility === 'shown' ? 'secondary' : 'destructive'}
+                                variant={m.visibility === 'shown' ? 'destructive' : 'secondary'}
                                 size="sm"
                                 onClick={() => handleToggleVisibility(m.id)}
                                 disabled={updatingVisibilityId === m.id}
                                 className="w-28"
-                                title={`Click to toggle visibility. Current: ${m.visibility}`}
+                                title={`Click to ${m.visibility === 'shown' ? 'deactivate' : 'activate'} this memorial`}
                             >
                                 {updatingVisibilityId === m.id ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : m.visibility === 'shown' ? (
+                                    <>
+                                        <EyeOff className="mr-2 h-4 w-4" />
+                                        <span>Deactivate</span>
+                                    </>
                                 ) : (
                                     <>
-                                        {m.visibility === 'shown' ? <Eye className="mr-2 h-4 w-4" /> : <EyeOff className="mr-2 h-4 w-4" />}
-                                        <span className="capitalize">{m.visibility}</span>
+                                        <Eye className="mr-2 h-4 w-4" />
+                                        <span>Activate</span>
                                     </>
                                 )}
                             </Button>
@@ -696,3 +701,5 @@ export default function PappaPage() {
     </div>
   );
 }
+
+    

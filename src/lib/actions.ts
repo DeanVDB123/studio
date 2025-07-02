@@ -191,3 +191,34 @@ export async function saveFeedbackAction(feedbackData: {
     throw new Error(error.message || 'An unexpected error occurred while saving feedback.');
   }
 }
+
+export async function updateUserStatusAction(adminId: string, userId: string, newStatus: string): Promise<void> {
+    console.log(`[Firestore] updateUserStatusAction called by admin ${adminId} for user ${userId} to set status ${newStatus}.`);
+    
+    if (!adminId) {
+        throw new Error('Authentication is required.');
+    }
+    const isAdminUser = await checkIsAdmin(adminId);
+    if (!isAdminUser) {
+        throw new Error('Permission denied. You must be an administrator to perform this action.');
+    }
+
+    const q = query(collection(firestore, 'signups'), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    const userDocRef = querySnapshot.docs[0].ref;
+    const updatePayload: { status: string, dateSwitched?: string } = { status: newStatus };
+
+    if (newStatus !== 'FREE') {
+      updatePayload.dateSwitched = new Date().toISOString();
+    }
+
+    await updateDoc(userDocRef, updatePayload);
+    console.log(`[Firestore] Successfully updated status for user ${userId}.`);
+}
+
+    
