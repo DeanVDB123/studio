@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -562,11 +561,6 @@ export default function PappaPage() {
                             </Button>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link href={`/edit/${m.id}`} title={`Edit ${m.deceasedName}`}>
-                                <Edit3 className="h-4 w-4" />
-                              </Link>
-                            </Button>
                             <Button variant="ghost" size="icon" asChild>
                               <Link href={`/${m.id}`} target="_blank" title={`View ${m.deceasedName}`}>
                                 <ExternalLink className="h-4 w-4" />
