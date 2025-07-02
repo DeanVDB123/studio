@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
+import { getAllUsersWithMemorialCount, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,7 +13,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
-import { toggleMemorialVisibilityAction } from '@/lib/actions';
+import { toggleMemorialVisibilityAction, updateUserStatusAction } from '@/lib/actions';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
@@ -701,5 +701,3 @@ export default function PappaPage() {
     </div>
   );
 }
-
-    

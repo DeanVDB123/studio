@@ -8,6 +8,8 @@ import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIs
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
+import { firestore } from './firebase';
+import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 
 export async function handleGenerateBiography(input: GenerateBiographyDraftInput): Promise<string> {
   console.log('[Action] handleGenerateBiography called with input:', JSON.stringify(input, null, 2));
