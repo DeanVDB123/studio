@@ -3,8 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, getAllMemorialsForAdmin, getFeatureFlag, updateFeatureFlagAction } from '@/lib/data';
-import type { UserForAdmin, Feedback, AdminMemorialView, FeatureFlag } from '@/lib/types';
+import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
+import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Edit3, Eye, EyeOff } from 'lucide-react';
@@ -26,7 +26,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Switch } from '@/components/ui/switch';
 import { toggleMemorialVisibilityAction } from '@/lib/actions';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
@@ -65,8 +64,6 @@ export default function PappaPage() {
   const [expandedFeedbackId, setExpandedFeedbackId] = useState<string | null>(null);
   const [allMemorials, setAllMemorials] = useState<AdminMemorialView[]>([]);
   const [isLoadingMemorials, setIsLoadingMemorials] = useState(true);
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
-  const [isLoadingFlags, setIsLoadingFlags] = useState(true);
   const [updatingVisibilityId, setUpdatingVisibilityId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -128,24 +125,6 @@ export default function PappaPage() {
     fetchAllMemorials();
   }, [userStatus, selectedView, toast]);
 
-  useEffect(() => {
-    async function fetchFeatureFlags() {
-      if (userStatus === 'ADMIN' && selectedView === 'Features List') {
-        setIsLoadingFlags(true);
-        try {
-          const flags = await getFeatureFlag();
-          setFeatureFlags(flags);
-        } catch (error) {
-          console.error("[PappaPage] Failed to fetch feature flags:", error);
-          toast({ title: "Error", description: "Could not load feature flags.", variant: "destructive" });
-        } finally {
-          setIsLoadingFlags(false);
-        }
-      }
-    }
-    fetchFeatureFlags();
-  }, [userStatus, selectedView, toast]);
-
   const handleStatusChange = async (userId: string, newStatus: string) => {
     if (!user) {
       toast({ title: "Not Authenticated", description: "You must be logged in to perform this action.", variant: "destructive" });
@@ -163,30 +142,6 @@ export default function PappaPage() {
     } finally {
       setUpdatingStatusFor(null);
       setOpenPopoverId(null); // Close the popover
-    }
-  };
-
-  const handleFeatureToggle = async (flagId: string, currentEnabled: boolean) => {
-    if (!user) {
-        toast({ title: "Not Authenticated", description: "You must be logged in.", variant: "destructive" });
-        return;
-    }
-    const newEnabled = !currentEnabled;
-    
-    // Optimistic UI update
-    setFeatureFlags(prevFlags => 
-      prevFlags.map(flag => flag.id === flagId ? { ...flag, enabled: newEnabled } : flag)
-    );
-
-    try {
-      await updateFeatureFlagAction(user.uid, flagId, newEnabled);
-      toast({ title: "Success", description: `Feature has been ${newEnabled ? 'enabled' : 'disabled'}.` });
-    } catch (error: any) {
-      // Revert UI on error
-      setFeatureFlags(prevFlags => 
-        prevFlags.map(flag => flag.id === flagId ? { ...flag, enabled: currentEnabled } : flag)
-      );
-      toast({ title: "Error", description: error.message, variant: "destructive" });
     }
   };
 
@@ -401,9 +356,6 @@ export default function PappaPage() {
                 <DropdownMenuItem onSelect={() => setSelectedView('Feedback')}>
                   Feedback
                 </DropdownMenuItem>
-                 <DropdownMenuItem onSelect={() => setSelectedView('Features List')}>
-                  Features List
-                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setSelectedView('QR Codes')}>
                   QR Codes
                 </DropdownMenuItem>
@@ -414,7 +366,7 @@ export default function PappaPage() {
             </DropdownMenu>
           </div>
 
-          {selectedView !== 'Feedback' && selectedView !== 'Errors' && selectedView !== 'Features List' && (
+          {selectedView !== 'Feedback' && selectedView !== 'Errors' && (
             <div className="flex items-center py-4">
               <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -688,49 +640,6 @@ export default function PappaPage() {
                           </TableBody>
                       </Table>
                   </div>
-              )}
-            </>
-          )}
-
-          {selectedView === 'Features List' && (
-            <>
-              {isLoadingFlags ? (
-                <div className="flex items-center justify-center h-64 text-center">
-                  <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : (
-                <div className="rounded-md border max-w-lg mx-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Feature</TableHead>
-                        <TableHead className="text-right">Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {featureFlags.length > 0 ? (
-                        featureFlags.map((flag) => (
-                          <TableRow key={flag.id}>
-                            <TableCell className="font-medium">{flag.name}</TableCell>
-                            <TableCell className="text-right">
-                              <Switch
-                                checked={flag.enabled}
-                                onCheckedChange={() => handleFeatureToggle(flag.id, flag.enabled)}
-                                aria-label={`Toggle ${flag.name} feature`}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={2} className="h-24 text-center">
-                            No feature flags found.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
               )}
             </>
           )}
