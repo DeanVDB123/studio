@@ -6,7 +6,7 @@ import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
 import { getMemorialById } from '@/lib/data'; // Public fetch
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, Loader2 } from 'lucide-react'; // Removed Globe, Link2
+import { AlertTriangle, Loader2, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, use } from 'react';
@@ -14,6 +14,14 @@ import type { MemorialData } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PricingTable } from '@/components/shared/PricingTable';
 
 
 interface EditMemorialPageProps {
@@ -27,7 +35,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
 
   const [memorialData, setMemorialData] = useState<MemorialData | null | undefined>(undefined); // undefined for loading, null for not found
   const [isLoading, setIsLoading] = useState(true);
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, userStatus } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [permalink, setPermalink] = useState('');
@@ -106,23 +114,57 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
   }
   
   return (
-    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-2">
-        <h1 className="text-3xl font-headline mb-8">Edit Memorial: {memorialData.deceasedName}</h1>
-        <MemorialForm initialData={memorialData} memorialId={memorialId} />
+    <Dialog>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <h1 className="text-3xl font-headline mb-8">Edit Memorial: {memorialData.deceasedName}</h1>
+          <MemorialForm initialData={memorialData} memorialId={memorialId} />
+        </div>
+        <div className="lg:col-span-1 space-y-6 lg:pt-20">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline text-xl">QR Code</CardTitle>
+              <CardDescription>
+                {userStatus === 'FREE' 
+                  ? 'Upgrade to activate and share your QR code.' 
+                  : 'Share this QR code for easy access.'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {permalink && (
+                userStatus === 'FREE' ? (
+                  <div className="relative flex flex-col items-center text-center">
+                    <div className="filter blur-sm pointer-events-none">
+                      <QRCodeDisplay url={permalink} />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md p-4">
+                      <DialogTrigger asChild>
+                        <Button>Upgrade to Share</Button>
+                      </DialogTrigger>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-4">
+                    <QRCodeDisplay url={permalink} />
+                    <Button variant="outline" className="w-full">
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      Order Physical QR Code
+                    </Button>
+                  </div>
+                )
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-      <div className="lg:col-span-1 space-y-6 lg:pt-20">
-        {/* Permalink Card Removed */}
-        <Card>
-           <CardHeader>
-            <CardTitle className="font-headline text-xl">QR Code</CardTitle>
-             <CardDescription>Share this QR code for easy access.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {permalink && <QRCodeDisplay url={permalink} />}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      <DialogContent className="max-w-6xl p-0 bg-card">
+        <DialogHeader className="p-6 pb-4 border-b bg-primary text-primary-foreground">
+          <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
+        </DialogHeader>
+        <div className="p-6">
+          <PricingTable />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
