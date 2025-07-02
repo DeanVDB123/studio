@@ -25,7 +25,7 @@ import { FeedbackDialog } from './FeedbackDialog';
 const navItems = [
   { href: '/memorials', label: 'Memorials', icon: BookUser },
   { href: '/visits', label: 'Visits', icon: BarChart },
-  { href: '/qrcodes', label: 'QR Codes', icon: QrCode },
+  // { href: '/qrcodes', label: 'QR Codes', icon: QrCode },
 ];
 
 const createNavItem = { href: '/create', label: 'New Memorial', icon: PlusCircle };
