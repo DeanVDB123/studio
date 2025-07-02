@@ -3,11 +3,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
-import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
+import { getAllUsersWithMemorialCount, updateUserStatusAction, getAllFeedback, getAllMemorialsForAdmin, getFeatureFlag, updateFeatureFlagAction } from '@/lib/data';
+import type { UserForAdmin, Feedback, AdminMemorialView, FeatureFlag } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Edit3 } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Edit3, Eye, EyeOff } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -26,10 +26,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Switch } from '@/components/ui/switch';
+import { toggleMemorialVisibilityAction } from '@/lib/actions';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
-type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'createdAt' | 'viewCount' | 'ownerStatus';
+type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'createdAt' | 'viewCount' | 'ownerStatus' | 'visibility';
 type SortDirection = 'asc' | 'desc';
 
 const getBadgeVariant = (status: string | null) => {
@@ -63,6 +65,9 @@ export default function PappaPage() {
   const [expandedFeedbackId, setExpandedFeedbackId] = useState<string | null>(null);
   const [allMemorials, setAllMemorials] = useState<AdminMemorialView[]>([]);
   const [isLoadingMemorials, setIsLoadingMemorials] = useState(true);
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
+  const [isLoadingFlags, setIsLoadingFlags] = useState(true);
+  const [updatingVisibilityId, setUpdatingVisibilityId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -123,10 +128,32 @@ export default function PappaPage() {
     fetchAllMemorials();
   }, [userStatus, selectedView, toast]);
 
+  useEffect(() => {
+    async function fetchFeatureFlags() {
+      if (userStatus === 'ADMIN' && selectedView === 'Features List') {
+        setIsLoadingFlags(true);
+        try {
+          const flags = await getFeatureFlag();
+          setFeatureFlags(flags);
+        } catch (error) {
+          console.error("[PappaPage] Failed to fetch feature flags:", error);
+          toast({ title: "Error", description: "Could not load feature flags.", variant: "destructive" });
+        } finally {
+          setIsLoadingFlags(false);
+        }
+      }
+    }
+    fetchFeatureFlags();
+  }, [userStatus, selectedView, toast]);
+
   const handleStatusChange = async (userId: string, newStatus: string) => {
+    if (!user) {
+      toast({ title: "Not Authenticated", description: "You must be logged in to perform this action.", variant: "destructive" });
+      return;
+    }
     setUpdatingStatusFor(userId);
     try {
-      await updateUserStatusAction(userId, newStatus);
+      await updateUserStatusAction(user.uid, userId, newStatus);
       setUsers(prevUsers =>
         prevUsers.map(u => (u.userId === userId ? { ...u, status: newStatus, dateSwitched: newStatus !== 'FREE' ? new Date().toISOString() : u.dateSwitched } : u))
       );
@@ -136,6 +163,49 @@ export default function PappaPage() {
     } finally {
       setUpdatingStatusFor(null);
       setOpenPopoverId(null); // Close the popover
+    }
+  };
+
+  const handleFeatureToggle = async (flagId: string, currentEnabled: boolean) => {
+    if (!user) {
+        toast({ title: "Not Authenticated", description: "You must be logged in.", variant: "destructive" });
+        return;
+    }
+    const newEnabled = !currentEnabled;
+    
+    // Optimistic UI update
+    setFeatureFlags(prevFlags => 
+      prevFlags.map(flag => flag.id === flagId ? { ...flag, enabled: newEnabled } : flag)
+    );
+
+    try {
+      await updateFeatureFlagAction(user.uid, flagId, newEnabled);
+      toast({ title: "Success", description: `Feature has been ${newEnabled ? 'enabled' : 'disabled'}.` });
+    } catch (error: any) {
+      // Revert UI on error
+      setFeatureFlags(prevFlags => 
+        prevFlags.map(flag => flag.id === flagId ? { ...flag, enabled: currentEnabled } : flag)
+      );
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleToggleVisibility = async (memorialId: string) => {
+    if (!user) {
+        toast({ title: "Error", description: "You must be logged in.", variant: "destructive" });
+        return;
+    }
+    setUpdatingVisibilityId(memorialId);
+    try {
+        const newVisibility = await toggleMemorialVisibilityAction(user.uid, memorialId);
+        setAllMemorials(prev =>
+            prev.map(m => (m.id === memorialId ? { ...m, visibility: newVisibility } : m))
+        );
+        toast({ title: "Success", description: `Memorial is now ${newVisibility}.` });
+    } catch (error: any) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+        setUpdatingVisibilityId(null);
     }
   };
 
@@ -331,6 +401,9 @@ export default function PappaPage() {
                 <DropdownMenuItem onSelect={() => setSelectedView('Feedback')}>
                   Feedback
                 </DropdownMenuItem>
+                 <DropdownMenuItem onSelect={() => setSelectedView('Features List')}>
+                  Features List
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setSelectedView('QR Codes')}>
                   QR Codes
                 </DropdownMenuItem>
@@ -341,7 +414,7 @@ export default function PappaPage() {
             </DropdownMenu>
           </div>
 
-          {selectedView !== 'Feedback' && selectedView !== 'Errors' && (
+          {selectedView !== 'Feedback' && selectedView !== 'Errors' && selectedView !== 'Features List' && (
             <div className="flex items-center py-4">
               <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -492,13 +565,18 @@ export default function PappaPage() {
                           Views <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
                       </TableHead>
+                       <TableHead>
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('visibility')}>
+                          Visibility <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoadingMemorials ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
+                        <TableCell colSpan={7} className="h-24 text-center">
                           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                         </TableCell>
                       </TableRow>
@@ -512,7 +590,25 @@ export default function PappaPage() {
                           </TableCell>
                           <TableCell>{safeFormatDate(m.createdAt)}</TableCell>
                           <TableCell className="text-center">{m.viewCount}</TableCell>
+                          <TableCell>
+                            <Badge variant={m.visibility === 'shown' ? 'secondary' : 'destructive'}>{m.visibility}</Badge>
+                          </TableCell>
                           <TableCell className="text-right">
+                            <Button
+                               variant="ghost"
+                               size="icon"
+                               onClick={() => handleToggleVisibility(m.id)}
+                               disabled={updatingVisibilityId === m.id}
+                               title={m.visibility === 'shown' ? 'Hide Memorial' : 'Show Memorial'}
+                             >
+                               {updatingVisibilityId === m.id ? (
+                                 <Loader2 className="h-4 w-4 animate-spin" />
+                               ) : m.visibility === 'shown' ? (
+                                 <EyeOff className="h-4 w-4" />
+                               ) : (
+                                 <Eye className="h-4 w-4" />
+                               )}
+                             </Button>
                             <Button variant="ghost" size="icon" asChild>
                               <Link href={`/edit/${m.id}`} title={`Edit ${m.deceasedName}`}>
                                 <Edit3 className="h-4 w-4" />
@@ -528,7 +624,7 @@ export default function PappaPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
+                        <TableCell colSpan={7} className="h-24 text-center">
                           No memorials found.
                         </TableCell>
                       </TableRow>
@@ -592,6 +688,49 @@ export default function PappaPage() {
                           </TableBody>
                       </Table>
                   </div>
+              )}
+            </>
+          )}
+
+          {selectedView === 'Features List' && (
+            <>
+              {isLoadingFlags ? (
+                <div className="flex items-center justify-center h-64 text-center">
+                  <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="rounded-md border max-w-lg mx-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Feature</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {featureFlags.length > 0 ? (
+                        featureFlags.map((flag) => (
+                          <TableRow key={flag.id}>
+                            <TableCell className="font-medium">{flag.name}</TableCell>
+                            <TableCell className="text-right">
+                              <Switch
+                                checked={flag.enabled}
+                                onCheckedChange={() => handleFeatureToggle(flag.id, flag.enabled)}
+                                aria-label={`Toggle ${flag.name} feature`}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={2} className="h-24 text-center">
+                            No feature flags found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </>
           )}

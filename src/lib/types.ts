@@ -23,6 +23,7 @@ export interface MemorialData {
   lastVisited?: string;
   viewTimestamps?: string[]; // Array of ISO date strings for each view
   createdAt?: string;
+  visibility?: 'shown' | 'hidden';
 }
 
 export interface OrganizedContent {
@@ -66,4 +67,5 @@ export interface AdminMemorialView {
   ownerStatus: string;
   createdAt: string;
   viewCount: number;
+  visibility: 'shown' | 'hidden';
 }

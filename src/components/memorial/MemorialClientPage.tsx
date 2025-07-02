@@ -15,7 +15,7 @@ import { TributesSection } from '@/components/memorial/TributesSection';
 import { StoriesSection } from '@/components/memorial/StoriesSection';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Feather, Lock, Loader2 } from 'lucide-react';
+import { Feather, Lock, Loader2, ShieldOff } from 'lucide-react';
 import { logMemorialViewAction } from '@/lib/actions';
 
 
@@ -46,11 +46,11 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
   }, [memorialId]);
 
   useEffect(() => {
-    // Log a view when the page has finished loading and has a valid memorialId
-    if (memorialId && !isLoading) {
+    // Log a view when the page has finished loading, has a valid memorialId, and the memorial is visible
+    if (memorialId && !isLoading && memorialData && memorialData.visibility !== 'hidden') {
       logMemorialViewAction(memorialId);
     }
-  }, [memorialId, isLoading]);
+  }, [memorialId, isLoading, memorialData]);
 
 
   if (isLoading || authLoading) {
@@ -61,6 +61,8 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
       </div>
     );
   }
+
+  const isAdmin = userStatus === 'ADMIN';
 
   if (!memorialData) {
     return (
@@ -79,12 +81,29 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     );
   }
 
-  // Access Control Logic
+  // Admin bypasses all visibility checks
+  if (!isAdmin && memorialData.visibility === 'hidden') {
+    return (
+      <div className="container mx-auto py-12 px-4 text-center">
+        <Alert variant="destructive" className="max-w-md mx-auto">
+            <ShieldOff className="h-5 w-5" />
+            <AlertTitle className="font-headline">Memorial Not Available</AlertTitle>
+            <AlertDescription>
+                This memorial page is currently not available for viewing.
+            </AlertDescription>
+        </Alert>
+        <Button asChild className="mt-8">
+            <Link href="/">Return Home</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  // Access Control Logic for non-admins
   const isFreeTier = memorialData.ownerStatus === 'FREE';
   const isOwner = user && user.uid === memorialData.userId;
-  const isAdmin = userStatus === 'ADMIN';
-
-  if (isFreeTier && !isOwner && !isAdmin) {
+  
+  if (!isAdmin && isFreeTier && !isOwner) {
     return (
      <div className="container mx-auto py-12 px-4 text-center">
        <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">

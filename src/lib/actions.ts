@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
@@ -83,6 +83,7 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
   if (!isUpdate) {
     dataToSave.viewCount = 0; // Initialize view count for new memorials
     dataToSave.createdAt = new Date().toISOString();
+    dataToSave.visibility = 'shown';
   }
   
   console.log(`[Action] Data prepared for DB operation (dataToSave):`, JSON.stringify(dataToSave, null, 2));
@@ -117,6 +118,39 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     }
     // Pass the more specific error from the data layer up to the UI
     throw new Error(`Failed to ${isUpdate ? 'update' : 'create'} memorial page. ${error.message || 'Please try again.'}`);
+  }
+}
+
+export async function toggleMemorialVisibilityAction(adminId: string, memorialId: string): Promise<'shown' | 'hidden'> {
+  console.log(`[Action] toggleMemorialVisibilityAction called by admin ${adminId} for memorial ${memorialId}`);
+
+  if (!adminId) {
+    throw new Error('Authentication is required.');
+  }
+
+  const isAdminUser = await checkIsAdmin(adminId);
+  if (!isAdminUser) {
+    throw new Error('Permission denied. You must be an administrator to perform this action.');
+  }
+
+  // Get current visibility to toggle it
+  const memorial = await getMemorialById(memorialId);
+  if (!memorial) {
+    throw new Error('Memorial not found.');
+  }
+  const currentVisibility = memorial.visibility || 'shown';
+  const newVisibility = currentVisibility === 'shown' ? 'hidden' : 'shown';
+
+  try {
+    await updateMemorialVisibility(memorialId, newVisibility);
+    console.log(`[Action] Memorial ${memorialId} visibility toggled to ${newVisibility}`);
+    revalidatePath('/pappapage', 'page');
+    revalidatePath('/memorials', 'page'); // User dashboard
+    revalidatePath(`/${memorialId}`, 'page'); // Public page
+    return newVisibility;
+  } catch (error: any) {
+    console.error(`[Action] Error toggling visibility for memorial ${memorialId}:`, error);
+    throw new Error('Failed to update memorial visibility.');
   }
 }
 

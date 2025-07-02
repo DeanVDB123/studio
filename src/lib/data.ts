@@ -23,6 +23,9 @@ async function fetchUserStatus(userId: string): Promise<string> {
     const signupData = signupSnapshot.docs[0].data() as SignupEvent;
     return signupData.status || 'FREE'; // Default to FREE if status field is missing
   } else {
+    // This case might be hit for server-side rendering or if a user record is missing.
+    // It is safer to return a default status than to error out.
+    // However, for admin checks, a missing record means they are NOT an admin.
     console.warn(`[Firestore] No signup record found for user ID: ${userId}, defaulting to FREE.`);
     return 'FREE'; // Default to FREE if no signup record exists
   }
@@ -33,6 +36,12 @@ export async function getUserStatus(userId: string): Promise<string> {
     return await fetchUserStatus(userId);
 }
 
+export async function isAdmin(userId: string): Promise<boolean> {
+  if (!userId) return false;
+  const status = await fetchUserStatus(userId);
+  return status === 'ADMIN';
+}
+
 export async function getMemorialById(id: string): Promise<MemorialData | undefined> {
   console.log(`[Firestore] getMemorialById called for ID: ${id}`);
   const docRef = doc(memorialsCollection, id);
@@ -41,14 +50,21 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
   if (docSnap.exists()) {
     const memorialData = docSnap.data() as MemorialData;
 
-    if (memorialData.userId) {
-      console.log(`[Firestore] Found memorial owner UID: ${memorialData.userId}. Fetching status.`);
-      memorialData.ownerStatus = await fetchUserStatus(memorialData.userId);
-      console.log(`[Firestore] Found owner status: ${memorialData.ownerStatus}`);
-    } else {
-      // This is a demo/sample memorial without an owner. Treat it as public.
-      console.log(`[Firestore] Memorial with ID ${id} has no owner. Treating as public demo.`);
-      memorialData.ownerStatus = 'PAID'; // Assign a status that bypasses the 'FREE' tier check
+    try {
+        if (memorialData.userId) {
+          console.log(`[Firestore] Found memorial owner UID: ${memorialData.userId}. Fetching status.`);
+          memorialData.ownerStatus = await fetchUserStatus(memorialData.userId);
+          console.log(`[Firestore] Found owner status: ${memorialData.ownerStatus}`);
+        } else {
+          // This is a demo/sample memorial without an owner. Treat it as public.
+          console.log(`[Firestore] Memorial with ID ${id} has no owner. Treating as public demo.`);
+          memorialData.ownerStatus = 'PAID'; // Assign a status that bypasses the 'FREE' tier check
+        }
+    } catch (error) {
+        console.error(`[Firestore] Permission error fetching owner status for memorial ${id}. This may happen during server-side metadata generation for private memorials. Defaulting status. Error:`, error);
+        // Default the status to avoid crashing server-side operations. 
+        // Client-side logic will re-verify and handle access control.
+        memorialData.ownerStatus = 'FREE';
     }
 
     return memorialData;
@@ -65,6 +81,10 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
 
   const userMemorials = querySnapshot.docs.map(doc => {
     const data = doc.data() as MemorialData;
+    // Admins should see all their assigned memorials, but users should not see hidden ones.
+    if (data.visibility === 'hidden') {
+      return null;
+    }
     return {
       id: doc.id,
       deceasedName: data.deceasedName,
@@ -76,10 +96,10 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
       lastVisited: data.lastVisited,
       viewTimestamps: data.viewTimestamps || [],
     };
-  });
+  }).filter(Boolean); // This filters out the null values from hidden memorials
   
-  console.log(`[Firestore] Found ${userMemorials.length} memorials for user ${userId}.`);
-  return userMemorials;
+  console.log(`[Firestore] Found ${userMemorials.length} visible memorials for user ${userId}.`);
+  return userMemorials as any[];
 }
 
 export async function saveMemorial(data: MemorialData): Promise<MemorialData> {
@@ -89,7 +109,11 @@ export async function saveMemorial(data: MemorialData): Promise<MemorialData> {
   console.log(`[Firestore] saveMemorial (UPDATE) called for ID: ${data.id}, User: ${data.userId}`);
   const docRef = doc(memorialsCollection, data.id);
   
-  await updateDoc(docRef, { ...data });
+  // Ensure the object passed to updateDoc does not contain undefined values
+  const updateData = { ...data };
+  Object.keys(updateData).forEach(key => updateData[key as keyof MemorialData] === undefined && delete updateData[key as keyof MemorialData]);
+
+  await updateDoc(docRef, updateData);
 
   console.log(`[Firestore] Memorial UPDATED: ${data.id}. User: ${data.userId}.`);
   return data;
@@ -113,7 +137,11 @@ export async function deleteMemorial(memorialId: string, userId: string): Promis
   
   const docRef = doc(memorialsCollection, memorialId);
   const memorial = await getMemorialById(memorialId);
-  if (memorial && memorial.userId !== userId) {
+  
+  const isUserAdmin = await isAdmin(userId);
+
+  // Allow deletion if the user is the owner OR if the user is an admin
+  if (!isUserAdmin && memorial && memorial.userId !== userId) {
     throw new Error(`Unauthorized: User ${userId} cannot delete memorial ${memorialId}.`);
   }
 
@@ -250,6 +278,7 @@ export async function getAllMemorialsForAdmin(): Promise<AdminMemorialView[]> {
             ownerStatus: ownerInfo?.status || 'N/A',
             createdAt: data.createdAt || 'N/A',
             viewCount: data.viewCount || 0,
+            visibility: data.visibility || 'shown',
         };
     });
 
@@ -257,8 +286,17 @@ export async function getAllMemorialsForAdmin(): Promise<AdminMemorialView[]> {
     return allMemorials;
 }
 
-export async function updateUserStatusAction(userId: string, newStatus: string): Promise<void> {
-    console.log(`[Firestore] updateUserStatusAction called for user ${userId} to set status ${newStatus}.`);
+export async function updateUserStatusAction(adminId: string, userId: string, newStatus: string): Promise<void> {
+    console.log(`[Firestore] updateUserStatusAction called by admin ${adminId} for user ${userId} to set status ${newStatus}.`);
+    
+    if (!adminId) {
+        throw new Error('Authentication is required.');
+    }
+    const isAdminUser = await isAdmin(adminId);
+    if (!isAdminUser) {
+        throw new Error('Permission denied. You must be an administrator to perform this action.');
+    }
+
     const q = query(signupsCollection, where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
 
@@ -275,4 +313,10 @@ export async function updateUserStatusAction(userId: string, newStatus: string):
 
     await updateDoc(userDocRef, updatePayload);
     console.log(`[Firestore] Successfully updated status for user ${userId}.`);
+}
+
+export async function updateMemorialVisibility(memorialId: string, newVisibility: 'shown' | 'hidden'): Promise<void> {
+  console.log(`[Firestore] updateMemorialVisibility called for ID: ${memorialId} to set to ${newVisibility}`);
+  const docRef = doc(memorialsCollection, memorialId);
+  await updateDoc(docRef, { visibility: newVisibility });
 }
