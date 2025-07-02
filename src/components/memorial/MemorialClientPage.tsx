@@ -79,12 +79,12 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     );
   }
 
-  const isAdmin = userStatus === 'ADMIN';
-  const isOwner = user && user.uid === memorialData.userId;
-
-  // If the user is not an admin, perform visibility and privacy checks.
-  // Admins will bypass this entire block.
-  if (!isAdmin) {
+  const viewerIsAdmin = userStatus === 'ADMIN';
+  const viewerIsOwner = user && user.uid === memorialData.userId;
+  
+  // Explicitly grant access to admins first.
+  if (!viewerIsAdmin) {
+    // If not an admin, check other rules.
     // Check 1: Is the memorial hidden by an admin?
     if (memorialData.visibility === 'hidden') {
       return (
@@ -105,7 +105,7 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
 
     // Check 2: Is it a private (free tier) memorial and the viewer is not the owner?
     const isFreeTier = memorialData.ownerStatus === 'FREE';
-    if (isFreeTier && !isOwner) {
+    if (isFreeTier && !viewerIsOwner) {
       return (
         <div className="container mx-auto py-12 px-4 text-center">
           <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
@@ -126,7 +126,7 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
 
   // If access is granted, render the page
   const profilePhotoUrl = memorialData.photos && memorialData.photos.length > 0 ? memorialData.photos[0].url : undefined;
-  const backLinkHref = isOwner || isAdmin ? '/memorials' : '/';
+  const backLinkHref = viewerIsOwner || viewerIsAdmin ? '/memorials' : '/';
 
   return (
     <div className="bg-background min-h-screen font-body">
@@ -147,14 +147,6 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
       <footer className="py-8 text-center bg-primary text-primary-foreground/80">
         <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved.</p>
         <p className="text-sm mt-1">Created with love and remembrance.</p>
-        {/* {memorialData.userId && (
-          <div className="text-xs mt-4 space-y-1">
-            <p>Owner UID: {memorialData.userId}</p>
-            {memorialData.ownerStatus && (
-              <p>Owner Status: <span className="font-semibold">{memorialData.ownerStatus}</span></p>
-            )}
-          </div>
-        )} */}
       </footer>
     </div>
   );
