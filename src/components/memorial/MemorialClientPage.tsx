@@ -62,8 +62,6 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     );
   }
 
-  const isAdmin = userStatus === 'ADMIN';
-
   if (!memorialData) {
     return (
       <div className="container mx-auto py-12 px-4 text-center">
@@ -81,43 +79,48 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     );
   }
 
-  // Admin bypasses all visibility checks
-  if (!isAdmin && memorialData.visibility === 'hidden') {
-    return (
-      <div className="container mx-auto py-12 px-4 text-center">
-        <Alert variant="destructive" className="max-w-md mx-auto">
-            <ShieldOff className="h-5 w-5" />
-            <AlertTitle className="font-headline">Memorial Not Available</AlertTitle>
-            <AlertDescription>
-                This memorial page is currently not available for viewing.
-            </AlertDescription>
-        </Alert>
-        <Button asChild className="mt-8">
-            <Link href="/">Return Home</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  // Access Control Logic for non-admins
-  const isFreeTier = memorialData.ownerStatus === 'FREE';
+  const isAdmin = userStatus === 'ADMIN';
   const isOwner = user && user.uid === memorialData.userId;
-  
-  if (!isAdmin && isFreeTier && !isOwner) {
-    return (
-     <div className="container mx-auto py-12 px-4 text-center">
-       <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
-         <Lock className="h-5 w-5" />
-         <AlertTitle className="font-headline text-yellow-900">This Memorial is Private</AlertTitle>
-         <AlertDescription>
-           Memorials on the free plan are only visible to the owner. Please log in as the owner to view this page, or ask them to upgrade their plan to make it public.
-         </AlertDescription>
-       </Alert>
-       <Button asChild className="mt-8">
-         <Link href={user ? "/memorials" : "/login"}>{user ? "Go to Your Dashboard" : "Log In"}</Link>
-       </Button>
-     </div>
-   );
+
+  // If the user is not an admin, perform visibility and privacy checks.
+  // Admins will bypass this entire block.
+  if (!isAdmin) {
+    // Check 1: Is the memorial hidden by an admin?
+    if (memorialData.visibility === 'hidden') {
+      return (
+        <div className="container mx-auto py-12 px-4 text-center">
+          <Alert variant="destructive" className="max-w-md mx-auto">
+              <ShieldOff className="h-5 w-5" />
+              <AlertTitle className="font-headline">Memorial Not Available</AlertTitle>
+              <AlertDescription>
+                  This memorial page is currently not available for viewing.
+              </AlertDescription>
+          </Alert>
+          <Button asChild className="mt-8">
+              <Link href="/">Return Home</Link>
+          </Button>
+        </div>
+      );
+    }
+
+    // Check 2: Is it a private (free tier) memorial and the viewer is not the owner?
+    const isFreeTier = memorialData.ownerStatus === 'FREE';
+    if (isFreeTier && !isOwner) {
+      return (
+        <div className="container mx-auto py-12 px-4 text-center">
+          <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
+            <Lock className="h-5 w-5" />
+            <AlertTitle className="font-headline text-yellow-900">This Memorial is Private</AlertTitle>
+            <AlertDescription>
+              Memorials on the free plan are only visible to the owner. Please log in as the owner to view this page, or ask them to upgrade their plan to make it public.
+            </AlertDescription>
+          </Alert>
+          <Button asChild className="mt-8">
+            <Link href={user ? "/memorials" : "/login"}>{user ? "Go to Your Dashboard" : "Log In"}</Link>
+          </Button>
+        </div>
+      );
+    }
   }
 
 
