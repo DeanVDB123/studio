@@ -4,11 +4,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllUsersWithMemorialCount, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
-import { updateUserStatusAction, toggleMemorialVisibilityAction } from '@/lib/actions';
+import { updateUserStatusAction, toggleMemorialVisibilityAction, toggleFeedbackStatusAction } from '@/lib/actions';
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff, BookOpen, BookLock } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -67,6 +67,8 @@ export default function PappaPage() {
   const [allMemorials, setAllMemorials] = useState<AdminMemorialView[]>([]);
   const [isLoadingMemorials, setIsLoadingMemorials] = useState(true);
   const [updatingVisibilityId, setUpdatingVisibilityId] = useState<string | null>(null);
+  const [updatingFeedbackId, setUpdatingFeedbackId] = useState<string | null>(null);
+  const [showReadFeedback, setShowReadFeedback] = useState(false);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -163,6 +165,25 @@ export default function PappaPage() {
         toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
         setUpdatingVisibilityId(null);
+    }
+  };
+
+  const handleToggleFeedbackStatus = async (feedbackId: string) => {
+    if (!user) {
+        toast({ title: "Error", description: "You must be logged in.", variant: "destructive" });
+        return;
+    }
+    setUpdatingFeedbackId(feedbackId);
+    try {
+        const newStatus = await toggleFeedbackStatusAction(user.uid, feedbackId);
+        setFeedbackList(prev =>
+            prev.map(f => (f.id === feedbackId ? { ...f, status: newStatus } : f))
+        );
+        toast({ title: "Success", description: `Feedback marked as ${newStatus}.` });
+    } catch (error: any) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+        setUpdatingFeedbackId(null);
     }
   };
 
@@ -315,6 +336,11 @@ export default function PappaPage() {
         return "Search...";
     }
   }
+
+  const visibleFeedback = React.useMemo(() => {
+      return feedbackList.filter(item => showReadFeedback || item.status === 'unread');
+  }, [feedbackList, showReadFeedback]);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -593,6 +619,11 @@ export default function PappaPage() {
 
           {selectedView === 'Feedback' && (
              <>
+              <div className="flex justify-end py-4">
+                  <Button variant="outline" onClick={() => setShowReadFeedback(prev => !prev)}>
+                      {showReadFeedback ? 'Hide Read Messages' : 'Show Read Messages'}
+                  </Button>
+              </div>
               {isLoadingFeedback ? (
                   <div className="flex items-center justify-center h-64 text-center">
                       <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
@@ -604,12 +635,13 @@ export default function PappaPage() {
                               <TableRow>
                                   <TableHead className="w-[250px]">User Email</TableHead>
                                   <TableHead>Feedback Message</TableHead>
-                                  <TableHead className="w-[180px] text-right">Date</TableHead>
+                                  <TableHead className="w-[180px]">Date</TableHead>
+                                  <TableHead className="w-[180px] text-right">Actions</TableHead>
                               </TableRow>
                           </TableHeader>
                           <TableBody>
-                              {feedbackList.length > 0 ? (
-                                  feedbackList.map((item) => (
+                              {visibleFeedback.length > 0 ? (
+                                  visibleFeedback.map((item) => (
                                       <TableRow key={item.id}>
                                           <TableCell className="font-medium align-top">{item.email}</TableCell>
                                           <TableCell className="align-top max-w-[600px]">
@@ -632,12 +664,36 @@ export default function PappaPage() {
                                               )}
                                           </TableCell>
                                           <TableCell className="text-right align-top">{safeFormatDateTime(item.createdAt)}</TableCell>
+                                          <TableCell className="text-right align-top">
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => handleToggleFeedbackStatus(item.id!)}
+                                              disabled={updatingFeedbackId === item.id}
+                                              title={item.status === 'unread' ? 'Mark as read' : 'Mark as unread'}
+                                              className="w-40"
+                                            >
+                                                {updatingFeedbackId === item.id ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : item.status === 'unread' ? (
+                                                    <>
+                                                        <BookOpen className="mr-2 h-4 w-4" />
+                                                        <span>Mark as Read</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <BookLock className="mr-2 h-4 w-4" />
+                                                        <span>Mark as Unread</span>
+                                                    </>
+                                                )}
+                                            </Button>
+                                          </TableCell>
                                       </TableRow>
                                   ))
                               ) : (
                                   <TableRow>
-                                      <TableCell colSpan={3} className="h-24 text-center">
-                                          No feedback submitted yet.
+                                      <TableCell colSpan={4} className="h-24 text-center">
+                                          {showReadFeedback ? 'No read feedback messages.' : 'No new feedback messages.'}
                                       </TableCell>
                                   </TableRow>
                               )}

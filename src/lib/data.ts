@@ -189,7 +189,7 @@ export async function incrementMemorialViewCount(memorialId: string): Promise<vo
   }
 }
 
-export async function saveFeedback(feedbackData: Omit<Feedback, 'createdAt'>): Promise<void> {
+export async function saveFeedback(feedbackData: Omit<Feedback, 'id' | 'createdAt'>): Promise<void> {
   console.log(`[Firestore] saveFeedback called for user: ${feedbackData.userId}`);
   try {
     const dataToSave = {
@@ -210,18 +210,40 @@ export async function getAllFeedback(): Promise<Feedback[]> {
   const feedbackSnapshot = await getDocs(q);
 
   const feedbackList: Feedback[] = feedbackSnapshot.docs.map(doc => {
-    const data = doc.data();
+    const data = doc.data() as Feedback;
     return {
       id: doc.id,
       userId: data.userId,
       email: data.email,
       feedback: data.feedback,
       createdAt: data.createdAt,
+      status: data.status || 'unread',
     };
   });
   console.log(`[Firestore] Found ${feedbackList.length} feedback entries.`);
   return feedbackList;
 }
+
+export async function getFeedbackById(id: string): Promise<Feedback | undefined> {
+  console.log(`[Firestore] getFeedbackById called for ID: ${id}`);
+  const docRef = doc(feedbackCollection, id);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const feedbackData = docSnap.data() as Feedback;
+    return { ...feedbackData, id: docSnap.id };
+  } else {
+    console.warn(`[Firestore] No feedback found with ID: ${id}`);
+    return undefined;
+  }
+}
+
+export async function updateFeedbackStatus(feedbackId: string, newStatus: 'read' | 'unread'): Promise<void> {
+  console.log(`[Firestore] updateFeedbackStatus called for ID: ${feedbackId} to set to ${newStatus}`);
+  const docRef = doc(feedbackCollection, feedbackId);
+  await updateDoc(docRef, { status: newStatus });
+}
+
 
 // Admin-specific functions
 export async function getAllUsersWithMemorialCount(): Promise<UserForAdmin[]> {

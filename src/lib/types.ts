@@ -57,6 +57,7 @@ export interface Feedback {
   email: string;
   feedback: string;
   createdAt: string; // ISO 8601 format
+  status: 'read' | 'unread';
 }
 
 export interface AdminMemorialView {

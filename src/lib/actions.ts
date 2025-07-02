@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
@@ -187,7 +187,10 @@ export async function saveFeedbackAction(feedbackData: {
   }
 
   try {
-    await dbSaveFeedback(feedbackData);
+    await dbSaveFeedback({
+      ...feedbackData,
+      status: 'unread',
+    });
   } catch (error: any) {
     console.error('[Action] Error in saveFeedbackAction:', error);
     throw new Error(error.message || 'An unexpected error occurred while saving feedback.');
@@ -223,4 +226,34 @@ export async function updateUserStatusAction(adminId: string, userId: string, ne
     console.log(`[Firestore] Successfully updated status for user ${userId}.`);
 }
 
+export async function toggleFeedbackStatusAction(adminId: string, feedbackId: string): Promise<'read' | 'unread'> {
+  console.log(`[Action] toggleFeedbackStatusAction called by admin ${adminId} for feedback ${feedbackId}`);
+
+  if (!adminId) {
+    throw new Error('Authentication is required.');
+  }
+
+  const isAdminUser = await checkIsAdmin(adminId);
+  if (!isAdminUser) {
+    throw new Error('Permission denied. You must be an administrator to perform this action.');
+  }
+
+  const feedback = await getFeedbackById(feedbackId);
+  if (!feedback) {
+    throw new Error('Feedback not found.');
+  }
+
+  const currentStatus = feedback.status || 'unread';
+  const newStatus = currentStatus === 'unread' ? 'read' : 'unread';
+
+  try {
+    await updateFeedbackStatus(feedbackId, newStatus);
+    console.log(`[Action] Feedback ${feedbackId} status toggled to ${newStatus}`);
+    revalidatePath('/pappapage', 'page');
+    return newStatus;
+  } catch (error: any) {
+    console.error(`[Action] Error toggling status for feedback ${feedbackId}:`, error);
+    throw new Error('Failed to update feedback status.');
+  }
+}
     
