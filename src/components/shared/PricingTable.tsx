@@ -22,7 +22,7 @@ export function PricingTable() {
             </li>
             <li className="flex items-start gap-3">
               <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>Can't share created memorials.</span>
+              <span>Private access to your memorials.</span>
             </li>
           </ul>
           <div className="mt-6 text-center">
@@ -123,7 +123,7 @@ export function PricingTable() {
             </li>
             <li className="flex items-start gap-3">
               <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>"Eternal" badge displayed on page.</span>
+              <span>Bespoke design for memorial page.</span>
             </li>
           </ul>
           <div className="mt-6 text-center">

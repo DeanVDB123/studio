@@ -137,16 +137,12 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                 isFreeOrSuspended ? (
                   <div className="flex flex-col items-center justify-center text-center p-4">
                     <DialogTrigger asChild>
-                      <Button>Upgrade to Share</Button>
+                      <Button>Upgrade Now</Button>
                     </DialogTrigger>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4">
                     <QRCodeDisplay url={permalink} />
-                    <Button variant="outline" className="w-full">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      Order Physical QR Code
-                    </Button>
                   </div>
                 )
               )}

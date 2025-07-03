@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; 
-import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2, QrCode, ShoppingCart } from 'lucide-react'; 
+import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2, QrCode } from 'lucide-react'; 
 import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -238,12 +238,8 @@ export default function AdminDashboardPage() {
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-center">
-                            <p className="text-sm font-medium text-foreground">Try it out!</p>
+                            <p className="text-sm font-medium text-foreground">Scan me!</p>
                             <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
-                            <Button variant="outline" size="icon" className="mt-2" title="Order Physical QR Code">
-                                <ShoppingCart className="h-5 w-5" />
-                                <span className="sr-only">Order Physical QR Code</span>
-                            </Button>
                         </div>
                       )}
                     </PopoverContent>
