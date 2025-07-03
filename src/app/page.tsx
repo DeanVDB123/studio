@@ -188,7 +188,7 @@ export default function HomePage() {
                 imageHint="teacher classroom"
                 name="Emily Grace Mathebula – Beloved Teacher"
                 timeline="12 Mar 1992 – 19 Nov 2024"
-                memorialId="3670b18f-b965-4d3f-a13e-50a3299f6da5"
+                memorialId="4xNu8bTVMw"
                 story="A beloved teacher whose passion for learning lit up every classroom, Emily Grace Mathebula was a beacon of light and knowledge to all who knew her. From her earliest days, Emily was drawn to books, stories, and the joy of discovery—qualities she carried into her teaching career with remarkable grace. Her compassion, warmth, and boundless energy turned lessons into life-changing experiences and classrooms into safe, welcoming spaces. Emily believed in every child’s potential and gave tirelessly to nurture it. Though her time was far too short, her influence continues to inspire generations."
               />
               <StoryCard
@@ -198,7 +198,7 @@ export default function HomePage() {
                 imageHint="community volunteer"
                 name='James "Jimmy" Okoro – Community Hero'
                 timeline="17 Mar 1960 – 07 Aug 2020"
-                memorialId="dcf677d0-f689-4485-8849-e63dcf550c1d"
+                memorialId="R1tIx7wEs7"
                 story="A gentle soul and community hero, Jimmy touched lives with his selflessness and tireless dedication to others. Known for his warm heart and unwavering commitment to helping those in need, he devoted his time to uplifting his community through volunteer work, mentorship, and quiet acts of kindness. Whether organizing local events or offering a listening ear, Jimmy made everyone feel seen, heard, and valued. His legacy lives on in the countless lives he impacted and the enduring spirit of compassion he leaves behind."
               />
               <StoryCard
@@ -208,7 +208,7 @@ export default function HomePage() {
                 imageHint="storyteller elder"
                 name="Nokuthula Maseko – Resilient Storyteller"
                 timeline="04 Oct 1971 – 18 Feb 2024"
-                memorialId="4f38044b-495b-4e80-a8e3-b894c7516382"
+                memorialId="OD-kLLNknN"
                 story="A mother, storyteller, and beacon of resilience, Nokuthula Maseko carried the soul of her people in every word she spoke. Born and raised in a small village, she grew into a woman who faced hardship with quiet strength and unwavering dignity. Her gift for storytelling was not just an art—it was a lifeline, a way to preserve culture, pass on wisdom, and bring comfort during times of struggle. Whether seated by a fire under the stars or gathered with children in the shade of an acacia tree, Nokuthula wove tales that nurtured, healed, and empowered. Her stories live on in the hearts of those she touched, and her voice echoes in every lesson she left behind."
               />
             </div>
