@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 export function PricingTable() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t-4 border-l-4 border-logo-background overflow-hidden">
-      {/* SPIRIT TIER */}
+      {/* SPIRIT Plan */}
       <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
         <div className="bg-logo-background text-primary-foreground p-6 text-center">
           <div className="flex items-center justify-center gap-2 h-8">
@@ -33,7 +33,7 @@ export function PricingTable() {
         </div>
       </div>
 
-      {/* ESSENCE TIER */}
+      {/* ESSENCE Plan */}
       <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
         <div className="bg-logo-background text-primary-foreground p-6 text-center">
           <div className="flex items-center justify-center gap-2 h-8">
@@ -45,11 +45,7 @@ export function PricingTable() {
           <ul className="space-y-4 text-card-foreground/90 flex-grow text-left">
             <li className="flex items-start gap-3">
               <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>Unlimited memorials.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>Memorials are hosted and shareable for the first 5 years.</span>
+              <span>Memorials are hosted and shareable for the first 2 years.</span>
             </li>
             <li className="flex items-start gap-3">
               <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
@@ -58,15 +54,15 @@ export function PricingTable() {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href="mailto:honouredlives@gmail.com?subject=Inquiry about the ESSENCE plan">
-                Contact us
+              <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the ESSENCE plan`}>
+                R3,499
               </a>
             </Button>
           </div>
         </div>
       </div>
 
-      {/* LEGACY TIER */}
+      {/* LEGACY Plan */}
       <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
         <div className="bg-logo-background text-primary-foreground p-6 text-center">
           <div className="flex items-center justify-center gap-2 h-8">
@@ -88,22 +84,22 @@ export function PricingTable() {
               <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
               <span>Priority support.</span>
             </li>
-            <li className="flex items-start gap-3">
+             <li className="flex items-start gap-3">
               <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>Optional custom design template.</span>
+              <span>Custom plaque design.</span>
             </li>
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href="mailto:honouredlives@gmail.com?subject=Inquiry about the LEGACY plan">
-                Contact us
+              <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the LEGACY plan`}>
+                R7,999
               </a>
             </Button>
           </div>
         </div>
       </div>
 
-      {/* ETERNAL TIER */}
+      {/* ETERNAL Plan */}
       <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
         <div className="bg-logo-background text-primary-foreground p-6 text-center">
           <div className="flex items-center justify-center gap-2 h-8">
@@ -132,8 +128,8 @@ export function PricingTable() {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href="mailto:honouredlives@gmail.com?subject=Inquiry about the ETERNAL plan">
-                Contact us
+              <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the ETERNAL plan`}>
+                R19,999
               </a>
             </Button>
           </div>
