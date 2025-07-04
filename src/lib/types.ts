@@ -19,6 +19,7 @@ export interface MemorialData {
   tributes: string[]; // Array of tribute messages
   stories: string[]; // Array of stories
   ownerStatus?: string; // Status of the memorial owner
+  plan?: string; // Plan for this specific memorial e.g., 'SPIRIT', 'ESSENCE'
   viewCount?: number;
   lastVisited?: string;
   viewTimestamps?: string[]; // Array of ISO date strings for each view

@@ -6,7 +6,7 @@ import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
 import { getMemorialById } from '@/lib/data'; // Public fetch
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle, Loader2, ShoppingCart } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, use } from 'react';
@@ -155,7 +155,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
           <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
         </DialogHeader>
         <div className="p-6">
-          <PricingTable />
+          <PricingTable memorialId={memorialId} />
         </div>
       </DialogContent>
     </Dialog>

@@ -58,6 +58,7 @@ export default function AdminDashboardPage() {
   const [pageBaseUrl, setPageBaseUrl] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [memorialToDelete, setMemorialToDelete] = useState<UserMemorial | null>(null);
+  const [memorialForUpgrade, setMemorialForUpgrade] = useState<UserMemorial | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -146,7 +147,7 @@ export default function AdminDashboardPage() {
   const isFreeOrSuspended = userStatus === 'FREE' || userStatus === 'SUSPENDED';
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(isOpen) => { if (!isOpen) setMemorialForUpgrade(null); }}>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-headline">Your Memorials</h1>
@@ -233,7 +234,7 @@ export default function AdminDashboardPage() {
                         <div className="flex flex-col items-center text-center gap-2">
                           <p className="text-sm text-muted-foreground">Upgrade to share this QR code.</p>
                           <DialogTrigger asChild>
-                            <Button size="sm">Upgrade Now</Button>
+                            <Button size="sm" onClick={() => setMemorialForUpgrade(memorial)}>Upgrade Now</Button>
                           </DialogTrigger>
                         </div>
                       ) : (
@@ -273,7 +274,7 @@ export default function AdminDashboardPage() {
         {isFreeOrSuspended && (
           <div className="flex justify-center pt-6 mt-6 border-t">
             <DialogTrigger asChild>
-              <Button size="lg">
+              <Button size="lg" onClick={() => setMemorialForUpgrade(null)}>
                   Upgrade Now to Share!
               </Button>
             </DialogTrigger>
@@ -285,7 +286,7 @@ export default function AdminDashboardPage() {
           <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
         </DialogHeader>
         <div className="p-6">
-          <PricingTable />
+          <PricingTable memorialId={memorialForUpgrade?.id} />
         </div>
       </DialogContent>
     </Dialog>

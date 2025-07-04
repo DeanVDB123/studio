@@ -86,6 +86,7 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     dataToSave.viewCount = 0; // Initialize view count for new memorials
     dataToSave.createdAt = new Date().toISOString();
     dataToSave.visibility = 'shown';
+    dataToSave.plan = 'SPIRIT'; // Set default plan for new memorials
   }
   
   console.log(`[Action] Data prepared for DB operation (dataToSave):`, JSON.stringify(dataToSave, null, 2));

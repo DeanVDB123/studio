@@ -3,7 +3,18 @@ import { Leaf, Sprout, TreeDeciduous, Heart, Check } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
-export function PricingTable() {
+interface PricingTableProps {
+  memorialId?: string;
+}
+
+export function PricingTable({ memorialId }: PricingTableProps) {
+  const createMailtoLink = (planName: string) => {
+    const subject = memorialId
+      ? `Inquiry about the ${planName} plan for Memorial ID: ${memorialId}`
+      : `Inquiry about the ${planName} plan`;
+    return `mailto:honouredlives@gmail.com?subject=${encodeURIComponent(subject)}`;
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t-4 border-l-4 border-logo-background overflow-hidden">
       {/* SPIRIT Plan */}
@@ -54,7 +65,7 @@ export function PricingTable() {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the ESSENCE plan`}>
+              <a href={createMailtoLink('ESSENCE')}>
                 R3,499
               </a>
             </Button>
@@ -91,7 +102,7 @@ export function PricingTable() {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the LEGACY plan`}>
+              <a href={createMailtoLink('LEGACY')}>
                 R7,999
               </a>
             </Button>
@@ -128,7 +139,7 @@ export function PricingTable() {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href={`mailto:honouredlives@gmail.com?subject=Inquiry about the ETERNAL plan`}>
+              <a href={createMailtoLink('ETERNAL')}>
                 R19,999
               </a>
             </Button>
