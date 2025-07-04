@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
@@ -258,3 +258,47 @@ export async function toggleFeedbackStatusAction(adminId: string, feedbackId: st
   }
 }
     
+export async function updateMemorialPlanAction(adminId: string, memorialId: string, newPlan: string): Promise<void> {
+  console.log(`[Action] updateMemorialPlanAction called by admin ${adminId} for memorial ${memorialId} to set plan ${newPlan}.`);
+
+  if (!adminId) {
+    throw new Error('Authentication is required.');
+  }
+  const isAdminUser = await checkIsAdmin(adminId);
+  if (!isAdminUser) {
+    throw new Error('Permission denied. You must be an administrator to perform this action.');
+  }
+
+  let planExpiryDate: string | undefined = undefined;
+  const now = new Date();
+
+  switch (newPlan.toUpperCase()) {
+    case 'ESSENCE':
+      now.setFullYear(now.getFullYear() + 2);
+      planExpiryDate = now.toISOString();
+      break;
+    case 'LEGACY':
+      now.setFullYear(now.getFullYear() + 10);
+      planExpiryDate = now.toISOString();
+      break;
+    case 'ETERNAL':
+      planExpiryDate = 'ETERNAL'; // Special value for no expiry
+      break;
+    case 'SPIRIT':
+      planExpiryDate = undefined;
+      break;
+    default:
+      throw new Error('Invalid plan specified.');
+  }
+
+  try {
+    await dbUpdateMemorialPlan(memorialId, newPlan, planExpiryDate);
+    console.log(`[Action] Memorial ${memorialId} plan updated to ${newPlan} with expiry ${planExpiryDate || 'none'}`);
+    revalidatePath('/pappapage', 'page');
+    revalidatePath(`/${memorialId}`);
+    revalidatePath(`/memorial/${memorialId}`);
+  } catch (error: any) {
+    console.error(`[Action] Error updating plan for memorial ${memorialId}:`, error);
+    throw new Error('Failed to update memorial plan.');
+  }
+}

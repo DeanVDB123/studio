@@ -20,6 +20,7 @@ export interface MemorialData {
   stories: string[]; // Array of stories
   ownerStatus?: string; // Status of the memorial owner
   plan?: string; // Plan for this specific memorial e.g., 'SPIRIT', 'ESSENCE'
+  planExpiryDate?: string; // ISO 8601 format, or 'ETERNAL'
   viewCount?: number;
   lastVisited?: string;
   viewTimestamps?: string[]; // Array of ISO date strings for each view
@@ -67,6 +68,8 @@ export interface AdminMemorialView {
   ownerId?: string;
   ownerEmail: string;
   ownerStatus: string;
+  plan?: string;
+  planExpiryDate?: string;
   createdAt: string;
   viewCount: number;
   visibility: 'shown' | 'hidden';

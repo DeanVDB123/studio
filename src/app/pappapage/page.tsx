@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllUsersWithMemorialCount, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
-import { updateUserStatusAction, toggleMemorialVisibilityAction, toggleFeedbackStatusAction } from '@/lib/actions';
+import { updateUserStatusAction, toggleMemorialVisibilityAction, toggleFeedbackStatusAction, updateMemorialPlanAction } from '@/lib/actions';
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -30,7 +30,7 @@ import Link from 'next/link';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
-type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'viewCount' | 'ownerStatus' | 'visibility';
+type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'viewCount' | 'ownerStatus' | 'visibility' | 'plan';
 type SortDirection = 'asc' | 'desc';
 
 const getBadgeVariant = (status: string | null) => {
@@ -43,6 +43,20 @@ const getBadgeVariant = (status: string | null) => {
     case 'SUSPENDED':
       return 'suspended' as const;
     case 'FREE':
+    default:
+      return 'secondary' as const;
+  }
+};
+
+const getPlanBadgeVariant = (plan?: string) => {
+  if (!plan) return 'secondary';
+  switch (plan.toUpperCase()) {
+    case 'ETERNAL':
+      return 'admin' as const; // gold
+    case 'LEGACY':
+    case 'ESSENCE':
+      return 'default' as const; // primary color
+    case 'SPIRIT':
     default:
       return 'secondary' as const;
   }
@@ -69,6 +83,7 @@ export default function PappaPage() {
   const [updatingVisibilityId, setUpdatingVisibilityId] = useState<string | null>(null);
   const [updatingFeedbackId, setUpdatingFeedbackId] = useState<string | null>(null);
   const [showReadFeedback, setShowReadFeedback] = useState(false);
+  const [updatingPlanFor, setUpdatingPlanFor] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -148,6 +163,26 @@ export default function PappaPage() {
       setOpenPopoverId(null); // Close the popover
     }
   };
+
+  const handlePlanChange = async (memorialId: string, newPlan: string) => {
+    if (!user) {
+      toast({ title: "Not Authenticated", description: "You must be logged in.", variant: "destructive" });
+      return;
+    }
+    setUpdatingPlanFor(memorialId);
+    try {
+      await updateMemorialPlanAction(user.uid, memorialId, newPlan);
+      // Data will be refetched because of revalidatePath, but for immediate UI update, refetch manually.
+      const memorials = await getAllMemorialsForAdmin();
+      setAllMemorials(memorials);
+      toast({ title: "Success", description: `Memorial plan updated to ${newPlan}.` });
+    } catch (error: any) {
+      toast({ title: "Update Failed", description: error.message, variant: "destructive" });
+    } finally {
+      setUpdatingPlanFor(null);
+    }
+  };
+
 
   const handleToggleVisibility = async (memorialId: string) => {
     if (!user) {
@@ -229,6 +264,9 @@ export default function PappaPage() {
     }
   };
 
+  const visibleFeedback = React.useMemo(() => {
+      return feedbackList.filter(item => showReadFeedback || item.status === 'unread');
+  }, [feedbackList, showReadFeedback]);
 
   const filteredAndSortedUsers = React.useMemo(() => {
     let sortableUsers = [...users];
@@ -316,9 +354,6 @@ export default function PappaPage() {
     return sortableUsers;
   }, [users, qrSortConfig, searchTerm]);
 
-  const visibleFeedback = React.useMemo(() => {
-      return feedbackList.filter(item => showReadFeedback || item.status === 'unread');
-  }, [feedbackList, showReadFeedback]);
   
   const searchPlaceholder = () => {
     switch (selectedView) {
@@ -538,7 +573,12 @@ export default function PappaPage() {
                       </TableHead>
                        <TableHead>
                         <Button variant="ghost" onClick={() => handleMemorialsSort('ownerStatus')}>
-                          Status <ArrowUpDown className="ml-2 h-4 w-4" />
+                          Owner Status <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('plan')}>
+                          Plan <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
                       </TableHead>
                       <TableHead className="text-center">
@@ -557,7 +597,7 @@ export default function PappaPage() {
                   <TableBody>
                     {isLoadingMemorials ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
+                        <TableCell colSpan={7} className="h-24 text-center">
                           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                         </TableCell>
                       </TableRow>
@@ -568,6 +608,35 @@ export default function PappaPage() {
                           <TableCell>{m.ownerEmail}</TableCell>
                           <TableCell>
                             <Badge variant={getBadgeVariant(m.ownerStatus)}>{m.ownerStatus}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="p-0 h-auto flex flex-col items-start" disabled={updatingPlanFor === m.id}>
+                                        {updatingPlanFor === m.id ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Badge variant={getPlanBadgeVariant(m.plan)}>{m.plan || 'SPIRIT'}</Badge>
+                                                {m.planExpiryDate && (
+                                                    <span className="text-xs text-muted-foreground mt-1">
+                                                        {m.planExpiryDate === 'ETERNAL' 
+                                                            ? 'Never Expires' 
+                                                            : `Expires: ${safeFormatDate(m.planExpiryDate)}`
+                                                        }
+                                                    </span>
+                                                )}
+                                            </>
+                                        )}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onSelect={() => handlePlanChange(m.id, 'SPIRIT')}>SPIRIT</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handlePlanChange(m.id, 'ESSENCE')}>ESSENCE</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handlePlanChange(m.id, 'LEGACY')}>LEGACY</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => handlePlanChange(m.id, 'ETERNAL')}>ETERNAL</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                           <TableCell className="text-center">{m.viewCount}</TableCell>
                           <TableCell>
@@ -605,7 +674,7 @@ export default function PappaPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center">
+                        <TableCell colSpan={7} className="h-24 text-center">
                           No memorials found.
                         </TableCell>
                       </TableRow>

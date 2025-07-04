@@ -3,7 +3,7 @@
 'use server';
 
 import { firestore } from '@/lib/firebase';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion, orderBy } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion, orderBy, deleteField } from 'firebase/firestore';
 import type { MemorialData, SignupEvent, UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
@@ -298,6 +298,8 @@ export async function getAllMemorialsForAdmin(): Promise<AdminMemorialView[]> {
             ownerId: data.userId,
             ownerEmail: ownerInfo?.email || 'N/A (Demo)',
             ownerStatus: ownerInfo?.status || 'N/A',
+            plan: data.plan,
+            planExpiryDate: data.planExpiryDate,
             createdAt: data.createdAt || 'N/A',
             viewCount: data.viewCount || 0,
             visibility: data.visibility || 'shown',
@@ -314,4 +316,17 @@ export async function updateMemorialVisibility(memorialId: string, newVisibility
   await updateDoc(docRef, { visibility: newVisibility });
 }
 
+export async function updateMemorialPlan(memorialId: string, newPlan: string, planExpiryDate: string | undefined): Promise<void> {
+  console.log(`[Firestore] updateMemorialPlan called for ID: ${memorialId} to set plan to ${newPlan}`);
+  const docRef = doc(memorialsCollection, memorialId);
+  
+  const payload: any = { plan: newPlan };
+  if (planExpiryDate) {
+    payload.planExpiryDate = planExpiryDate;
+  } else {
+    payload.planExpiryDate = deleteField();
+  }
+
+  await updateDoc(docRef, payload);
+}
     
