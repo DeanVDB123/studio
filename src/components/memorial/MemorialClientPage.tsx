@@ -81,19 +81,17 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
 
   const viewerIsAdmin = userStatus === 'ADMIN';
   const viewerIsOwner = user && user.uid === memorialData.userId;
-  
-  // Explicitly grant access to admins first.
-  if (!viewerIsAdmin) {
-    // If not an admin, check other rules.
-    // Check 1: Is the memorial hidden by an admin?
-    if (memorialData.visibility === 'hidden') {
+
+  // First, check for admin deactivation. This overrides all other rules.
+  // Only admins can see a 'hidden' memorial.
+  if (memorialData.visibility === 'hidden' && !viewerIsAdmin) {
       return (
         <div className="container mx-auto py-12 px-4 text-center">
           <Alert variant="destructive" className="max-w-md mx-auto">
               <ShieldOff className="h-5 w-5" />
               <AlertTitle className="font-headline">Memorial Not Available</AlertTitle>
               <AlertDescription>
-                  This memorial page is currently not available for viewing.
+                  This memorial page has been deactivated by an administrator.
               </AlertDescription>
           </Alert>
           <Button asChild className="mt-8">
@@ -101,37 +99,56 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
           </Button>
         </div>
       );
+  }
+  
+  // Check if the plan is expired
+  const isExpired = () => {
+    if (!memorialData.planExpiryDate || memorialData.planExpiryDate === 'ETERNAL') {
+      return false; // No expiry date or it's eternal, so not expired.
+    }
+    try {
+      // Compare current date with expiry date
+      return new Date() > new Date(memorialData.planExpiryDate);
+    } catch (e) {
+      console.error("Invalid plan expiry date format:", memorialData.planExpiryDate);
+      return true; // Treat invalid dates as expired for safety
+    }
+  };
+
+  const planIsActiveAndPublic = 
+    memorialData.plan && 
+    memorialData.plan.toUpperCase() !== 'SPIRIT' && 
+    !isExpired();
+
+  // Access is granted if: viewer is admin OR viewer is owner OR the plan is active and public.
+  if (!viewerIsAdmin && !viewerIsOwner && !planIsActiveAndPublic) {
+    let title = "This Memorial is Private";
+    let description = "This memorial is not currently available for public viewing. Please ask the owner to upgrade their plan to make it public.";
+
+    if (isExpired()) {
+        title = "This Memorial's Plan has Expired";
+        description = "Access to this public memorial has expired. Please contact the owner for more information.";
     }
 
-    // Check 2: Is it a private (free/suspended tier) memorial and the viewer is not the owner?
-    const isFreeTier = memorialData.ownerStatus === 'FREE';
-    const isSuspended = memorialData.ownerStatus === 'SUSPENDED';
-    
-    if ((isFreeTier || isSuspended) && !viewerIsOwner) {
-      return (
-        <div className="container mx-auto py-12 px-4 text-center">
-          <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
-            <Lock className="h-5 w-5" />
-            <AlertTitle className="font-headline text-yellow-900">
-               {isSuspended ? "This Memorial is Inactive" : "This Memorial is Private"}
-            </AlertTitle>
-            <AlertDescription>
-              {isSuspended 
-                  ? "This memorial is currently suspended and not publicly visible. Please contact support for more information."
-                  : "Memorials on the free plan are only visible to the owner. Please log in as the owner to view this page, or ask them to upgrade their plan to make it public."
-              }
-            </AlertDescription>
-          </Alert>
-          <Button asChild className="mt-8">
-            <Link href={user ? "/memorials" : "/login"}>{user ? "Go to Your Dashboard" : "Log In"}</Link>
-          </Button>
-        </div>
-      );
-    }
+    return (
+      <div className="container mx-auto py-12 px-4 text-center">
+        <Alert className="max-w-md mx-auto border-yellow-500 text-yellow-800 [&>svg]:text-yellow-800">
+          <Lock className="h-5 w-5" />
+          <AlertTitle className="font-headline text-yellow-900">
+              {title}
+          </AlertTitle>
+          <AlertDescription>
+            {description}
+          </AlertDescription>
+        </Alert>
+        <Button asChild className="mt-8">
+          <Link href={user ? "/memorials" : "/login"}>{user ? "Go to Your Dashboard" : "Log In"}</Link>
+        </Button>
+      </div>
+    );
   }
 
-
-  // If access is granted, render the page
+  // If we reach here, access is granted. Render the page.
   const profilePhotoUrl = memorialData.photos && memorialData.photos.length > 0 ? memorialData.photos[0].url : undefined;
   const backLinkHref = viewerIsOwner || viewerIsAdmin ? '/memorials' : '/';
 
