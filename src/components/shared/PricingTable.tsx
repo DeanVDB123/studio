@@ -2,6 +2,7 @@
 import { Leaf, Sprout, TreeDeciduous, Heart, Check } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface PricingTableProps {
   memorialId?: string;
@@ -15,34 +16,41 @@ export function PricingTable({ memorialId }: PricingTableProps) {
     return `mailto:honouredlives@gmail.com?subject=${encodeURIComponent(subject)}`;
   };
 
+  const isUpgradeFlow = !!memorialId;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t-4 border-l-4 border-logo-background overflow-hidden">
-      {/* SPIRIT Plan */}
-      <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
-        <div className="bg-logo-background text-primary-foreground p-6 text-center">
-          <div className="flex items-center justify-center gap-2 h-8">
-            <Leaf className="h-6 w-6 text-green-400" />
-            <h3 className="text-2xl font-headline tracking-wider">SPIRIT</h3>
-          </div>
+    <div className={cn(
+        "grid grid-cols-1 md:grid-cols-2 border-t-4 border-l-4 border-logo-background overflow-hidden",
+        isUpgradeFlow ? "lg:grid-cols-3" : "lg:grid-cols-4"
+    )}>
+      {/* SPIRIT Plan - Conditionally rendered */}
+      {!isUpgradeFlow && (
+        <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
+            <div className="bg-logo-background text-primary-foreground p-6 text-center">
+            <div className="flex items-center justify-center gap-2 h-8">
+                <Leaf className="h-6 w-6 text-green-400" />
+                <h3 className="text-2xl font-headline tracking-wider">SPIRIT</h3>
+            </div>
+            </div>
+            <div className="p-6 bg-card flex-grow flex flex-col">
+            <ul className="space-y-4 text-card-foreground/90 flex-grow text-left">
+                <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <span>Unlimited memorials.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <span>Private access to your memorials.</span>
+                </li>
+            </ul>
+            <div className="mt-6 text-center">
+                <Button variant="outline" className="w-full" disabled>
+                Free
+                </Button>
+            </div>
+            </div>
         </div>
-        <div className="p-6 bg-card flex-grow flex flex-col">
-          <ul className="space-y-4 text-card-foreground/90 flex-grow text-left">
-            <li className="flex items-start gap-3">
-              <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>Unlimited memorials.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-              <span>Private access to your memorials.</span>
-            </li>
-          </ul>
-          <div className="mt-6 text-center">
-            <Button variant="outline" className="w-full" disabled>
-              Free
-            </Button>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* ESSENCE Plan */}
       <div className="flex flex-col border-b-4 border-r-4 border-logo-background">
@@ -66,7 +74,7 @@ export function PricingTable({ memorialId }: PricingTableProps) {
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
               <a href={createMailtoLink('ESSENCE')}>
-                Contact us
+                R3,499
               </a>
             </Button>
           </div>
@@ -103,7 +111,7 @@ export function PricingTable({ memorialId }: PricingTableProps) {
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
               <a href={createMailtoLink('LEGACY')}>
-              Contact us
+              R7,999
               </a>
             </Button>
           </div>
@@ -140,7 +148,7 @@ export function PricingTable({ memorialId }: PricingTableProps) {
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
               <a href={createMailtoLink('ETERNAL')}>
-                Contact us
+                R19,999
               </a>
             </Button>
           </div>
