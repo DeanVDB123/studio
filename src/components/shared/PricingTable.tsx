@@ -74,7 +74,7 @@ export function PricingTable({ memorialId }: PricingTableProps) {
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
               <a href={createMailtoLink('ESSENCE')}>
-                R3,499
+              Contact us
               </a>
             </Button>
           </div>
@@ -111,7 +111,7 @@ export function PricingTable({ memorialId }: PricingTableProps) {
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
               <a href={createMailtoLink('LEGACY')}>
-              R7,999
+              Contact us
               </a>
             </Button>
           </div>
@@ -148,7 +148,7 @@ export function PricingTable({ memorialId }: PricingTableProps) {
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
               <a href={createMailtoLink('ETERNAL')}>
-                R19,999
+              Contact us
               </a>
             </Button>
           </div>

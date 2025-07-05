@@ -244,6 +244,30 @@ export async function updateFeedbackStatus(feedbackId: string, newStatus: 'read'
   await updateDoc(docRef, { status: newStatus });
 }
 
+export async function dbUpdateUserStatus(userId: string, newStatus: string): Promise<void> {
+  console.log(`[Firestore] dbUpdateUserStatus called for user ${userId} to set status ${newStatus}.`);
+    
+  const q = query(signupsCollection, where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+      console.warn(`[Firestore] User with ID ${userId} not found in signups collection. Cannot update status.`);
+      return;
+  }
+
+  const userDocRef = querySnapshot.docs[0].ref;
+  const updatePayload: { status: string, dateSwitched?: any } = { status: newStatus };
+
+  if (newStatus !== 'FREE') {
+    updatePayload.dateSwitched = new Date().toISOString();
+  } else {
+    // When downgrading back to FREE, remove the dateSwitched field.
+    updatePayload.dateSwitched = deleteField();
+  }
+
+  await updateDoc(userDocRef, updatePayload);
+  console.log(`[Firestore] Successfully updated status for user ${userId} to ${newStatus}.`);
+}
 
 // Admin-specific functions
 export async function getAllUsersWithMemorialCount(): Promise<UserForAdmin[]> {

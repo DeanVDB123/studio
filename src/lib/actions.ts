@@ -4,12 +4,10 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
-import { firestore } from './firebase';
-import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 
 export async function handleGenerateBiography(input: GenerateBiographyDraftInput): Promise<string> {
   console.log('[Action] handleGenerateBiography called with input:', JSON.stringify(input, null, 2));
@@ -199,7 +197,7 @@ export async function saveFeedbackAction(feedbackData: {
 }
 
 export async function updateUserStatusAction(adminId: string, userId: string, newStatus: string): Promise<void> {
-    console.log(`[Firestore] updateUserStatusAction called by admin ${adminId} for user ${userId} to set status ${newStatus}.`);
+    console.log(`[Action] updateUserStatusAction called by admin ${adminId} for user ${userId} to set status ${newStatus}.`);
     
     if (!adminId) {
         throw new Error('Authentication is required.');
@@ -209,22 +207,14 @@ export async function updateUserStatusAction(adminId: string, userId: string, ne
         throw new Error('Permission denied. You must be an administrator to perform this action.');
     }
 
-    const q = query(collection(firestore, 'signups'), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-        throw new Error(`User with ID ${userId} not found.`);
+    try {
+        await dbUpdateUserStatus(userId, newStatus);
+        console.log(`[Action] Successfully updated status for user ${userId}.`);
+        revalidatePath('/pappapage', 'page');
+    } catch (error: any) {
+        console.error(`[Action] Error calling dbUpdateUserStatus for user ${userId}:`, error);
+        throw new Error(`Failed to update user status. ${error.message || ''}`);
     }
-
-    const userDocRef = querySnapshot.docs[0].ref;
-    const updatePayload: { status: string, dateSwitched?: string } = { status: newStatus };
-
-    if (newStatus !== 'FREE') {
-      updatePayload.dateSwitched = new Date().toISOString();
-    }
-
-    await updateDoc(userDocRef, updatePayload);
-    console.log(`[Firestore] Successfully updated status for user ${userId}.`);
 }
 
 export async function toggleFeedbackStatusAction(adminId: string, feedbackId: string): Promise<'read' | 'unread'> {
@@ -294,6 +284,20 @@ export async function updateMemorialPlanAction(adminId: string, memorialId: stri
   try {
     await dbUpdateMemorialPlan(memorialId, newPlan, planExpiryDate);
     console.log(`[Action] Memorial ${memorialId} plan updated to ${newPlan} with expiry ${planExpiryDate || 'none'}`);
+
+    // After updating the plan, check if we need to update the user's status
+    const memorial = await getMemorialById(memorialId);
+    if (memorial?.userId) {
+      const ownerId = memorial.userId;
+      const ownerStatus = await getUserStatus(ownerId);
+      
+      // If the user is on the FREE plan and upgrades a memorial, update their status to PAID
+      if (newPlan.toUpperCase() !== 'SPIRIT' && ownerStatus === 'FREE') {
+        console.log(`[Action] Owner ${ownerId} status is ${ownerStatus}. Upgrading to PAID.`);
+        await dbUpdateUserStatus(ownerId, 'PAID');
+      }
+    }
+
     revalidatePath('/pappapage', 'page');
     revalidatePath(`/${memorialId}`);
     revalidatePath(`/memorial/${memorialId}`);
