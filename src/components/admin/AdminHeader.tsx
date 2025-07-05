@@ -1,3 +1,4 @@
+
 "use client"; // Make it a client component to use useAuth
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -60,7 +61,7 @@ export function AdminHeader() {
               <Button variant="ghost" className="relative h-auto flex items-center gap-2 rounded-full px-2 hover:bg-secondary hover:text-secondary-foreground">
                 <UserCircle className="h-6 w-6" />
                 <span className="text-sm hidden sm:inline">{user.email}</span>
-                 {userStatus && (
+                 {userStatus && userStatus.toUpperCase() !== 'FREE' && (
                   <Badge
                     variant={getBadgeVariant(userStatus)}
                     className={cn(
@@ -80,7 +81,7 @@ export function AdminHeader() {
                   <p className="text-xs leading-none text-muted-foreground">
                     {user.email}
                   </p>
-                  {userStatus && (
+                  {userStatus && userStatus.toUpperCase() !== 'FREE' && (
                      <div className="flex items-center pt-2">
                        <Badge variant={getBadgeVariant(userStatus)}>
                          {userStatus.toUpperCase()}
