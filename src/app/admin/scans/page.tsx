@@ -288,14 +288,14 @@ export default function MyScansPage() {
 
       <Dialog open={!!selectedMemorial} onOpenChange={(isOpen) => { if (!isOpen) setSelectedMemorial(null); }}>
         {selectedMemorial && (
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-md p-0 gap-0">
+            <DialogHeader className="p-6 bg-primary text-primary-foreground">
               <DialogTitle className="text-center font-headline text-2xl">Daily Views Heatmap</DialogTitle>
-              <DialogDescription className="text-center text-muted-foreground pt-1">
+              <DialogDescription className="text-center text-primary-foreground/90 pt-1">
                 {selectedMemorial.deceasedName}
               </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
+            <div className="p-6 bg-background">
               <MemorialHeatmapCalendar timestamps={selectedMemorial.viewTimestamps} />
             </div>
           </DialogContent>
