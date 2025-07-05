@@ -60,6 +60,12 @@ export default function AdminDashboardPage() {
   const [memorialToDelete, setMemorialToDelete] = useState<UserMemorial | null>(null);
   const [memorialForUpgrade, setMemorialForUpgrade] = useState<UserMemorial | null>(null);
   const { toast } = useToast();
+  const [isPricingDialogOpen, setIsPricingDialogOpen] = useState(false);
+
+  const handleUpgradeClick = (memorial: UserMemorial | null) => {
+    setMemorialForUpgrade(memorial);
+    setIsPricingDialogOpen(true);
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -147,7 +153,12 @@ export default function AdminDashboardPage() {
   const isFreeOrSuspended = userStatus === 'FREE' || userStatus === 'SUSPENDED';
 
   return (
-    <Dialog onOpenChange={(isOpen) => { if (!isOpen) setMemorialForUpgrade(null); }}>
+    <Dialog open={isPricingDialogOpen} onOpenChange={(isOpen) => {
+      setIsPricingDialogOpen(isOpen);
+      if (!isOpen) {
+        setMemorialForUpgrade(null);
+      }
+    }}>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-headline">Your Memorials</h1>
@@ -233,9 +244,7 @@ export default function AdminDashboardPage() {
                       {isFreeOrSuspended ? (
                         <div className="flex flex-col items-center text-center gap-2">
                           <p className="text-sm text-muted-foreground">Upgrade to share this QR code.</p>
-                          <DialogTrigger asChild>
-                            <Button size="sm" onClick={() => setMemorialForUpgrade(memorial)}>Upgrade Now</Button>
-                          </DialogTrigger>
+                          <Button size="sm" onClick={() => handleUpgradeClick(memorial)}>Upgrade Now</Button>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-center">
@@ -273,11 +282,9 @@ export default function AdminDashboardPage() {
 
         {isFreeOrSuspended && (
           <div className="flex justify-center pt-6 mt-6 border-t">
-            <DialogTrigger asChild>
-              <Button size="lg" onClick={() => setMemorialForUpgrade(null)}>
-                  Upgrade Now to Share!
-              </Button>
-            </DialogTrigger>
+            <Button size="lg" onClick={() => handleUpgradeClick(null)}>
+                Upgrade Now to Share!
+            </Button>
           </div>
         )}
       </div>
