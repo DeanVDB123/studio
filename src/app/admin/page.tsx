@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; 
-import { PlusCircle, Edit3, ExternalLink, Loader2, Trash2, QrCode } from 'lucide-react'; 
+import { PlusCircle, Edit3, Loader2, Trash2, QrCode } from 'lucide-react'; 
 import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
@@ -227,12 +227,6 @@ export default function AdminDashboardPage() {
                       <span className="sr-only">Edit</span>
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" asChild title={`View ${memorial.deceasedName}`}>
-                    <Link href={`/${memorial.id}`} target="_blank">
-                      <ExternalLink className="h-5 w-5" /> 
-                      <span className="sr-only">View</span>
-                    </Link>
-                  </Button>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="ghost" size="icon" title={`Show QR Code for ${memorial.deceasedName}`}>
@@ -249,7 +243,15 @@ export default function AdminDashboardPage() {
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-center">
                             <p className="text-sm font-medium text-foreground">Scan me!</p>
-                            <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                             <Link
+                                href={`/${memorial.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`View memorial for ${memorial.deceasedName}`}
+                                className="transition-transform duration-200 hover:scale-105"
+                              >
+                                <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                              </Link>
                         </div>
                       )}
                     </PopoverContent>
