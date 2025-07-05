@@ -246,7 +246,6 @@ export default function AdminDashboardPage() {
                              <Link
                                 href={`/${memorial.id}`}
                                 target={`memorial-${memorial.id}`}
-                                rel="noopener noreferrer"
                                 aria-label={`View memorial for ${memorial.deceasedName}`}
                                 className="transition-transform duration-200 hover:scale-105"
                               >
