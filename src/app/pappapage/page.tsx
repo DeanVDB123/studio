@@ -665,7 +665,7 @@ export default function PappaPage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <Button variant="ghost" size="icon" asChild>
-                              <Link href={`/${m.id}`} target="_blank" title={`View ${m.deceasedName}`}>
+                              <Link href={`/${m.id}`} target={`memorial-${m.id}`} title={`View ${m.deceasedName}`}>
                                 <ExternalLink className="h-4 w-4" />
                               </Link>
                             </Button>

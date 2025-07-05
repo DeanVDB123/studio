@@ -53,7 +53,7 @@ export function StoryCard({ imageUrl, imageAlt, imageHint, name, timeline, memor
             <>
               <Link
                 href={`/${memorialId}`}
-                target="_blank"
+                target={`memorial-${memorialId}`}
                 rel="noopener noreferrer"
                 aria-label={`View memorial for ${name}`}
                 className="transition-transform duration-200 hover:scale-105"

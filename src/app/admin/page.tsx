@@ -245,7 +245,7 @@ export default function AdminDashboardPage() {
                             <p className="text-sm font-medium text-foreground">Scan me!</p>
                              <Link
                                 href={`/${memorial.id}`}
-                                target="_blank"
+                                target={`memorial-${memorial.id}`}
                                 rel="noopener noreferrer"
                                 aria-label={`View memorial for ${memorial.deceasedName}`}
                                 className="transition-transform duration-200 hover:scale-105"
