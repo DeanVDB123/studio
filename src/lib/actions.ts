@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus, checkIfUserHasPaidMemorials } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus, checkIfUserHasPaidMemorials, deleteMemorial } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
@@ -119,6 +119,26 @@ export async function saveMemorialAction(userId: string, memorialData: MemorialD
     }
     // Pass the more specific error from the data layer up to the UI
     throw new Error(`Failed to ${isUpdate ? 'update' : 'create'} memorial page. ${error.message || 'Please try again.'}`);
+  }
+}
+
+export async function deleteMemorialAction(userId: string, memorialId: string): Promise<void> {
+  console.log(`[Action] deleteMemorialAction called by user ${userId} for memorial ${memorialId}`);
+
+  if (!userId) {
+    throw new Error('Authentication is required.');
+  }
+  
+  try {
+    // The data function `deleteMemorial` already contains the necessary ownership/admin checks.
+    await deleteMemorial(memorialId, userId);
+    console.log(`[Action] Memorial ${memorialId} deleted successfully.`);
+    revalidatePath('/memorials', 'page');
+    revalidatePath('/pappapage', 'page');
+  } catch (error: any) {
+    console.error(`[Action] Error deleting memorial ${memorialId}:`, error);
+    // Re-throw the error from the data layer to be displayed in the UI.
+    throw error;
   }
 }
 

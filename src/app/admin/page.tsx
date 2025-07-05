@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; 
 import { PlusCircle, Edit3, Loader2, Trash2, QrCode } from 'lucide-react'; 
-import { getAllMemorialsForUser, deleteMemorial } from '@/lib/data'; 
+import { getAllMemorialsForUser } from '@/lib/data'; 
+import { deleteMemorialAction } from '@/lib/actions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
@@ -119,7 +120,7 @@ export default function AdminDashboardPage() {
   const confirmDelete = async () => {
     if (memorialToDelete && user) {
       try {
-        await deleteMemorial(memorialToDelete.id, user.uid);
+        await deleteMemorialAction(user.uid, memorialToDelete.id);
         setMemorials(prevMemorials => prevMemorials.filter(m => m.id !== memorialToDelete.id));
         toast({ title: "Deleted", description: `Memorial for ${memorialToDelete.deceasedName} has been deleted.` });
       } catch (error: any) {
