@@ -8,7 +8,7 @@ import { updateUserStatusAction, toggleMemorialVisibilityAction, toggleFeedbackS
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff, BookOpen, BookLock } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff, BookOpen, BookLock, Leaf, Sprout, TreeDeciduous, Heart } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
@@ -61,6 +62,26 @@ const getPlanBadgeVariant = (plan?: string) => {
       return 'secondary' as const;
   }
 };
+
+const PlanBadge = ({ plan }: { plan?: string }) => {
+    const currentPlan = plan?.toUpperCase() || 'SPIRIT';
+  
+    const planDetails: Record<string, { icon: React.ComponentType<{ className?: string }>, text: string, variant: 'secondary' | 'default' | 'admin' }> = {
+      SPIRIT: { icon: Leaf, text: 'SPIRIT', variant: getPlanBadgeVariant('SPIRIT') },
+      ESSENCE: { icon: Sprout, text: 'ESSENCE', variant: getPlanBadgeVariant('ESSENCE') },
+      LEGACY: { icon: TreeDeciduous, text: 'LEGACY', variant: getPlanBadgeVariant('LEGACY') },
+      ETERNAL: { icon: Heart, text: 'ETERNAL', variant: getPlanBadgeVariant('ETERNAL') },
+    };
+  
+    const { icon: Icon, text, variant } = planDetails[currentPlan] || planDetails.SPIRIT;
+  
+    return (
+      <Badge variant={variant} className={cn("inline-flex items-center gap-1.5")}>
+        <Icon className="h-3.5 w-3.5" />
+        <span>{text}</span>
+      </Badge>
+    );
+  };
 
 
 export default function PappaPage() {
@@ -617,7 +638,7 @@ export default function PappaPage() {
                                             <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
                                             <>
-                                                <Badge variant={getPlanBadgeVariant(m.plan)}>{m.plan || 'SPIRIT'}</Badge>
+                                                <PlanBadge plan={m.plan} />
                                                 {m.planExpiryDate && (
                                                     <span className="text-xs text-muted-foreground mt-1">
                                                         {m.planExpiryDate === 'ETERNAL' 
