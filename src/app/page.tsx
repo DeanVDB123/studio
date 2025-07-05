@@ -8,11 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StoryCard } from '@/components/shared/StoryCard';
 import { PricingTable } from '@/components/shared/PricingTable';
-import { UserPlus, FilePenLine, Share2, Sparkles, QrCode, Users, Loader2 } from 'lucide-react';
+import { UserPlus, FilePenLine, Share2, Sparkles, QrCode, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 // Note: generateMetadata is not supported in client components.
 // We can keep the static title here, or move it to a layout if dynamic metadata is needed.
@@ -22,24 +19,6 @@ import { useRouter } from 'next/navigation';
 // };
 
 export default function HomePage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace('/memorials');
-    }
-  }, [user, loading, router]);
-
-  if (loading || user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">Loading your experience...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
