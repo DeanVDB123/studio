@@ -279,14 +279,6 @@ export default function AdminDashboardPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
-        {isFreeOrSuspended && (
-          <div className="flex justify-center pt-6 mt-6 border-t">
-            <Button size="lg" onClick={() => handleUpgradeClick(null)}>
-                Upgrade Now to Share!
-            </Button>
-          </div>
-        )}
       </div>
       <DialogContent className="max-w-6xl p-0 bg-card">
         <DialogHeader className="p-6 pb-4 border-b bg-primary text-primary-foreground">
