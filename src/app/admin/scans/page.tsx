@@ -7,10 +7,17 @@ import { getAllMemorialsForUser } from '@/lib/data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowUpDown, Loader2, Search, CalendarDays } from 'lucide-react';
+import { ArrowUpDown, Loader2, Search, CalendarDays, Eye } from 'lucide-react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
 
 type MemorialScanData = {
   id: string;
@@ -127,7 +134,7 @@ export default function MyScansPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: 'lastVisited', direction: 'desc' });
-  const [expandedMemorialId, setExpandedMemorialId] = useState<string | null>(null);
+  const [selectedMemorial, setSelectedMemorial] = useState<MemorialScanData | null>(null);
 
   useEffect(() => {
     async function fetchScans() {
@@ -201,58 +208,56 @@ export default function MyScansPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Memorial visits</CardTitle>
-          <CardDescription>
-            Track visits to your memorial pages. Click a row to see a heatmap of daily views.
-          </CardDescription>
-          <div className="flex items-center justify-between gap-4 pt-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="Search by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+    <>
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Memorial visits</CardTitle>
+            <CardDescription>
+              Track visits to your memorial pages. Click the eye icon to see a heatmap of daily views.
+            </CardDescription>
+            <div className="flex items-center justify-between gap-4 pt-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  placeholder="Search by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40%]">
-                    <Button variant="ghost" onClick={() => handleSort('deceasedName')} className="w-full justify-start px-2">
-                      Memorial Name
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-center">
-                    <Button variant="ghost" onClick={() => handleSort('viewCount')} className="w-full justify-center px-2">
-                      Total Views
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" onClick={() => handleSort('lastVisited')} className="w-full justify-end px-2">
-                      Last Visited
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedAndFilteredMemorials.length > 0 ? (
-                  sortedAndFilteredMemorials.map((memorial) => (
-                    <React.Fragment key={memorial.id}>
-                      <TableRow
-                        onClick={() => setExpandedMemorialId(expandedMemorialId === memorial.id ? null : memorial.id)}
-                        className="cursor-pointer"
-                      >
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40%]">
+                      <Button variant="ghost" onClick={() => handleSort('deceasedName')} className="w-full justify-start px-2">
+                        Memorial Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </TableHead>
+                    <TableHead className="text-center">
+                      <Button variant="ghost" onClick={() => handleSort('viewCount')} className="w-full justify-center px-2">
+                        Total Views
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <Button variant="ghost" onClick={() => handleSort('lastVisited')} className="w-full justify-end px-2">
+                        Last Visited
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </TableHead>
+                    <TableHead className="w-[100px] text-center">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sortedAndFilteredMemorials.length > 0 ? (
+                    sortedAndFilteredMemorials.map((memorial) => (
+                      <TableRow key={memorial.id}>
                         <TableCell className="font-medium">{memorial.deceasedName}</TableCell>
                         <TableCell className="text-center">{memorial.viewCount}</TableCell>
                         <TableCell className="text-right">
@@ -260,29 +265,42 @@ export default function MyScansPage() {
                             ? `${formatDistanceToNow(parseISO(memorial.lastVisited), { addSuffix: true })}`
                             : 'Never'}
                         </TableCell>
+                        <TableCell className="text-center">
+                          <Button variant="ghost" size="icon" onClick={() => setSelectedMemorial(memorial)} title="View heatmap">
+                            <Eye className="h-5 w-5" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
-                      {expandedMemorialId === memorial.id && (
-                        <TableRow className="bg-muted/50 hover:bg-muted/50">
-                          <TableCell colSpan={3} className="p-4 transition-all duration-300">
-                             <h4 className="text-md font-headline mb-4 text-center text-foreground">Daily Views Heatmap (Current Month)</h4>
-                             <MemorialHeatmapCalendar timestamps={memorial.viewTimestamps} />
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </React.Fragment>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center">
-                      No memorials found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center">
+                        No memorials found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Dialog open={!!selectedMemorial} onOpenChange={(isOpen) => { if (!isOpen) setSelectedMemorial(null); }}>
+        {selectedMemorial && (
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-center font-headline text-2xl">Daily Views Heatmap</DialogTitle>
+              <DialogDescription className="text-center text-muted-foreground pt-1">
+                {selectedMemorial.deceasedName}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <MemorialHeatmapCalendar timestamps={selectedMemorial.viewTimestamps} />
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+    </>
   );
 }
