@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus, checkIfUserHasPaidMemorials } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
@@ -285,16 +285,25 @@ export async function updateMemorialPlanAction(adminId: string, memorialId: stri
     await dbUpdateMemorialPlan(memorialId, newPlan, planExpiryDate);
     console.log(`[Action] Memorial ${memorialId} plan updated to ${newPlan} with expiry ${planExpiryDate || 'none'}`);
 
-    // After updating the plan, check if we need to update the user's status
+    // After updating the plan, check the owner's status based on ALL their memorials
     const memorial = await getMemorialById(memorialId);
     if (memorial?.userId) {
       const ownerId = memorial.userId;
+      const ownerHasPaidPlans = await checkIfUserHasPaidMemorials(ownerId);
       const ownerStatus = await getUserStatus(ownerId);
-      
-      // If the user is on the FREE plan and upgrades a memorial, update their status to PAID
-      if (newPlan.toUpperCase() !== 'SPIRIT' && ownerStatus === 'FREE') {
-        console.log(`[Action] Owner ${ownerId} status is ${ownerStatus}. Upgrading to PAID.`);
-        await dbUpdateUserStatus(ownerId, 'PAID');
+
+      if (ownerHasPaidPlans) {
+        // If they have any paid plan, ensure their status is PAID
+        if (ownerStatus === 'FREE') { // Only upgrade if they are FREE
+            await dbUpdateUserStatus(ownerId, 'PAID');
+            console.log(`[Action] Owner ${ownerId} has active plans. Upgrading status to PAID.`);
+        }
+      } else {
+        // If they have NO paid plans, downgrade their status to FREE
+        if (ownerStatus === 'PAID') { // Only downgrade if they are currently PAID
+            await dbUpdateUserStatus(ownerId, 'FREE');
+            console.log(`[Action] Owner ${ownerId} has no active plans. Downgrading status to FREE.`);
+        }
       }
     }
 

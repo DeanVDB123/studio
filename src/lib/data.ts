@@ -238,6 +238,30 @@ export async function getFeedbackById(id: string): Promise<Feedback | undefined>
   }
 }
 
+export async function checkIfUserHasPaidMemorials(userId: string): Promise<boolean> {
+  console.log(`[Firestore] checkIfUserHasPaidMemorials called for user: ${userId}`);
+  const q = query(memorialsCollection, where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    return false;
+  }
+
+  for (const doc of querySnapshot.docs) {
+    const memorial = doc.data() as MemorialData;
+    if (memorial.plan && memorial.plan.toUpperCase() !== 'SPIRIT') {
+      if (memorial.planExpiryDate === 'ETERNAL') {
+        return true; // Found an eternal plan
+      }
+      if (memorial.planExpiryDate && new Date() < new Date(memorial.planExpiryDate)) {
+        return true; // Found an active, non-expired plan
+      }
+    }
+  }
+
+  return false; // No active paid memorials found
+}
+
 export async function updateFeedbackStatus(feedbackId: string, newStatus: 'read' | 'unread'): Promise<void> {
   console.log(`[Firestore] updateFeedbackStatus called for ID: ${feedbackId} to set to ${newStatus}`);
   const docRef = doc(feedbackCollection, feedbackId);
