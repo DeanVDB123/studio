@@ -137,7 +137,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
                 isFreeOrSuspended ? (
                   <div className="flex flex-col items-center justify-center text-center p-4">
                     <DialogTrigger asChild>
-                      <Button>Upgrade Now</Button>
+                      <Button>Ascend to premium</Button>
                     </DialogTrigger>
                   </div>
                 ) : (

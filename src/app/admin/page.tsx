@@ -239,7 +239,7 @@ export default function AdminDashboardPage() {
                       {isFreeOrSuspended ? (
                         <div className="flex flex-col items-center text-center gap-2">
                           <p className="text-sm text-muted-foreground">Upgrade to share this QR code.</p>
-                          <Button size="sm" onClick={() => handleUpgradeClick(memorial)}>Upgrade Now</Button>
+                          <Button size="sm" onClick={() => handleUpgradeClick(memorial)}>Ascend to premium</Button>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-center">
