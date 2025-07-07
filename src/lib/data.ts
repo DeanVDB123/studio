@@ -280,14 +280,7 @@ export async function dbUpdateUserStatus(userId: string, newStatus: string): Pro
   }
 
   const userDocRef = querySnapshot.docs[0].ref;
-  const updatePayload: { status: string, dateSwitched?: any } = { status: newStatus };
-
-  if (newStatus !== 'FREE') {
-    updatePayload.dateSwitched = new Date().toISOString();
-  } else {
-    // When downgrading back to FREE, remove the dateSwitched field.
-    updatePayload.dateSwitched = deleteField();
-  }
+  const updatePayload: { status: string } = { status: newStatus };
 
   await updateDoc(userDocRef, updatePayload);
   console.log(`[Firestore] Successfully updated status for user ${userId} to ${newStatus}.`);
@@ -314,7 +307,6 @@ export async function getAllUsersWithMemorialCount(): Promise<UserForAdmin[]> {
       email: signupData.email,
       signupDate: signupData.signupDate,
       status: signupData.status,
-      dateSwitched: signupData.dateSwitched,
       memorialCount: memorialCounts[signupData.userId] || 0,
       totalQrCodes: 0,
     };

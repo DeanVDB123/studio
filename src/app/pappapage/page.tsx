@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
-type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
+type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
 type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'viewCount' | 'ownerStatus' | 'visibility' | 'plan';
 type SortDirection = 'asc' | 'desc';
@@ -181,7 +181,7 @@ export default function PappaPage() {
     try {
       await updateUserStatusAction(user.uid, userId, newStatus);
       setUsers(prevUsers =>
-        prevUsers.map(u => (u.userId === userId ? { ...u, status: newStatus, dateSwitched: newStatus !== 'FREE' ? new Date().toISOString() : u.dateSwitched } : u))
+        prevUsers.map(u => (u.userId === userId ? { ...u, status: newStatus } : u))
       );
       toast({ title: "Success", description: `User status updated to ${newStatus}.` });
     } catch (error: any) {
@@ -497,11 +497,6 @@ export default function PappaPage() {
                         </Button>
                       </TableHead>
                       <TableHead>
-                        <Button variant="ghost" onClick={() => handleSort('dateSwitched')}>
-                          Date Switched <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </TableHead>
-                      <TableHead>
                         <Button variant="ghost" onClick={() => handleSort('status')}>
                           Status <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
@@ -511,7 +506,7 @@ export default function PappaPage() {
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
+                        <TableCell colSpan={4} className="h-24 text-center">
                           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                         </TableCell>
                       </TableRow>
@@ -521,9 +516,6 @@ export default function PappaPage() {
                           <TableCell className="font-medium">{u.email}</TableCell>
                           <TableCell className="text-center">{u.memorialCount}</TableCell>
                           <TableCell>{safeFormatDate(u.signupDate)}</TableCell>
-                          <TableCell>
-                            {safeFormatDateTime(u.dateSwitched)}
-                          </TableCell>
                           <TableCell>
                             {u.status === 'ADMIN' ? (
                               <Badge variant="admin" className="cursor-not-allowed">
@@ -577,7 +569,7 @@ export default function PappaPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
+                        <TableCell colSpan={4} className="h-24 text-center">
                           No users found.
                         </TableCell>
                       </TableRow>
