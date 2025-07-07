@@ -1,14 +1,14 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAllUsersWithMemorialCount, getAllFeedback, getAllMemorialsForAdmin } from '@/lib/data';
 import { updateUserStatusAction, toggleMemorialVisibilityAction, toggleFeedbackStatusAction, updateMemorialPlanAction } from '@/lib/actions';
 import type { UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff, BookOpen, BookLock, Leaf, Sprout, TreeDeciduous, Heart } from 'lucide-react';
+import { Loader2, ArrowUpDown, Search, ChevronDown, Pencil, ExternalLink, Eye, EyeOff, BookOpen, BookLock, Leaf, Sprout, TreeDeciduous, Heart, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -106,6 +106,23 @@ export default function PappaPage() {
   const [showReadFeedback, setShowReadFeedback] = useState(false);
   const [updatingPlanFor, setUpdatingPlanFor] = useState<string | null>(null);
 
+  const fetchAllMemorials = useCallback(async (showNotification = false) => {
+    if (userStatus !== 'ADMIN') return;
+    setIsLoadingMemorials(true);
+    try {
+        const memorials = await getAllMemorialsForAdmin();
+        setAllMemorials(memorials);
+        if (showNotification) {
+            toast({ title: "Refreshed", description: "The list of memorials has been updated." });
+        }
+    } catch (error) {
+        console.error("[PappaPage] Failed to fetch all memorials:", error);
+        toast({ title: "Error", description: "Could not load memorial data.", variant: "destructive" });
+    } finally {
+        setIsLoadingMemorials(false);
+    }
+  }, [userStatus, toast]);
+
   useEffect(() => {
     async function fetchUsers() {
       if (userStatus === 'ADMIN') {
@@ -148,22 +165,10 @@ export default function PappaPage() {
   }, [userStatus, selectedView, toast]);
   
   useEffect(() => {
-    async function fetchAllMemorials() {
-      if (userStatus === 'ADMIN' && selectedView === 'All Memorials') {
-        setIsLoadingMemorials(true);
-        try {
-          const memorials = await getAllMemorialsForAdmin();
-          setAllMemorials(memorials);
-        } catch (error) {
-          console.error("[PappaPage] Failed to fetch all memorials:", error);
-          toast({ title: "Error", description: "Could not load memorial data.", variant: "destructive" });
-        } finally {
-          setIsLoadingMemorials(false);
-        }
-      }
+    if (userStatus === 'ADMIN' && selectedView === 'All Memorials') {
+      fetchAllMemorials();
     }
-    fetchAllMemorials();
-  }, [userStatus, selectedView, toast]);
+  }, [userStatus, selectedView, fetchAllMemorials]);
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     if (!user) {
@@ -450,7 +455,7 @@ export default function PappaPage() {
           </div>
 
           {selectedView !== 'Feedback' && selectedView !== 'Errors' && (
-            <div className="flex items-center py-4">
+            <div className="flex items-center justify-between py-4">
               <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -460,6 +465,11 @@ export default function PappaPage() {
                     className="pl-10 w-80"
                   />
               </div>
+              {selectedView === 'All Memorials' && (
+                <Button variant="outline" size="icon" onClick={() => fetchAllMemorials(true)} disabled={isLoadingMemorials} title="Refresh memorials">
+                    <RefreshCw className={cn("h-4 w-4", isLoadingMemorials && "animate-spin")} />
+                </Button>
+              )}
             </div>
           )}
 
