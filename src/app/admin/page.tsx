@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
                     <PopoverContent className="w-auto p-4">
                       {isFreeOrSuspended ? (
                         <div className="flex flex-col items-center text-center gap-2">
-                          <p className="text-sm text-muted-foreground">Upgrade to share this QR code.</p>
+                          <p className="text-sm text-muted-foreground">Ascend to share this QR code.</p>
                           <Button size="sm" onClick={() => handleUpgradeClick(memorial)}>Ascend to premium</Button>
                         </div>
                       ) : (
