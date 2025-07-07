@@ -28,6 +28,8 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 type UserSortKey = 'email' | 'memorialCount' | 'signupDate' | 'dateSwitched' | 'status';
 type QrSortKey = 'email' | 'totalQrCodes';
@@ -35,7 +37,7 @@ type MemorialSortKey = 'deceasedName' | 'ownerEmail' | 'viewCount' | 'ownerStatu
 type SortDirection = 'asc' | 'desc';
 
 const getBadgeVariant = (status: string | null) => {
-  if (!status) return 'secondary';
+  if (!status) return 'outline';
   switch (status.toUpperCase()) {
     case 'ADMIN':
       return 'admin' as const;
@@ -45,7 +47,7 @@ const getBadgeVariant = (status: string | null) => {
       return 'suspended' as const;
     case 'FREE':
     default:
-      return 'secondary' as const;
+      return 'outline' as const;
   }
 };
 
@@ -617,8 +619,8 @@ export default function PappaPage() {
                           Views <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
                       </TableHead>
-                       <TableHead>
-                        <Button variant="ghost" onClick={() => handleMemorialsSort('visibility')}>
+                       <TableHead className="w-[120px] text-center">
+                        <Button variant="ghost" onClick={() => handleMemorialsSort('visibility')} className="w-full justify-center">
                           Visibility <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
                       </TableHead>
@@ -670,29 +672,29 @@ export default function PappaPage() {
                             </DropdownMenu>
                           </TableCell>
                           <TableCell className="text-center">{m.viewCount}</TableCell>
-                          <TableCell>
-                            <Button
-                                variant={m.visibility === 'shown' ? 'destructive' : 'admin'}
-                                size="sm"
-                                onClick={() => handleToggleVisibility(m.id)}
-                                disabled={updatingVisibilityId === m.id}
-                                className="w-32"
-                                title={`Click to ${m.visibility === 'shown' ? 'deactivate' : 'activate'} this memorial`}
-                            >
-                                {updatingVisibilityId === m.id ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : m.visibility === 'shown' ? (
-                                    <>
-                                        <EyeOff className="mr-2 h-4 w-4" />
-                                        <span>Deactivate</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        <span>Activate</span>
-                                    </>
-                                )}
-                            </Button>
+                          <TableCell className="w-[120px]">
+                            <div className="flex flex-col items-center justify-center h-full gap-1">
+                              {updatingVisibilityId === m.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <Switch
+                                    checked={m.visibility === 'shown'}
+                                    onCheckedChange={() => handleToggleVisibility(m.id)}
+                                    disabled={updatingVisibilityId === m.id}
+                                    id={`visibility-switch-${m.id}`}
+                                    aria-labelledby={`visibility-label-${m.id}`}
+                                  />
+                                  <Label
+                                    htmlFor={`visibility-switch-${m.id}`}
+                                    id={`visibility-label-${m.id}`}
+                                    className="text-xs font-normal text-muted-foreground cursor-pointer"
+                                  >
+                                    {m.visibility === 'shown' ? 'Public' : 'Hidden'}
+                                  </Label>
+                                </>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right">
                             <Button variant="ghost" size="icon" asChild>
