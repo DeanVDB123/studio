@@ -3,7 +3,7 @@
 'use server';
 
 import { firestore } from '@/lib/firebase';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion, orderBy, deleteField } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, addDoc, increment, arrayUnion, orderBy, deleteField, writeBatch } from 'firebase/firestore';
 import type { MemorialData, SignupEvent, UserForAdmin, Feedback, AdminMemorialView } from '@/lib/types';
 
 const memorialsCollection = collection(firestore, 'memorials');
@@ -355,6 +355,26 @@ export async function updateMemorialVisibility(memorialId: string, newVisibility
   const docRef = doc(memorialsCollection, memorialId);
   await updateDoc(docRef, { visibility: newVisibility });
 }
+
+export async function setAllMemorialsVisibilityForUser(userId: string, newVisibility: 'shown' | 'hidden'): Promise<void> {
+  console.log(`[Firestore] setAllMemorialsVisibilityForUser called for user ${userId} to set visibility to ${newVisibility}.`);
+  const q = query(memorialsCollection, where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
+    console.log(`[Firestore] No memorials found for user ${userId}. No action taken.`);
+    return;
+  }
+
+  const batch = writeBatch(firestore);
+  querySnapshot.forEach(doc => {
+    batch.update(doc.ref, { visibility: newVisibility });
+  });
+
+  await batch.commit();
+  console.log(`[Firestore] Updated visibility to ${newVisibility} for ${querySnapshot.size} memorials owned by user ${userId}.`);
+}
+
 
 export async function updateMemorialPlan(memorialId: string, newPlan: string, planExpiryDate: string | undefined): Promise<void> {
   console.log(`[Firestore] updateMemorialPlan called for ID: ${memorialId} to set plan to ${newPlan}`);

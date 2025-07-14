@@ -4,7 +4,7 @@
 import { generateBiographyDraft, type GenerateBiographyDraftInput } from '@/ai/flows/generate-biography-draft';
 import { organizeUserContent, type OrganizeUserContentInput } from '@/ai/flows/organize-user-content';
 import type { MemorialData, OrganizedContent } from '@/lib/types';
-import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus, checkIfUserHasPaidMemorials, deleteMemorial } from '@/lib/data';
+import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIsAdmin, saveMemorial as dbSaveMemorial, incrementMemorialViewCount, saveFeedback as dbSaveFeedback, updateMemorialVisibility, getFeedbackById, updateFeedbackStatus, updateMemorialPlan as dbUpdateMemorialPlan, dbUpdateUserStatus, getUserStatus, checkIfUserHasPaidMemorials, deleteMemorial, setAllMemorialsVisibilityForUser } from '@/lib/data';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
@@ -226,11 +226,25 @@ export async function updateUserStatusAction(adminId: string, userId: string, ne
     if (!isAdminUser) {
         throw new Error('Permission denied. You must be an administrator to perform this action.');
     }
+    
+    const oldStatus = await getUserStatus(userId);
 
     try {
         await dbUpdateUserStatus(userId, newStatus);
         console.log(`[Action] Successfully updated status for user ${userId}.`);
+        
+        // If status changes to 'SUSPENDED', hide all their memorials.
+        if (newStatus.toUpperCase() === 'SUSPENDED') {
+            await setAllMemorialsVisibilityForUser(userId, 'hidden');
+            console.log(`[Action] All memorials for user ${userId} have been hidden due to suspension.`);
+        } else if (oldStatus.toUpperCase() === 'SUSPENDED' && newStatus.toUpperCase() !== 'SUSPENDED') {
+            // If status changes FROM 'SUSPENDED' to something else, re-show memorials.
+            await setAllMemorialsVisibilityForUser(userId, 'shown');
+            console.log(`[Action] All memorials for user ${userId} have been shown as suspension was lifted.`);
+        }
+        
         revalidatePath('/pappapage', 'page');
+        revalidatePath('/memorials', 'page'); // User dashboard might be affected
     } catch (error: any) {
         console.error(`[Action] Error calling dbUpdateUserStatus for user ${userId}:`, error);
         throw new Error(`Failed to update user status. ${error.message || ''}`);
