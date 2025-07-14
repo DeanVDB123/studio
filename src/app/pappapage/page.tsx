@@ -446,12 +446,6 @@ export default function PappaPage() {
                 <DropdownMenuItem onSelect={() => setSelectedView('Feedback')}>
                   Feedback
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setSelectedView('QR Codes')}>
-                  QR Codes
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setSelectedView('Errors')}>
-                  Errors
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
