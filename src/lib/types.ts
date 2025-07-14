@@ -26,7 +26,7 @@ export interface MemorialData {
   viewTimestamps?: string[]; // Array of ISO date strings for each view
   createdAt?: string;
   visibility?: 'shown' | 'hidden';
-  templateId?: 'classic' | 'modern' | 'skyline';
+  templateId?: 'classic' | 'skyline';
 }
 
 export interface OrganizedContent {

@@ -44,7 +44,7 @@ const memorialFormSchema = z.object({
   photos: z.array(photoSchema).min(0, "At least one photo is recommended."),
   tributes: z.array(z.string()).min(0, "At least one tribute is recommended."),
   stories: z.array(z.string()).min(0, "At least one story is recommended."),
-  templateId: z.enum(['classic', 'modern', 'skyline']).optional().default('classic'),
+  templateId: z.enum(['classic', 'skyline']).optional().default('classic'),
 }).refine(
   (data) => {
     if (data.birthDate && data.deathDate) {
@@ -290,7 +290,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                   <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
                   >
                       <Label htmlFor="template-classic" className="border rounded-md p-4 has-[input:checked]:bg-primary has-[input:checked]:text-primary-foreground has-[input:checked]:border-primary transition-colors cursor-pointer">
                           <div className="flex items-center gap-4">
@@ -301,18 +301,6 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
                                       Classic
                                   </div>
                                   <p className="text-sm font-normal mt-1">A timeless, single-column layout focused on storytelling.</p>
-                              </div>
-                          </div>
-                      </Label>
-                      <Label htmlFor="template-modern" className="border rounded-md p-4 has-[input:checked]:bg-primary has-[input:checked]:text-primary-foreground has-[input:checked]:border-primary transition-colors cursor-pointer">
-                          <div className="flex items-center gap-4">
-                              <RadioGroupItem value="modern" id="template-modern" />
-                              <div className="flex-grow">
-                                  <div className="flex items-center gap-2 font-headline text-lg">
-                                      <Columns className="h-5 w-5" />
-                                      Modern
-                                  </div>
-                                  <p className="text-sm font-normal mt-1">A contemporary split-column layout for biography and media.</p>
                               </div>
                           </div>
                       </Label>

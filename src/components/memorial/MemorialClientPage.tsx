@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Feather, Lock, Loader2, ShieldOff } from 'lucide-react';
 import { logMemorialViewAction } from '@/lib/actions';
 import { ClassicTemplate } from '@/components/memorial/templates/ClassicTemplate';
-import { ModernTemplate } from '@/components/memorial/templates/ModernTemplate';
 import { SkylineTemplate } from './templates/SkylineTemplate';
 
 
@@ -151,8 +150,6 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
   const propsToPass = { memorialData, backLinkHref };
 
   switch (memorialData.templateId) {
-      case 'modern':
-          return <ModernTemplate {...propsToPass} />;
       case 'skyline':
           return <SkylineTemplate {...propsToPass} />;
       case 'classic':
