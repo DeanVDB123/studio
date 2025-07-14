@@ -108,9 +108,3 @@
      /* Ensure body font is widely applied, specific components might override */
   }
 }
-
-@layer components {
-  .drop-cap::first-letter {
-    @apply font-headline text-7xl float-left font-bold text-primary mr-3 pt-2;
-  }
-}

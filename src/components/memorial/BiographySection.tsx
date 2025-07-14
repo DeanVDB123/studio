@@ -15,7 +15,7 @@ export function BiographySection({ biography, template }: BiographySectionProps)
     return (
       <div className="animate-in fade-in duration-500">
         <div 
-          className="prose prose-lg max-w-none font-body text-foreground/90 leading-relaxed drop-cap" 
+          className="prose prose-lg max-w-none font-body text-foreground/90 leading-relaxed" 
           dangerouslySetInnerHTML={{ __html: biography.replace(/\n/g, '<br />') }} 
         />
       </div>
