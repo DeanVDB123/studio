@@ -14,7 +14,7 @@ export function SkylineTemplate({ memorialData, backLinkHref }: TemplateProps) {
   const profilePhotoUrl = memorialData.photos && memorialData.photos.length > 0 ? memorialData.photos[0].url : undefined;
   
   // Use a dramatic sky image as the background for the entire page
-  const backgroundImageUrl = 'https://placehold.co/1920x1080/2B3145/FFFFFF';
+  const backgroundImageUrl = '/sky-dramatic.jpg';
 
   return (
     <div className="bg-background min-h-screen font-body relative">
@@ -26,6 +26,7 @@ export function SkylineTemplate({ memorialData, backLinkHref }: TemplateProps) {
           objectFit="cover"
           className="filter brightness-75"
           data-ai-hint="dramatic sky"
+          priority
         />
         <div className="absolute inset-0 bg-black/30" />
       </div>
