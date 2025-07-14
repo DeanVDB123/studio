@@ -108,6 +108,40 @@ export default function PappaPage() {
   const [showReadFeedback, setShowReadFeedback] = useState(false);
   const [updatingPlanFor, setUpdatingPlanFor] = useState<string | null>(null);
 
+  const fetchUsers = useCallback(async (showNotification = false) => {
+    if (userStatus !== 'ADMIN') return;
+    setIsLoading(true);
+    try {
+      const allUsers = await getAllUsersWithMemorialCount();
+      setUsers(allUsers);
+      if (showNotification) {
+        toast({ title: "Refreshed", description: "The list of users has been updated." });
+      }
+    } catch (error) {
+      console.error("[PappaPage] Failed to fetch users:", error);
+      toast({ title: "Error", description: "Could not load user data.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userStatus, toast]);
+
+  const fetchFeedback = useCallback(async (showNotification = false) => {
+    if (userStatus !== 'ADMIN') return;
+    setIsLoadingFeedback(true);
+    try {
+      const allFeedback = await getAllFeedback();
+      setFeedbackList(allFeedback);
+       if (showNotification) {
+        toast({ title: "Refreshed", description: "The list of feedback has been updated." });
+      }
+    } catch (error) {
+      console.error("[PappaPage] Failed to fetch feedback:", error);
+      toast({ title: "Error", description: "Could not load feedback data.", variant: "destructive" });
+    } finally {
+      setIsLoadingFeedback(false);
+    }
+  }, [userStatus, toast]);
+
   const fetchAllMemorials = useCallback(async (showNotification = false) => {
     if (userStatus !== 'ADMIN') return;
     setIsLoadingMemorials(true);
@@ -126,45 +160,16 @@ export default function PappaPage() {
   }, [userStatus, toast]);
 
   useEffect(() => {
-    async function fetchUsers() {
-      if (userStatus === 'ADMIN') {
-        setIsLoading(true);
-        try {
-          const allUsers = await getAllUsersWithMemorialCount();
-          setUsers(allUsers);
-        } catch (error) {
-          console.error("[PappaPage] Failed to fetch users:", error);
-          toast({ title: "Error", description: "Could not load user data.", variant: "destructive" });
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    if (!authLoading) {
-      if (userStatus === 'ADMIN') {
+    if (!authLoading && userStatus === 'ADMIN') {
         fetchUsers();
-      }
     }
-  }, [userStatus, authLoading, toast]);
+  }, [userStatus, authLoading, fetchUsers]);
   
   useEffect(() => {
-    async function fetchFeedback() {
-      if (userStatus === 'ADMIN' && selectedView === 'Feedback') {
-        setIsLoadingFeedback(true);
-        try {
-          const allFeedback = await getAllFeedback();
-          setFeedbackList(allFeedback);
-        } catch (error) {
-          console.error("[PappaPage] Failed to fetch feedback:", error);
-          toast({ title: "Error", description: "Could not load feedback data.", variant: "destructive" });
-        } finally {
-          setIsLoadingFeedback(false);
-        }
-      }
+    if (userStatus === 'ADMIN' && selectedView === 'Feedback') {
+      fetchFeedback();
     }
-    fetchFeedback();
-  }, [userStatus, selectedView, toast]);
+  }, [userStatus, selectedView, fetchFeedback]);
   
   useEffect(() => {
     if (userStatus === 'ADMIN' && selectedView === 'All Memorials') {
@@ -450,7 +455,7 @@ export default function PappaPage() {
             </DropdownMenu>
           </div>
 
-          {selectedView !== 'Feedback' && selectedView !== 'Errors' && (
+          {selectedView !== 'Feedback' && (
             <div className="flex items-center justify-between py-4">
               <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -464,6 +469,11 @@ export default function PappaPage() {
               {selectedView === 'All Memorials' && (
                 <Button variant="outline" size="icon" onClick={() => fetchAllMemorials(true)} disabled={isLoadingMemorials} title="Refresh memorials">
                     <RefreshCw className={cn("h-4 w-4", isLoadingMemorials && "animate-spin")} />
+                </Button>
+              )}
+               {selectedView === 'User Management' && (
+                <Button variant="outline" size="icon" onClick={() => fetchUsers(true)} disabled={isLoading} title="Refresh users">
+                    <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
                 </Button>
               )}
             </div>
@@ -706,9 +716,12 @@ export default function PappaPage() {
 
           {selectedView === 'Feedback' && (
              <>
-              <div className="flex justify-end py-4">
+              <div className="flex justify-end items-center gap-4 py-4">
                   <Button variant="outline" onClick={() => setShowReadFeedback(prev => !prev)}>
                       {showReadFeedback ? 'Hide Read Messages' : 'Show Read Messages'}
+                  </Button>
+                  <Button variant="outline" size="icon" onClick={() => fetchFeedback(true)} disabled={isLoadingFeedback} title="Refresh feedback">
+                      <RefreshCw className={cn("h-4 w-4", isLoadingFeedback && "animate-spin")} />
                   </Button>
               </div>
               {isLoadingFeedback ? (
@@ -789,57 +802,6 @@ export default function PappaPage() {
                   </div>
               )}
             </>
-          )}
-          
-          {selectedView === 'QR Codes' && (
-             <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>
-                        <Button variant="ghost" onClick={() => handleQrSort('email')}>
-                          User Email <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </TableHead>
-                      <TableHead className="text-center">
-                        <Button variant="ghost" onClick={() => handleQrSort('totalQrCodes')}>
-                          Total QR Codes Purchased <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={2} className="h-24 text-center">
-                          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                        </TableCell>
-                      </TableRow>
-                    ) : filteredAndSortedQrData.length > 0 ? (
-                      filteredAndSortedQrData.map((u) => (
-                        <TableRow key={u.userId}>
-                          <TableCell className="font-medium">{u.email}</TableCell>
-                          <TableCell className="text-center">{u.totalQrCodes}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={2} className="h-24 text-center">
-                          No users found.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
-          )}
-
-          {selectedView === 'Errors' && (
-            <div className="flex items-center justify-center h-64 text-center">
-              <h2 className="text-2xl font-headline text-muted-foreground">Error Log View Coming Soon</h2>
-            </div>
           )}
 
         </div>
