@@ -6,12 +6,13 @@ import { cn } from '@/lib/utils';
 
 interface PricingTableProps {
   memorialId?: string;
+  deceasedName?: string;
 }
 
-export function PricingTable({ memorialId }: PricingTableProps) {
+export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
   const createMailtoLink = (planName: string) => {
-    const subject = memorialId
-      ? `Inquiry about the ${planName} plan for Memorial ID: ${memorialId}`
+    const subject = deceasedName
+      ? `Inquiry about the ${planName} plan for: ${deceasedName}`
       : `Inquiry about the ${planName} plan`;
     return `mailto:honouredlives@gmail.com?subject=${encodeURIComponent(subject)}`;
   };

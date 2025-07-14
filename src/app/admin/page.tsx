@@ -287,7 +287,7 @@ export default function AdminDashboardPage() {
           <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
         </DialogHeader>
         <div className="p-6">
-          <PricingTable memorialId={memorialForUpgrade?.id} />
+          <PricingTable memorialId={memorialForUpgrade?.id} deceasedName={memorialForUpgrade?.deceasedName} />
         </div>
       </DialogContent>
     </Dialog>

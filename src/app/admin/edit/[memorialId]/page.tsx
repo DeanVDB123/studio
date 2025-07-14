@@ -155,7 +155,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
           <DialogTitle className="text-3xl font-headline text-center">Our Plans</DialogTitle>
         </DialogHeader>
         <div className="p-6">
-          <PricingTable memorialId={memorialId} />
+          <PricingTable memorialId={memorialId} deceasedName={memorialData.deceasedName} />
         </div>
       </DialogContent>
     </Dialog>
