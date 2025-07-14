@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, UploadCloud, Trash2, FileImage, PlusCircle, Loader2 } from 'lucide-react';
+import { CalendarIcon, UploadCloud, Trash2, FileImage, PlusCircle, Loader2, LayoutDashboard, Columns } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -23,6 +23,7 @@ import { saveMemorialAction } from '@/lib/actions';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { nanoid } from 'nanoid';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const photoSchema = z.object({
   id: z.string().optional(),
@@ -43,6 +44,7 @@ const memorialFormSchema = z.object({
   photos: z.array(photoSchema).min(0, "At least one photo is recommended."),
   tributes: z.array(z.string()).min(0, "At least one tribute is recommended."),
   stories: z.array(z.string()).min(0, "At least one story is recommended."),
+  templateId: z.enum(['classic', 'modern']).optional().default('classic'),
 }).refine(
   (data) => {
     if (data.birthDate && data.deathDate) {
@@ -83,6 +85,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       photos: initialData?.photos?.map(p => ({ ...p, id: p.id || nanoid(10) })) || [],
       tributes: initialData?.tributes || [],
       stories: initialData?.stories || [],
+      templateId: initialData?.templateId || 'classic',
     },
   });
   
@@ -273,6 +276,52 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline text-2xl">Page Template</CardTitle>
+          <CardDescription>Choose a layout for the public memorial page.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Controller
+              name="templateId"
+              control={control}
+              render={({ field }) => (
+                  <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                  >
+                      <Label htmlFor="template-classic" className="border rounded-md p-4 has-[input:checked]:bg-primary has-[input:checked]:text-primary-foreground has-[input:checked]:border-primary transition-colors cursor-pointer">
+                          <div className="flex items-center gap-4">
+                              <RadioGroupItem value="classic" id="template-classic" />
+                              <div className="flex-grow">
+                                  <div className="flex items-center gap-2 font-headline text-lg">
+                                      <LayoutDashboard className="h-5 w-5" />
+                                      Classic
+                                  </div>
+                                  <p className="text-sm font-normal mt-1">A timeless, single-column layout focused on storytelling.</p>
+                              </div>
+                          </div>
+                      </Label>
+                      <Label htmlFor="template-modern" className="border rounded-md p-4 has-[input:checked]:bg-primary has-[input:checked]:text-primary-foreground has-[input:checked]:border-primary transition-colors cursor-pointer">
+                          <div className="flex items-center gap-4">
+                              <RadioGroupItem value="modern" id="template-modern" />
+                              <div className="flex-grow">
+                                  <div className="flex items-center gap-2 font-headline text-lg">
+                                      <Columns className="h-5 w-5" />
+                                      Modern
+                                  </div>
+                                  <p className="text-sm font-normal mt-1">A contemporary split-column layout for biography and media.</p>
+                              </div>
+                          </div>
+                      </Label>
+                  </RadioGroup>
+              )}
+          />
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>

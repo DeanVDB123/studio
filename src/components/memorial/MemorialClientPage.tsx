@@ -7,16 +7,12 @@ import Link from 'next/link';
 import { getMemorialById } from '@/lib/data';
 import type { MemorialData } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
-
-import { MemorialPageHeader } from '@/components/memorial/MemorialPageHeader';
-import { BiographySection } from '@/components/memorial/BiographySection';
-import { PhotoGallerySection } from '@/components/memorial/PhotoGallerySection';
-import { TributesSection } from '@/components/memorial/TributesSection';
-import { StoriesSection } from '@/components/memorial/StoriesSection';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Feather, Lock, Loader2, ShieldOff } from 'lucide-react';
 import { logMemorialViewAction } from '@/lib/actions';
+import { ClassicTemplate } from '@/components/memorial/templates/ClassicTemplate';
+import { ModernTemplate } from '@/components/memorial/templates/ModernTemplate';
 
 
 interface MemorialClientPageProps {
@@ -149,30 +145,15 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     );
   }
 
-  // If we reach here, access is granted. Render the page.
-  const profilePhotoUrl = memorialData.photos && memorialData.photos.length > 0 ? memorialData.photos[0].url : undefined;
+  // If we reach here, access is granted. Render the correct template.
   const backLinkHref = viewerIsOwner || viewerIsAdmin ? '/memorials' : '/';
+  const propsToPass = { memorialData, backLinkHref };
 
-  return (
-    <div className="bg-background min-h-screen font-body">
-      <MemorialPageHeader
-        deceasedName={memorialData.deceasedName}
-        birthDate={memorialData.birthDate}
-        deathDate={memorialData.deathDate}
-        lifeSummary={memorialData.lifeSummary}
-        profilePhotoUrl={profilePhotoUrl}
-        backLinkHref={backLinkHref}
-      />
-      <main className="container mx-auto py-8 px-4 md:px-6 lg:px-8 space-y-12">
-        <BiographySection biography={memorialData.biography} />
-        <PhotoGallerySection photos={memorialData.photos} />
-        <TributesSection tributes={memorialData.tributes} />
-        <StoriesSection stories={memorialData.stories} />
-      </main>
-      <footer className="py-8 text-center bg-primary text-primary-foreground/80">
-        <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved.</p>
-        <p className="text-sm mt-1">Created with love and remembrance.</p>
-      </footer>
-    </div>
-  );
+  switch (memorialData.templateId) {
+      case 'modern':
+          return <ModernTemplate {...propsToPass} />;
+      case 'classic':
+      default:
+          return <ClassicTemplate {...propsToPass} />;
+  }
 }
