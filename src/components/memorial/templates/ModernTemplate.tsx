@@ -29,12 +29,12 @@ export function ModernTemplate({ memorialData, backLinkHref }: TemplateProps) {
       <main className="container mx-auto py-8 px-4 md:px-6 lg:px-8 space-y-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-12">
-                <BiographySection biography={memorialData.biography} />
-                <PhotoGallerySection photos={memorialData.photos} />
+                <BiographySection biography={memorialData.biography} template="modern" />
+                <PhotoGallerySection photos={memorialData.photos} template="modern" />
             </div>
             <div className="lg:col-span-1 space-y-12">
-                <TributesSection tributes={memorialData.tributes} />
-                <StoriesSection stories={memorialData.stories} />
+                <TributesSection tributes={memorialData.tributes} template="modern" />
+                <StoriesSection stories={memorialData.stories} template="modern" />
             </div>
         </div>
       </main>

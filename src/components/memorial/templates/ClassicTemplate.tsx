@@ -26,11 +26,11 @@ export function ClassicTemplate({ memorialData, backLinkHref }: TemplateProps) {
         profilePhotoUrl={profilePhotoUrl}
         backLinkHref={backLinkHref}
       />
-      <main className="container mx-auto py-8 px-4 md:px-6 lg:px-8 space-y-12">
-        <BiographySection biography={memorialData.biography} />
-        <PhotoGallerySection photos={memorialData.photos} />
-        <TributesSection tributes={memorialData.tributes} />
-        <StoriesSection stories={memorialData.stories} />
+      <main className="container mx-auto py-8 px-4 md:px-6 lg:px-8 space-y-16">
+        <BiographySection biography={memorialData.biography} template="classic" />
+        <PhotoGallerySection photos={memorialData.photos} template="classic" />
+        <TributesSection tributes={memorialData.tributes} template="classic" />
+        <StoriesSection stories={memorialData.stories} template="classic" />
       </main>
       <footer className="py-8 text-center bg-primary text-primary-foreground/80">
         <p>&copy; {new Date().getFullYear()} HonouredLives. All rights reserved.</p>
