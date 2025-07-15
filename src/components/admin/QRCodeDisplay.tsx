@@ -10,7 +10,7 @@ interface QRCodeDisplayProps {
 
 export function QRCodeDisplay({ url, size = 256 }: QRCodeDisplayProps) {
   const imageSettings = {
-    src: "/hlb.png",
+    src: "/lhbwb.png",
     height: size * 0.2, // Logo height is 20% of QR code size
     width: size * 0.2,  // Logo width is 20% of QR code size
     excavate: true,     // Clears space for the logo
