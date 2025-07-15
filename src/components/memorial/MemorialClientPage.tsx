@@ -13,6 +13,7 @@ import { Feather, Lock, Loader2, ShieldOff } from 'lucide-react';
 import { logMemorialViewAction } from '@/lib/actions';
 import { ClassicTemplate } from '@/components/memorial/templates/ClassicTemplate';
 import { SkylineTemplate } from './templates/SkylineTemplate';
+import { RusticTemplate } from './templates/RusticTemplate';
 
 
 interface MemorialClientPageProps {
@@ -152,6 +153,8 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
   switch (memorialData.templateId) {
       case 'skyline':
           return <SkylineTemplate {...propsToPass} />;
+      case 'rustic':
+          return <RusticTemplate {...propsToPass} />;
       case 'classic':
       default:
           return <ClassicTemplate {...propsToPass} />;
