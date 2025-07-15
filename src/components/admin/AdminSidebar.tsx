@@ -20,22 +20,41 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
 import { FeedbackDialog } from './FeedbackDialog';
+import { useState, useEffect } from 'react';
 
 
 const navItems = [
   { href: '/memorials', label: 'Memorials', icon: BookUser },
   { href: '/visits', label: 'Visits', icon: BarChart },
-  // { href: '/qrcodes', label: 'QR Codes', icon: QrCode },
 ];
 
 const createNavItem = { href: '/create', label: 'New Memorial', icon: PlusCircle };
 
+interface AdminSidebarProps {
+  handleNavigation: (path: string) => void;
+}
 
-export function AdminSidebar() {
+export function AdminSidebar({ handleNavigation }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { logOut, loading } = useAuth();
   const { toast } = useToast();
+  const [isFormDirty, setIsFormDirty] = useState(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [nextPath, setNextPath] = useState<string | null>(null);
+
+  const isEditPage = /^\/edit\/[a-zA-Z0-9_-]+$/.test(pathname);
+
+  // Custom link click handler
+  const onLinkClick = (e: React.MouseEvent<HTMLButtonElement>, href: string) => {
+    e.preventDefault();
+    if (isEditPage && isFormDirty) {
+      setNextPath(href);
+      setShowUnsavedDialog(true);
+    } else {
+      router.push(href);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -50,10 +69,8 @@ export function AdminSidebar() {
   
   const isActive = (href: string) => {
     if (href === '/memorials') {
-      // Make "Memorials" active for the main list and the edit page.
       return pathname === href || pathname.startsWith('/edit/');
     }
-    // For other items, an exact match is fine.
     return pathname === href;
   };
 
@@ -77,6 +94,10 @@ export function AdminSidebar() {
                     isActive={isActive(item.href)}
                     tooltip={{children: item.label, side: 'right', align: 'center'}}
                     className="w-full justify-start"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(item.href);
+                    }}
                   >
                     <item.icon className="h-5 w-5" />
                     <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
@@ -84,13 +105,16 @@ export function AdminSidebar() {
                 </Link>
               </SidebarMenuItem>
             ))}
-            {/* Separately render the create button to ensure it's always last in this section */}
             <SidebarMenuItem key={createNavItem.href}>
               <Link href={createNavItem.href} passHref legacyBehavior>
                 <SidebarMenuButton
                   isActive={isActive(createNavItem.href)}
                   tooltip={{children: createNavItem.label, side: 'right', align: 'center'}}
                   className="w-full justify-start"
+                  onClick={(e) => {
+                      e.preventDefault();
+                      handleNavigation(createNavItem.href);
+                    }}
                 >
                   <createNavItem.icon className="h-5 w-5" />
                   <span className="group-data-[collapsible=icon]:hidden">{createNavItem.label}</span>

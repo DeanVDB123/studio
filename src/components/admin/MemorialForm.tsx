@@ -64,9 +64,11 @@ export type MemorialFormValues = z.infer<typeof memorialFormSchema>;
 interface MemorialFormProps {
   initialData?: MemorialData;
   memorialId?: string;
+  onFormDirtyChange: (isDirty: boolean) => void;
+  getFormSubmitHandler: () => () => void;
 }
 
-export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
+export function MemorialForm({ initialData, memorialId, onFormDirtyChange, getFormSubmitHandler }: MemorialFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -74,7 +76,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
   const [isBirthDatePickerOpen, setIsBirthDatePickerOpen] = useState(false);
   const [isDeathDatePickerOpen, setIsDeathDatePickerOpen] = useState(false);
 
-  const { control, handleSubmit, register, watch, setValue, formState: { errors, isSubmitting } } = useForm<MemorialFormValues>({
+  const { control, handleSubmit, register, watch, setValue, formState: { errors, isSubmitting, isDirty }, reset } = useForm<MemorialFormValues>({
     resolver: zodResolver(memorialFormSchema),
     defaultValues: {
       deceasedName: initialData?.deceasedName || '',
@@ -88,6 +90,10 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
       templateId: initialData?.templateId || 'classic',
     },
   });
+
+  useEffect(() => {
+    onFormDirtyChange(isDirty);
+  }, [isDirty, onFormDirtyChange]);
 
   const birthDateValue = watch('birthDate');
   const deathDateValue = watch('deathDate');
@@ -110,7 +116,7 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true });
+        setValue(`photos.${index}.url`, reader.result as string, { shouldValidate: true, shouldDirty: true });
       };
       reader.readAsDataURL(file);
     }
@@ -152,15 +158,19 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
         
         toast({ title: "Success", description: `Memorial page for ${savedMemorial.deceasedName} ${isUpdating ? 'updated' : 'created'}.` });
         
-        // Navigate to the admin dashboard and refresh the page to show the new data
-        router.push('/memorials');
-        router.refresh(); 
+        reset(data); // Reset form state to make it not dirty
+        
+        // Let the parent component handle navigation
       } catch (error: any) {
         console.error(`[Action] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
         toast({ title: "Error saving memorial", description: error.message || "An unexpected error occurred.", variant: "destructive" });
       }
     });
   };
+
+  useEffect(() => {
+    getFormSubmitHandler(handleSubmit(onSubmit));
+  }, [getFormSubmitHandler, handleSubmit]);
 
 
   if (authLoading) {
