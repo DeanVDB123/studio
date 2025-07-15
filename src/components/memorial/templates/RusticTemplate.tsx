@@ -66,8 +66,8 @@ export function RusticTemplate({ memorialData, backLinkHref }: TemplateProps) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {memorialData.tributes.map((tribute, index) => (
-                        <blockquote key={index} className="speech-bubble relative bg-background/5 border border-background/10 rounded-lg p-6 shadow-sm">
-                             <p className="italic text-primary-foreground/80 font-body leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: `&ldquo;${tribute.replace(/\n/g, '<br />')}&rdquo;` }} />
+                        <blockquote key={index} className="relative bg-card/90 text-card-foreground p-6 rounded-lg shadow-lg">
+                             <p className="italic font-body leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: `&ldquo;${tribute.replace(/\n/g, '<br />')}&rdquo;` }} />
                         </blockquote>
                     ))}
                 </div>
@@ -83,8 +83,8 @@ export function RusticTemplate({ memorialData, backLinkHref }: TemplateProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {memorialData.stories.map((story, index) => (
-                    <div key={index} className="p-6 bg-background/5 border border-background/10 rounded-lg shadow-sm">
-                      <p className="text-primary-foreground/90 font-body leading-relaxed" dangerouslySetInnerHTML={{ __html: story.replace(/\n/g, '<br />') }} />
+                    <div key={index} className="p-6 bg-card/90 text-card-foreground border border-border/20 rounded-lg shadow-lg">
+                      <p className="font-body leading-relaxed" dangerouslySetInnerHTML={{ __html: story.replace(/\n/g, '<br />') }} />
                     </div>
                   ))}
                 </div>
