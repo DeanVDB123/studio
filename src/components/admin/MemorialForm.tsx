@@ -65,10 +65,11 @@ interface MemorialFormProps {
   initialData?: MemorialData;
   memorialId?: string;
   onFormDirtyChange: (isDirty: boolean) => void;
-  getFormSubmitHandler: () => () => void;
+  getFormSubmitHandler: (handler: () => void) => void;
+  onSaveSuccess?: (memorialId: string) => void;
 }
 
-export function MemorialForm({ initialData, memorialId, onFormDirtyChange, getFormSubmitHandler }: MemorialFormProps) {
+export function MemorialForm({ initialData, memorialId, onFormDirtyChange, getFormSubmitHandler, onSaveSuccess }: MemorialFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -160,7 +161,10 @@ export function MemorialForm({ initialData, memorialId, onFormDirtyChange, getFo
         
         reset(data); // Reset form state to make it not dirty
         
-        // Let the parent component handle navigation
+        if (!isUpdating && onSaveSuccess && savedMemorial.id) {
+          onSaveSuccess(savedMemorial.id);
+        }
+        
       } catch (error: any) {
         console.error(`[Action] Error in onSubmit (calling saveMemorialAction for ${isUpdating ? 'update' : 'create'}):`, error);
         toast({ title: "Error saving memorial", description: error.message || "An unexpected error occurred.", variant: "destructive" });
@@ -169,7 +173,9 @@ export function MemorialForm({ initialData, memorialId, onFormDirtyChange, getFo
   };
 
   useEffect(() => {
-    getFormSubmitHandler(handleSubmit(onSubmit));
+    if(getFormSubmitHandler) {
+      getFormSubmitHandler(handleSubmit(onSubmit));
+    }
   }, [getFormSubmitHandler, handleSubmit]);
 
 
