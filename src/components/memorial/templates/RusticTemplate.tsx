@@ -34,9 +34,9 @@ export function RusticTemplate({ memorialData, backLinkHref }: TemplateProps) {
                     <Camera className="mr-3 h-7 w-7 text-primary" />
                     <h2 className="font-headline text-3xl text-primary">Photo Memories</h2>
                 </div>
-                <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+                <div className="columns-2 md:columns-3 lg:columns-4">
                     {memorialData.photos.map((photo, index) => (
-                        <div key={photo.id || index} className="group relative break-inside-avoid overflow-hidden rounded-lg shadow-md">
+                        <div key={photo.id || index} className="group relative break-inside-avoid overflow-hidden shadow-md">
                             <Image
                                 src={photo.url}
                                 alt={photo.caption || `Memory ${index + 1}`}
@@ -63,9 +63,9 @@ export function RusticTemplate({ memorialData, backLinkHref }: TemplateProps) {
                     <Heart className="mr-3 h-7 w-7 text-primary" />
                     <h2 className="font-headline text-3xl text-primary">Loving Tributes</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {memorialData.tributes.map((tribute, index) => (
-                        <blockquote key={index} className="p-6 bg-primary/5 border border-primary/10 rounded-lg shadow-sm">
+                        <blockquote key={index} className="speech-bubble">
                              <p className="italic text-foreground/80 font-body leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: `&ldquo;${tribute.replace(/\n/g, '<br />')}&rdquo;` }} />
                         </blockquote>
                     ))}
@@ -80,9 +80,9 @@ export function RusticTemplate({ memorialData, backLinkHref }: TemplateProps) {
                   <MessageSquareText className="mr-3 h-7 w-7 text-primary" />
                   <h2 className="font-headline text-3xl text-primary">Cherished Stories</h2>
                 </div>
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {memorialData.stories.map((story, index) => (
-                    <div key={index} className="p-4 bg-muted/50 border border-border rounded-lg shadow-sm">
+                    <div key={index} className="p-6 bg-muted/50 border border-border rounded-lg shadow-sm">
                       <p className="text-foreground/90 font-body leading-relaxed" dangerouslySetInnerHTML={{ __html: story.replace(/\n/g, '<br />') }} />
                     </div>
                   ))}

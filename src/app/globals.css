@@ -108,3 +108,14 @@
      /* Ensure body font is widely applied, specific components might override */
   }
 }
+
+@layer utilities {
+  .speech-bubble {
+    @apply relative bg-primary/5 border border-primary/10 rounded-lg p-6 shadow-sm;
+  }
+  .speech-bubble::after {
+    content: '';
+    @apply absolute top-1/2 -left-3 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[12px] border-r-primary/10;
+    transform: translateY(-50%);
+  }
+}
