@@ -4,7 +4,7 @@
 import type { ChangeEvent } from 'react';
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, Controller, useFieldArray, type UseFormWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -59,14 +59,15 @@ const memorialFormSchema = z.object({
 );
 
 
-type MemorialFormValues = z.infer<typeof memorialFormSchema>;
+export type MemorialFormValues = z.infer<typeof memorialFormSchema>;
 
 interface MemorialFormProps {
   initialData?: MemorialData;
   memorialId?: string;
+  onFormWatch?: (watch: UseFormWatch<MemorialFormValues>) => void;
 }
 
-export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
+export function MemorialForm({ initialData, memorialId, onFormWatch }: MemorialFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -89,6 +90,12 @@ export function MemorialForm({ initialData, memorialId }: MemorialFormProps) {
     },
   });
   
+  useEffect(() => {
+    if (onFormWatch) {
+      onFormWatch(watch);
+    }
+  }, [watch, onFormWatch]);
+
   const birthDateValue = watch('birthDate');
   const deathDateValue = watch('deathDate');
 

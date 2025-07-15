@@ -22,6 +22,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PricingTable } from '@/components/shared/PricingTable';
+import type { UseFormWatch } from 'react-hook-form';
+import { MemorialPreview } from '@/components/admin/MemorialPreview';
 
 
 interface EditMemorialPageProps {
@@ -39,6 +41,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [permalink, setPermalink] = useState('');
+  const [formWatch, setFormWatch] = useState<UseFormWatch<any> | null>(null);
 
 
   useEffect(() => {
@@ -120,7 +123,11 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <h1 className="text-3xl font-headline mb-8">Edit Memorial: {memorialData.deceasedName}</h1>
-          <MemorialForm initialData={memorialData} memorialId={memorialId} />
+          <MemorialForm 
+            initialData={memorialData} 
+            memorialId={memorialId} 
+            onFormWatch={setFormWatch}
+          />
         </div>
         <div className="lg:col-span-1 space-y-6 lg:pt-20">
           <Card>
@@ -148,6 +155,7 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
               )}
             </CardContent>
           </Card>
+           {formWatch && <MemorialPreview watch={formWatch} />}
         </div>
       </div>
       <DialogContent className="max-w-6xl p-0 bg-card">
