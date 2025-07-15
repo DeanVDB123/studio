@@ -34,9 +34,9 @@ export function RusticTemplate({ memorialData, backLinkHref }: TemplateProps) {
                     <Camera className="mr-3 h-7 w-7 text-primary" />
                     <h2 className="font-headline text-3xl text-primary">Photo Memories</h2>
                 </div>
-                <div className="columns-2 md:columns-3 lg:columns-4">
+                <div className="columns-2 md:columns-3 lg:columns-4 gap-0">
                     {memorialData.photos.map((photo, index) => (
-                        <div key={photo.id || index} className="group relative break-inside-avoid overflow-hidden shadow-md">
+                        <div key={photo.id || index} className="group relative break-inside-avoid overflow-hidden shadow-md mb-0">
                             <Image
                                 src={photo.url}
                                 alt={photo.caption || `Memory ${index + 1}`}
