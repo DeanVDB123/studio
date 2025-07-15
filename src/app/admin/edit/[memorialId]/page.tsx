@@ -1,15 +1,15 @@
 
-"use client"; // Needs to be client component for auth checks and data fetching
+"use client"; 
 
 import { MemorialForm } from '@/components/admin/MemorialForm';
 import { QRCodeDisplay } from '@/components/admin/QRCodeDisplay';
-import { getMemorialById } from '@/lib/data'; // Public fetch
+import { getMemorialById } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { MemorialData } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -24,14 +24,14 @@ import {
 import { PricingTable } from '@/components/shared/PricingTable';
 
 interface EditMemorialPageProps {
-  params: {
-    memorialId: string;
-  };
+  params: Promise<{ memorialId: string }>;
 }
 
-export default function EditMemorialPage({ params }: EditMemorialPageProps) {
-  const { memorialId } = params;
+interface EditMemorialPageClientProps {
+  memorialId: string;
+}
 
+function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
   const [memorialData, setMemorialData] = useState<MemorialData | null | undefined>(undefined); // undefined for loading, null for not found
   const [isLoading, setIsLoading] = useState(true);
   const { user, loading: authLoading, userStatus } = useAuth();
@@ -158,4 +158,10 @@ export default function EditMemorialPage({ params }: EditMemorialPageProps) {
       </DialogContent>
     </Dialog>
   );
+}
+
+
+export default function EditMemorialPage({ params }: EditMemorialPageProps) {
+  const { memorialId } = React.use(params);
+  return <EditMemorialPageClient memorialId={memorialId} />;
 }
