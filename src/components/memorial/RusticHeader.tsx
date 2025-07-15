@@ -26,7 +26,7 @@ export function RusticHeader({ deceasedName, birthDate, deathDate, lifeSummary, 
   };
 
   return (
-    <header className="bg-card border-b-2 border-primary">
+    <header className="bg-primary text-primary-foreground border-b-2 border-accent">
       <div className="absolute top-4 left-4 z-10">
         <Link href={backLinkHref}>
           <Image
@@ -44,7 +44,7 @@ export function RusticHeader({ deceasedName, birthDate, deathDate, lifeSummary, 
           {/* Left Column */}
           <div className="md:col-span-1 flex flex-col items-center text-center animate-in fade-in duration-500">
             {profilePhotoUrl && (
-              <div className="relative w-48 h-48 rounded-md overflow-hidden shadow-lg mb-4 border-2 border-primary/20">
+              <div className="relative w-48 h-48 rounded-md overflow-hidden shadow-lg mb-4 border-2 border-primary-foreground/20">
                 <Image
                   src={profilePhotoUrl}
                   alt={`Profile photo of ${deceasedName}`}
@@ -54,12 +54,12 @@ export function RusticHeader({ deceasedName, birthDate, deathDate, lifeSummary, 
                 />
               </div>
             )}
-            <h1 className="text-4xl font-headline text-primary">{deceasedName}</h1>
-            <p className="text-lg text-muted-foreground mt-1">
+            <h1 className="text-4xl font-headline text-primary-foreground">{deceasedName}</h1>
+            <p className="text-lg text-primary-foreground/80 mt-1">
               {formatDate(birthDate)} &ndash; {formatDate(deathDate)}
             </p>
             {lifeSummary && (
-              <p className="mt-4 text-md text-foreground/80 italic">
+              <p className="mt-4 text-md text-primary-foreground/90 italic">
                 {lifeSummary}
               </p>
             )}
@@ -67,9 +67,9 @@ export function RusticHeader({ deceasedName, birthDate, deathDate, lifeSummary, 
 
           {/* Right Column (Biography) */}
           <div className="md:col-span-2 animate-in fade-in-up duration-500 delay-100">
-            <h2 className="font-headline text-3xl text-primary mb-4 pb-2 border-b border-primary/20">Biography</h2>
+            <h2 className="font-headline text-3xl text-primary-foreground mb-4 pb-2 border-b border-primary-foreground/20">Biography</h2>
             <div 
-              className="prose prose-lg max-w-none font-body text-foreground/90 leading-relaxed" 
+              className="prose prose-lg max-w-none font-body text-primary-foreground/90 leading-relaxed" 
               dangerouslySetInnerHTML={{ __html: biography.replace(/\n/g, '<br />') }} 
             />
           </div>
