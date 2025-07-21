@@ -3,6 +3,7 @@ import { Leaf, Sprout, TreeDeciduous, Heart, Check } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface PricingTableProps {
   memorialId?: string;
@@ -10,13 +11,6 @@ interface PricingTableProps {
 }
 
 export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
-  const createMailtoLink = (planName: string) => {
-    const subject = deceasedName
-      ? `Inquiry about the ${planName} plan for: ${deceasedName}`
-      : `Inquiry about the ${planName} plan`;
-    return `mailto:honouredlives@gmail.com?subject=${encodeURIComponent(subject)}`;
-  };
-
   const isUpgradeFlow = !!memorialId;
 
   return (
@@ -74,9 +68,9 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href={createMailtoLink('ESSENCE')}>
-              Contact us
-              </a>
+              <Link href="/payments">
+                Choose Plan
+              </Link>
             </Button>
           </div>
         </div>
@@ -111,9 +105,9 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href={createMailtoLink('LEGACY')}>
-              Contact us
-              </a>
+              <Link href="/payments">
+                Choose Plan
+              </Link>
             </Button>
           </div>
         </div>
@@ -148,9 +142,9 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <a href={createMailtoLink('ETERNAL')}>
-              Contact us
-              </a>
+              <Link href="/payments">
+                Choose Plan
+              </Link>
             </Button>
           </div>
         </div>
