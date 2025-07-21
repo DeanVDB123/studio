@@ -26,6 +26,7 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
     reference: new Date().getTime().toString(),
     email,
     amount,
+    currency: 'ZAR', // Explicitly set the currency to ZAR
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
   };
 
