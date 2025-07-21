@@ -8,6 +8,7 @@ import { createMemorial as dbCreateMemorial, getMemorialById, isAdmin as checkIs
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { uploadImage } from './storage';
+import https from 'https';
 
 export async function handleGenerateBiography(input: GenerateBiographyDraftInput): Promise<string> {
   console.log('[Action] handleGenerateBiography called with input:', JSON.stringify(input, null, 2));
@@ -348,4 +349,62 @@ export async function updateMemorialPlanAction(adminId: string, memorialId: stri
     console.error(`[Action] Error updating plan for memorial ${memorialId}:`, error);
     throw new Error('Failed to update memorial plan.');
   }
+}
+
+export async function verifyPaystackTransaction(input: {
+    reference: string;
+    plan: string;
+    memorialId: string;
+}): Promise<{ status: boolean; message: string }> {
+    console.log(`[Action] Verifying Paystack transaction with reference: ${input.reference}`);
+    const { reference, plan, memorialId } = input;
+    const secretKey = process.env.PAYSTACK_SECRET_KEY;
+
+    if (!secretKey) {
+        console.error('[Action] Paystack secret key is not configured.');
+        throw new Error('Server configuration error. Cannot verify payment.');
+    }
+
+    const options = {
+        hostname: 'api.paystack.co',
+        port: 443,
+        path: `/transaction/verify/${reference}`,
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${secretKey}`,
+        },
+    };
+
+    return new Promise((resolve, reject) => {
+        const req = https.request(options, (res) => {
+            let data = '';
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            res.on('end', async () => {
+                try {
+                    const response = JSON.parse(data);
+                    if (response.status && response.data.status === 'success') {
+                        console.log('[Action] Paystack verification successful.');
+                        // Transaction is successful, now update the memorial plan
+                        await updateMemorialPlanAction('PAYSTACK_SYSTEM', memorialId, plan);
+                        resolve({ status: true, message: 'Payment verified successfully.' });
+                    } else {
+                        console.warn('[Action] Paystack verification failed:', response.message);
+                        reject(new Error(response.message || 'Payment verification failed.'));
+                    }
+                } catch (e) {
+                    console.error('[Action] Error parsing Paystack response or updating plan:', e);
+                    reject(new Error('An error occurred during payment verification.'));
+                }
+            });
+        });
+
+        req.on('error', (e) => {
+            console.error('[Action] Error with Paystack API request:', e);
+            reject(new Error('Could not connect to payment gateway for verification.'));
+        });
+
+        req.end();
+    });
 }

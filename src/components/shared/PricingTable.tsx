@@ -10,6 +10,14 @@ interface PricingTableProps {
   deceasedName?: string;
 }
 
+const getPaymentLink = (plan: string, memorialId?: string, deceasedName?: string) => {
+    if (!memorialId || !deceasedName) {
+        // If we don't have memorial details, just go to the signup page.
+        return '/signup';
+    }
+    return `/payments?plan=${plan}&memorialId=${memorialId}&deceasedName=${encodeURIComponent(deceasedName)}`;
+}
+
 export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
   const isUpgradeFlow = !!memorialId;
 
@@ -68,7 +76,7 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <Link href="/payments">
+              <Link href={getPaymentLink('ESSENCE', memorialId, deceasedName)}>
                 Choose Plan
               </Link>
             </Button>
@@ -105,7 +113,7 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <Link href="/payments">
+              <Link href={getPaymentLink('LEGACY', memorialId, deceasedName)}>
                 Choose Plan
               </Link>
             </Button>
@@ -142,7 +150,7 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
           </ul>
           <div className="mt-6 text-center">
             <Button asChild variant="outline" className="w-full">
-              <Link href="/payments">
+               <Link href={getPaymentLink('ETERNAL', memorialId, deceasedName)}>
                 Choose Plan
               </Link>
             </Button>
