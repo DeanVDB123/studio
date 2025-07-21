@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
@@ -32,10 +33,10 @@ export default function PaymentsPage() {
   const [clientReady, setClientReady] = useState(false);
   useEffect(() => setClientReady(true), []);
 
-  const planParam = Array.isArray(params.details) ? params.details[0] : params.details;
-  const memorialId = Array.isArray(params.details) ? params.details[1] : undefined;
+  const details = params.details as string[] || [];
+  const plan = details[0]?.toUpperCase();
+  const memorialId = details[1];
 
-  const plan = planParam?.toUpperCase();
   const deceasedName = searchParams.get('name');
 
   const selectedPlan = plan && planDetails[plan] ? planDetails[plan] : null;
@@ -72,9 +73,9 @@ export default function PaymentsPage() {
           </CardHeader>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href={`/edit/${memorialId || ''}`}>
+              <Link href="/memorials">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Return to Memorial Editor
+                Return to Dashboard
               </Link>
             </Button>
           </CardFooter>
@@ -113,9 +114,9 @@ export default function PaymentsPage() {
             deceasedName={deceasedName}
           />
            <Button asChild variant="ghost" className="text-muted-foreground">
-              <Link href={`/edit/${memorialId}`}>
+              <Link href="/memorials">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Editor
+                Back to Dashboard
               </Link>
             </Button>
         </CardFooter>

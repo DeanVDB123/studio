@@ -46,10 +46,6 @@ const nextConfig: NextConfig = {
         destination: '/admin/qrcodes',
       },
       {
-        source: '/payment/:plan/:memorialId',
-        destination: '/payments',
-      },
-      {
         source: `/edit/:memorialId(${memorialIdRegex})`,
         destination: '/admin/edit/:memorialId',
       },
@@ -59,6 +55,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/payment',
+        destination: '/memorials',
+        permanent: false,
+      },
+    ]
+  }
 };
 
 export default nextConfig;

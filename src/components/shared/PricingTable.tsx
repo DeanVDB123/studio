@@ -16,7 +16,7 @@ const getPaymentLink = (plan: string, memorialId?: string, deceasedName?: string
         return '/signup';
     }
     // Use a cleaner path and pass the name as a query parameter
-    return `/payment/${plan}/${memorialId}?name=${encodeURIComponent(deceasedName)}`;
+    return `/payment/${plan.toUpperCase()}/${memorialId}?name=${encodeURIComponent(deceasedName)}`;
 }
 
 export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
