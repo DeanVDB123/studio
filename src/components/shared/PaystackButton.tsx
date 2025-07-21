@@ -26,7 +26,6 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
     reference: new Date().getTime().toString(),
     email,
     amount,
-    currency: 'ZAR', // Explicitly set the currency to ZAR
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
   };
 
@@ -86,7 +85,7 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
         }
         setIsProcessing(true);
         // Correctly call initializePayment with the callback functions
-        initializePayment({onSuccess, onClose});
+        initializePayment(onSuccess, onClose);
       }}
       className="w-full"
       disabled={isProcessing}
