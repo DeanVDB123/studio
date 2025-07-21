@@ -15,7 +15,8 @@ const getPaymentLink = (plan: string, memorialId?: string, deceasedName?: string
         // If we don't have memorial details, just go to the signup page.
         return '/signup';
     }
-    return `/payments?plan=${plan}&memorialId=${memorialId}&deceasedName=${encodeURIComponent(deceasedName)}`;
+    // Use a cleaner path and pass the name as a query parameter
+    return `/payment/${plan}/${memorialId}?name=${encodeURIComponent(deceasedName)}`;
 }
 
 export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
@@ -47,8 +48,10 @@ export function PricingTable({ memorialId, deceasedName }: PricingTableProps) {
                 </li>
             </ul>
             <div className="mt-6 text-center">
-                <Button variant="outline" className="w-full" disabled>
-                Free
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href="/signup">
+                    Sign up to choose
+                  </Link>
                 </Button>
             </div>
             </div>

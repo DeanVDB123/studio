@@ -46,6 +46,10 @@ const nextConfig: NextConfig = {
         destination: '/admin/qrcodes',
       },
       {
+        source: '/payment/:plan/:memorialId',
+        destination: '/payments',
+      },
+      {
         source: `/edit/:memorialId(${memorialIdRegex})`,
         destination: '/admin/edit/:memorialId',
       },

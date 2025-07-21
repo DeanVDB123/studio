@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import {
@@ -18,22 +18,25 @@ import { PaystackButton } from '@/components/shared/PaystackButton';
 import { useEffect, useState } from 'react';
 
 const planDetails: Record<string, { name: string; price: number }> = {
-  ESSENCE: { name: 'Essence Plan', price: 5000 }, // Price in kobo (e.g., 5000 = ₦50.00)
-  LEGACY: { name: 'Legacy Plan', price: 15000 },
-  ETERNAL: { name: 'Eternal Plan', price: 50000 },
+  ESSENCE: { name: 'Essence Plan', price: 25000 }, // Price in kobo (e.g., 25000 = R250.00)
+  LEGACY: { name: 'Legacy Plan', price: 75000 },
+  ETERNAL: { name: 'Eternal Plan', price: 150000 },
 };
 
 export default function PaymentsPage() {
   const { user, loading: authLoading } = useAuth();
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   
   const [clientReady, setClientReady] = useState(false);
   useEffect(() => setClientReady(true), []);
 
-  const plan = searchParams.get('plan')?.toUpperCase();
-  const memorialId = searchParams.get('memorialId');
-  const deceasedName = searchParams.get('deceasedName');
+  const planParam = Array.isArray(params.details) ? params.details[0] : params.details;
+  const memorialId = Array.isArray(params.details) ? params.details[1] : undefined;
+
+  const plan = planParam?.toUpperCase();
+  const deceasedName = searchParams.get('name');
 
   const selectedPlan = plan && planDetails[plan] ? planDetails[plan] : null;
 
@@ -81,7 +84,7 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)] bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
       <Card className="w-full max-w-lg shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-headline">
@@ -97,11 +100,11 @@ export default function PaymentsPage() {
               Total Amount:
             </p>
              <p className="text-2xl font-bold text-foreground">
-              ₦{(selectedPlan.price / 100).toFixed(2)}
+              R{(selectedPlan.price / 100).toFixed(2)}
             </p>
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col gap-4">
           <PaystackButton 
             email={user.email!}
             amount={selectedPlan.price}
@@ -109,6 +112,12 @@ export default function PaymentsPage() {
             memorialId={memorialId}
             deceasedName={deceasedName}
           />
+           <Button asChild variant="ghost" className="text-muted-foreground">
+              <Link href={`/edit/${memorialId}`}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Editor
+              </Link>
+            </Button>
         </CardFooter>
       </Card>
     </div>
