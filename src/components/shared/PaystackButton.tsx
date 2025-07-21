@@ -31,7 +31,7 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
 
   const onSuccess = async (reference: any) => {
     console.log('[Paystack] Success. Reference:', reference);
-    setIsProcessing(true);
+    setIsProcessing(true); // Keep processing state while verifying
     toast({ title: 'Payment Received', description: 'Verifying your transaction...' });
     
     try {
@@ -56,8 +56,7 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
         description: error.message || 'There was an issue verifying your payment. Please contact support.',
         variant: 'destructive',
       });
-    } finally {
-        setIsProcessing(false);
+      setIsProcessing(false); // Reset button on failure
     }
   };
 
@@ -85,7 +84,8 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
             return;
         }
         setIsProcessing(true);
-        initializePayment({onSuccess, onClose});
+        // Correctly call initializePayment with the callback functions
+        initializePayment(onSuccess, onClose);
       }}
       className="w-full"
       disabled={isProcessing}
