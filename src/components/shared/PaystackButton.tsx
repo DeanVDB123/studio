@@ -1,12 +1,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { usePaystackPayment } from 'react-paystack';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, Loader2 } from 'lucide-react';
-import { verifyPaystackTransaction } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 
 interface PaystackButtonProps {
@@ -26,29 +25,35 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
     reference: new Date().getTime().toString(),
     email,
     amount,
-    currency: 'ZAR', // Explicitly set the currency to ZAR
+    currency: 'ZAR',
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
   };
 
-  const onSuccess = async (reference: any) => {
-    console.log('[Paystack] Success. Reference:', reference);
-    setIsProcessing(true); // Keep processing state while verifying
+  const handleVerification = useCallback(async (reference: string) => {
+    setIsProcessing(true);
     toast({ title: 'Payment Received', description: 'Verifying your transaction...' });
     
     try {
-      await verifyPaystackTransaction({
-        reference: reference.reference,
-        plan,
-        memorialId,
+      const response = await fetch('/api/paystack/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reference, plan, memorialId }),
       });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Verification failed. Please contact support.');
+      }
 
       toast({
         title: 'Verification Successful!',
         description: `The plan for ${deceasedName} has been upgraded.`,
       });
       
-      // Redirect to the edit page to see the changes
-      router.push(`/edit/${memorialId}`);
+      router.push(`/memorials`);
 
     } catch (error: any) {
       console.error('[Paystack] Verification failed:', error);
@@ -57,37 +62,44 @@ export function PaystackButton({ email, amount, plan, memorialId, deceasedName }
         description: error.message || 'There was an issue verifying your payment. Please contact support.',
         variant: 'destructive',
       });
-      setIsProcessing(false); // Reset button on failure
+      setIsProcessing(false);
     }
+  }, [plan, memorialId, deceasedName, toast, router]);
+
+
+  const onSuccess = (reference: any) => {
+    console.log('[Paystack] Success. Reference:', reference);
+    handleVerification(reference.reference);
   };
 
   const onClose = () => {
     console.log('[Paystack] Payment dialog closed.');
-    toast({
-      title: 'Payment Cancelled',
-      description: 'The payment process was cancelled.',
-      variant: 'default',
-    });
-    setIsProcessing(false); // Reset button state
+    if (!isProcessing) {
+        toast({
+            title: 'Payment Cancelled',
+            description: 'The payment process was cancelled.',
+            variant: 'default',
+        });
+    }
   };
 
   const initializePayment = usePaystackPayment(config);
 
+  const handlePayment = () => {
+    if (!config.publicKey) {
+        toast({
+            title: 'Configuration Error',
+            description: 'Payment gateway is not configured. Please contact support.',
+            variant: 'destructive'
+        });
+        return;
+    }
+    initializePayment({onSuccess, onClose});
+  };
+
   return (
     <Button
-      onClick={() => {
-        if (!config.publicKey) {
-            toast({
-                title: 'Configuration Error',
-                description: 'Payment gateway is not configured. Please contact support.',
-                variant: 'destructive'
-            });
-            return;
-        }
-        setIsProcessing(true);
-        // Correctly call initializePayment with the callback functions
-        initializePayment(onSuccess, onClose);
-      }}
+      onClick={handlePayment}
       className="w-full"
       disabled={isProcessing}
     >
