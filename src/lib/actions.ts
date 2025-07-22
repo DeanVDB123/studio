@@ -330,18 +330,15 @@ export async function updateMemorialPlanAction(adminId: string, memorialId: stri
       const ownerHasPaidPlans = await checkIfUserHasPaidMemorials(ownerId);
       const ownerStatus = await getUserStatus(ownerId);
 
-      if (ownerHasPaidPlans) {
-        // If they have any paid plan, ensure their status is PAID
-        if (ownerStatus === 'FREE') { // Only upgrade if they are FREE
-            await dbUpdateUserStatus(ownerId, 'PAID');
-            console.log(`[Action] Owner ${ownerId} has active plans. Upgrading status to PAID.`);
-        }
-      } else {
-        // If they have NO paid plans, downgrade their status to FREE
-        if (ownerStatus === 'PAID') { // Only downgrade if they are currently PAID
-            await dbUpdateUserStatus(ownerId, 'FREE');
-            console.log(`[Action] Owner ${ownerId} has no active plans. Downgrading status to FREE.`);
-        }
+      // Upgrade to PAID if they have any paid plan and are currently FREE
+      if (ownerHasPaidPlans && ownerStatus === 'FREE') {
+        await dbUpdateUserStatus(ownerId, 'PAID');
+        console.log(`[Action] Owner ${ownerId} has active plans. Upgrading status to PAID.`);
+      } 
+      // Downgrade to FREE if they have NO paid plans and are currently PAID
+      else if (!ownerHasPaidPlans && ownerStatus === 'PAID') {
+        await dbUpdateUserStatus(ownerId, 'FREE');
+        console.log(`[Action] Owner ${ownerId} has no active plans. Downgrading status to FREE.`);
       }
     }
 
