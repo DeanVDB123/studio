@@ -342,7 +342,9 @@ export async function updateMemorialPlanAction(adminId: string, memorialId: stri
       }
     }
 
+    // Invalidate caches for relevant pages
     revalidatePath('/pappapage', 'page');
+    revalidatePath('/memorials', 'page'); // This will refresh the dashboard
     revalidatePath(`/${memorialId}`);
     revalidatePath(`/memorial/${memorialId}`);
   } catch (error: any) {
@@ -350,3 +352,6 @@ export async function updateMemorialPlanAction(adminId: string, memorialId: stri
     throw new Error('Failed to update memorial plan.');
   }
 }
+
+
+    
