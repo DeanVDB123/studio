@@ -47,12 +47,13 @@ type UserMemorial = {
   profilePhotoUrl?: string;
   viewCount?: number;
   lastVisited?: string;
+  plan?: string;
 };
 
 export const dynamic = 'force-dynamic';
 
 export default function AdminDashboardPage() {
-  const { user, loading: authLoading, userStatus } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [memorials, setMemorials] = useState<UserMemorial[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const router = useRouter(); 
@@ -151,8 +152,6 @@ export default function AdminDashboardPage() {
     );
   }
   
-  const isFreeOrSuspended = userStatus === 'FREE' || userStatus === 'SUSPENDED';
-
   return (
     <Dialog open={isPricingDialogOpen} onOpenChange={(isOpen) => {
       setIsPricingDialogOpen(isOpen);
@@ -191,78 +190,81 @@ export default function AdminDashboardPage() {
           </Card>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {memorials.map((memorial) => (
-              <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-none">
-                <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
-                  {memorial.profilePhotoUrl && (
-                    <div className="relative w-1/2 aspect-square mx-auto mb-4 rounded-md overflow-hidden">
-                      <Image
-                        src={memorial.profilePhotoUrl}
-                        alt={`Profile photo of ${memorial.deceasedName}`}
-                        fill
-                        className="object-cover filter grayscale"
-                        data-ai-hint="profile person"
-                      />
+            {memorials.map((memorial) => {
+              const isFreePlan = (memorial.plan || 'SPIRIT').toUpperCase() === 'SPIRIT';
+              return (
+                <Card key={memorial.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-none">
+                  <CardHeader className="bg-primary text-primary-foreground pb-4 pt-5 px-4 text-center flex flex-col items-center">
+                    {memorial.profilePhotoUrl && (
+                      <div className="relative w-1/2 aspect-square mx-auto mb-4 rounded-md overflow-hidden">
+                        <Image
+                          src={memorial.profilePhotoUrl}
+                          alt={`Profile photo of ${memorial.deceasedName}`}
+                          fill
+                          className="object-cover filter grayscale"
+                          data-ai-hint="profile person"
+                        />
+                      </div>
+                    )}
+                    <CardTitle className="font-headline text-xl leading-tight truncate w-full">
+                      {memorial.deceasedName}
+                    </CardTitle>
+                    <p className="text-xs text-primary-foreground/80 font-body">
+                      {formatDateRange(memorial.birthDate, memorial.deathDate)}
+                    </p>
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/80 font-body mt-2">
+                      <QrCode className="h-4 w-4" />
+                      <span>{memorial.viewCount || 0} views</span>
                     </div>
-                  )}
-                  <CardTitle className="font-headline text-xl leading-tight truncate w-full">
-                    {memorial.deceasedName}
-                  </CardTitle>
-                  <p className="text-xs text-primary-foreground/80 font-body">
-                    {formatDateRange(memorial.birthDate, memorial.deathDate)}
-                  </p>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-primary-foreground/80 font-body mt-2">
-                    <QrCode className="h-4 w-4" />
-                    <span>{memorial.viewCount || 0} views</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
-                  <p className="text-sm text-muted-foreground italic">
-                    {memorial.lifeSummary}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex justify-around items-center p-3 border-t"> 
-                  <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
-                    <Link href={`/edit/${memorial.id}`}>
-                      <Edit3 className="h-5 w-5" />
-                      <span className="sr-only">Edit</span>
-                    </Link>
-                  </Button>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="icon" title={`Show QR Code for ${memorial.deceasedName}`}>
-                        <QrCode className="h-5 w-5" />
-                        <span className="sr-only">Show QR Code</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-4">
-                      {isFreeOrSuspended ? (
-                        <div className="flex flex-col items-center text-center gap-2">
-                          <p className="text-sm text-muted-foreground">Ascend to share this QR code.</p>
-                          <Button size="sm" onClick={() => handleUpgradeClick(memorial)}>Ascend to premium</Button>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center gap-2 text-center">
-                            <p className="text-sm font-medium text-foreground">Scan me!</p>
-                             <Link
-                                href={`/${memorial.id}`}
-                                target={`memorial-${memorial.id}`}
-                                aria-label={`View memorial for ${memorial.deceasedName}`}
-                                className="transition-transform duration-200 hover:scale-105"
-                              >
-                                <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
-                              </Link>
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
-                  <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
-                    <Trash2 className="h-5 w-5 text-destructive" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent className="flex-grow flex flex-col items-center justify-center p-4 text-center">
+                    <p className="text-sm text-muted-foreground italic">
+                      {memorial.lifeSummary}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="flex justify-around items-center p-3 border-t"> 
+                    <Button variant="ghost" size="icon" asChild title={`Edit ${memorial.deceasedName}`}>
+                      <Link href={`/edit/${memorial.id}`}>
+                        <Edit3 className="h-5 w-5" />
+                        <span className="sr-only">Edit</span>
+                      </Link>
+                    </Button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" title={`Show QR Code for ${memorial.deceasedName}`}>
+                          <QrCode className="h-5 w-5" />
+                          <span className="sr-only">Show QR Code</span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-4">
+                        {isFreePlan ? (
+                          <div className="flex flex-col items-center text-center gap-2">
+                            <p className="text-sm text-muted-foreground">Ascend to share this QR code.</p>
+                            <Button size="sm" onClick={() => handleUpgradeClick(memorial)}>Ascend to premium</Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 text-center">
+                              <p className="text-sm font-medium text-foreground">Scan me!</p>
+                               <Link
+                                  href={`/${memorial.id}`}
+                                  target={`memorial-${memorial.id}`}
+                                  aria-label={`View memorial for ${memorial.deceasedName}`}
+                                  className="transition-transform duration-200 hover:scale-105"
+                                >
+                                  <QRCodeDisplay url={`${pageBaseUrl}/${memorial.id}`} size={128} />
+                                </Link>
+                          </div>
+                        )}
+                      </PopoverContent>
+                    </Popover>
+                    <Button variant="ghost" size="icon" title={`Delete ${memorial.deceasedName}`} onClick={() => handleDeleteClick(memorial)}>
+                      <Trash2 className="h-5 w-5 text-destructive" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
           </div>
         )}
          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

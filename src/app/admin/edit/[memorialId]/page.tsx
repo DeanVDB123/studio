@@ -44,7 +44,7 @@ interface EditMemorialPageClientProps {
 function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
   const [memorialData, setMemorialData] = useState<MemorialData | null | undefined>(undefined); // undefined for loading, null for not found
   const [isLoading, setIsLoading] = useState(true);
-  const { user, loading: authLoading, userStatus } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [permalink, setPermalink] = useState('');
@@ -161,7 +161,7 @@ function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
     );
   }
   
-  const isFreeOrSuspended = userStatus === 'FREE' || userStatus === 'SUSPENDED';
+  const isFreePlan = (memorialData?.plan || 'SPIRIT').toUpperCase() === 'SPIRIT';
 
   return (
     <>
@@ -181,14 +181,14 @@ function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
               <CardHeader>
                 <CardTitle className="font-headline text-xl">QR Code</CardTitle>
                 <CardDescription>
-                  {isFreeOrSuspended
+                  {isFreePlan
                     ? 'Upgrade to activate and share your QR code.' 
                     : 'Share this QR code for easy access.'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {permalink && (
-                  isFreeOrSuspended ? (
+                  isFreePlan ? (
                     <div className="flex flex-col items-center justify-center text-center p-4">
                       <DialogTrigger asChild>
                         <Button>Ascend to premium</Button>

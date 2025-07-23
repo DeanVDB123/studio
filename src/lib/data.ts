@@ -74,7 +74,7 @@ export async function getMemorialById(id: string): Promise<MemorialData | undefi
   }
 }
 
-export async function getAllMemorialsForUser(userId: string): Promise<{ id: string; deceasedName: string; birthDate: string; deathDate: string; lifeSummary: string; profilePhotoUrl?: string; viewCount?: number; lastVisited?: string; viewTimestamps?: string[]; }[]> {
+export async function getAllMemorialsForUser(userId: string): Promise<(MemorialData & { id: string })[]> {
   console.log(`[Firestore] getAllMemorialsForUser called for user: ${userId}.`);
   const q = query(memorialsCollection, where("userId", "==", userId));
   const querySnapshot = await getDocs(q);
@@ -86,20 +86,13 @@ export async function getAllMemorialsForUser(userId: string): Promise<{ id: stri
       return null;
     }
     return {
+      ...(data as MemorialData),
       id: doc.id,
-      deceasedName: data.deceasedName,
-      birthDate: data.birthDate,
-      deathDate: data.deathDate,
-      lifeSummary: data.lifeSummary,
-      profilePhotoUrl: data.photos && data.photos.length > 0 ? data.photos[0].url : undefined,
-      viewCount: data.viewCount || 0,
-      lastVisited: data.lastVisited,
-      viewTimestamps: data.viewTimestamps || [],
     };
   }).filter(Boolean); // This filters out the null values from hidden memorials
   
   console.log(`[Firestore] Found ${userMemorials.length} visible memorials for user ${userId}.`);
-  return userMemorials as any[];
+  return userMemorials as (MemorialData & { id: string })[];
 }
 
 export async function saveMemorial(data: MemorialData): Promise<MemorialData> {
