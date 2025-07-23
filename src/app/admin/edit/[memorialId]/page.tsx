@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Leaf, Sprout, TreeDeciduous, Heart, BadgeCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -32,6 +32,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PricingTable } from '@/components/shared/PricingTable';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface EditMemorialPageProps {
   params: Promise<{ memorialId: string }>;
@@ -40,6 +42,56 @@ interface EditMemorialPageProps {
 interface EditMemorialPageClientProps {
   memorialId: string;
 }
+
+const PlanDisplayCard = ({ plan, expiryDate, onUpgradeClick }: { plan?: string; expiryDate?: string, onUpgradeClick: () => void; }) => {
+    const currentPlan = plan?.toUpperCase() || 'SPIRIT';
+
+    const planDetails: Record<string, { icon: React.ComponentType<{ className?: string }>, text: string, color: string }> = {
+      SPIRIT: { icon: Leaf, text: 'SPIRIT', color: 'text-green-500' },
+      ESSENCE: { icon: Sprout, text: 'ESSENCE', color: 'text-green-500' },
+      LEGACY: { icon: TreeDeciduous, text: 'LEGACY', color: 'text-green-500' },
+      ETERNAL: { icon: Heart, text: 'ETERNAL', color: 'text-yellow-500' },
+    };
+
+    const { icon: Icon, text, color } = planDetails[currentPlan] || planDetails.SPIRIT;
+    
+    const safeFormatDate = (dateString: string | undefined | null) => {
+        if (!dateString) return null;
+        try {
+            return format(new Date(dateString), 'dd MMM yyyy');
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const formattedExpiry = expiryDate === 'ETERNAL' ? 'Never' : safeFormatDate(expiryDate);
+  
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline text-xl">Current Plan</CardTitle>
+                <CardDescription>
+                    The subscription status for this memorial.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-center">
+                 <div className={cn("flex items-center justify-center gap-2 font-headline text-2xl", color)}>
+                    <Icon className="h-7 w-7" />
+                    <span>{text}</span>
+                 </div>
+                 {formattedExpiry && (
+                    <p className="text-sm text-muted-foreground">
+                        Expires: {formattedExpiry}
+                    </p>
+                 )}
+                 {currentPlan === 'SPIRIT' && (
+                    <Button onClick={onUpgradeClick}>Ascend to premium</Button>
+                 )}
+            </CardContent>
+        </Card>
+    );
+};
+
 
 function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
   const [memorialData, setMemorialData] = useState<MemorialData | null | undefined>(undefined); // undefined for loading, null for not found
@@ -54,6 +106,8 @@ function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [nextPath, setNextPath] = useState<string | null>(null);
   const [submitAndLeave, setSubmitAndLeave] = useState<(() => void) | null>(null);
+  const [isPricingDialogOpen, setIsPricingDialogOpen] = useState(false);
+
 
   const getFormSubmitHandler = useCallback((handler: () => void) => {
     setSubmitAndLeave(() => handler);
@@ -165,7 +219,7 @@ function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
 
   return (
     <>
-      <Dialog>
+      <Dialog open={isPricingDialogOpen} onOpenChange={setIsPricingDialogOpen}>
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <h1 className="text-3xl font-headline mb-8">Edit Memorial: {memorialData.deceasedName}</h1>
@@ -177,6 +231,11 @@ function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
             />
           </div>
           <div className="lg:col-span-1 space-y-6 lg:pt-20">
+             <PlanDisplayCard 
+                plan={memorialData.plan} 
+                expiryDate={memorialData.planExpiryDate} 
+                onUpgradeClick={() => setIsPricingDialogOpen(true)} 
+             />
             <Card>
               <CardHeader>
                 <CardTitle className="font-headline text-xl">QR Code</CardTitle>
@@ -190,9 +249,8 @@ function EditMemorialPageClient({ memorialId }: EditMemorialPageClientProps) {
                 {permalink && (
                   isFreePlan ? (
                     <div className="flex flex-col items-center justify-center text-center p-4">
-                      <DialogTrigger asChild>
-                        <Button>Ascend to premium</Button>
-                      </DialogTrigger>
+                      <p className="text-muted-foreground text-sm mb-4">Your QR code is ready once you ascend.</p>
+                      <Button onClick={() => setIsPricingDialogOpen(true)}>Ascend to premium</Button>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-4">
