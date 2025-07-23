@@ -78,7 +78,6 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
 
   const viewerIsAdmin = userStatus === 'ADMIN';
   const viewerIsOwner = user && user.uid === memorialData.userId;
-  const ownerIsAdmin = memorialData.ownerStatus === 'ADMIN';
 
   // First, check for admin deactivation. This overrides all other rules.
   // Only admins can see a 'hidden' memorial.
@@ -118,8 +117,8 @@ export default function MemorialClientPage({ memorialId }: MemorialClientPagePro
     memorialData.plan.toUpperCase() !== 'SPIRIT' && 
     !isExpired();
 
-  // Access is granted if: viewer is admin, viewer is owner, owner is admin, or the plan is active and public.
-  if (!viewerIsAdmin && !viewerIsOwner && !planIsActiveAndPublic && !ownerIsAdmin) {
+  // Access is granted if: viewer is admin, viewer is owner, or the memorial's plan is active and public.
+  if (!viewerIsAdmin && !viewerIsOwner && !planIsActiveAndPublic) {
     let title = "This Memorial is Private";
     let description = "This memorial is not currently available for public viewing. Please ask the owner to upgrade their plan to make it public.";
 
